@@ -28,7 +28,6 @@ import {
 import BasicPagination from '../../components/Pagination'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
-import CourseCard from '../../components/Cards'
 import Modal from '../../components/Modal'
 
 const UserCard = ({ FullName, avatar_url, email, role, onClick }) => {
@@ -272,11 +271,11 @@ const UserForm = ({ mode, userId, onChange }) => {
 							<button
 								onClick={() => setIsModalOpen(states[2])}
 								disabled={mode === 'create'}
-								className={`w-full group flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-sm font-medium transition-all ${mode === 'create' ? 'opacity-40 cursor-not-allowed' : 'text-[var(--red-base)] bg-[var(--red-surface)] hover:text-[var(--red-surface)] hover:bg-[var(--red-base)] hover:scale-101 hover:shadow-[var(--shadow)] active:scale-[0.98] cursor-pointer'}`}
+								className={`w-full group flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-sm font-medium transition-all ${mode === 'create' ? 'opacity-40 cursor-not-allowed' : 'text-[var(--red-base)] bg-[var(--red-pale)] hover:text-[var(--red-pale)] hover:bg-[var(--red-base)] hover:scale-101 hover:shadow-[var(--shadow)] active:scale-[0.98] cursor-pointer'}`}
 							>
 								<Trash2
 									size={16}
-									className='text-[var(--red-base)] group-hover:text-[var(--red-surface)] transition-all'
+									className='text-[var(--red-base)] group-hover:text-[var(--red-pale)] transition-all'
 								/>
 								Удалить аккаунт
 							</button>

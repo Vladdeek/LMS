@@ -19,8 +19,10 @@ import { InputDefault } from '../components/Inputs'
 import { DefaultButton } from '../components/Buttons'
 import { Me } from '../../service/APIs/Authorization'
 import Modal from '../components/Modal'
+import { useUser } from '../../service/context/UserContext'
 
 const Profile = ({ mode, userId, onChange }) => {
+	const { userInfo } = useUser()
 	const roles = {
 		student: 'Cтудент',
 		teacher: 'Преподаватель',
@@ -28,7 +30,6 @@ const Profile = ({ mode, userId, onChange }) => {
 	}
 
 	const [isModalOpen, setIsModalOpen] = useState(null)
-	const [userInfo, setUserInfo] = useState(null)
 	const [formData, setFormData] = useState({
 		first_name: '',
 		last_name: '',
@@ -133,16 +134,6 @@ const Profile = ({ mode, userId, onChange }) => {
 			action: () => deleteUsersById(),
 		},
 	}
-
-	useEffect(() => {
-		const getUserInfo = async e => {
-			try {
-				const res = await Me()
-				setUserInfo(res)
-			} catch (err) {}
-		}
-		getUserInfo()
-	}, [])
 
 	console.log(userInfo)
 
@@ -309,7 +300,7 @@ const Profile = ({ mode, userId, onChange }) => {
 							onClick={() => setIsModalOpen(states[2])}
 							className='group flex items-center gap-2 text-[var(--red-base)] font-medium hover:text-[var(--red-hover)] transition-all cursor-pointer'
 						>
-							<div className='p-2 rounded-lg group-hover:bg-[var(--red-surface)] transition-all'>
+							<div className='p-2 rounded-lg group-hover:bg-[var(--red-pale)] transition-all'>
 								<Trash2 size={20} />
 							</div>
 							Удалить аккаунт

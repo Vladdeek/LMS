@@ -30,7 +30,7 @@ import { FileManager } from '../components/ConstructorViews/FilesImport'
 import { Formula } from '../components/ConstructorViews/FormulaConstructor'
 import { ButtonConstructor } from '../components/ConstructorViews/ButtonConstructor'
 import { Callout } from '../components/ConstructorViews/Callout'
-import { Checkbox, DefaultButton } from '../components/Buttons'
+import { Checkbox, DefaultButton, RadioButton } from '../components/Buttons'
 import { InputDefault, TimeLimitInput } from '../components/Inputs'
 import {
 	CreateCourse,
@@ -59,6 +59,9 @@ import {
 } from '../../service/APIs/Test'
 import TestManager from '../components/TestManager/TestManager'
 import { formatTime } from '../../service/utils/formatTime'
+import AccessManagement from './CoursePage/AccessManagement'
+import ActivityStudents from './CoursePage/ActivityStudents'
+import Attachment from './CoursePage/Attachment'
 
 const COMPONENT_MAP = {
 	text: TextEditor,
@@ -152,7 +155,7 @@ const CreateItemButton = ({
 										type='button'
 										onClick={() => setSelectedTypeIndex(index)}
 										className={`flex flex-col items-center justify-center gap-2 py-2 rounded-lg transition-all
-                                            ${selectedTypeIndex === index ? 'bg-[var(--hero-epta)] text-white' : 'bg-[var(--bg)] text-[var(--middle)]'}
+                                            ${selectedTypeIndex === index ? 'bg-[var(--hero)] text-white' : 'bg-[var(--bg)] text-[var(--middle)]'}
                                             hover:scale-105 cursor-pointer`}
 									>
 										<span>{item.icon}</span>
@@ -225,6 +228,7 @@ const ContentView = ({
 	const [blocks, setBlocks] = useState([])
 	const [searchParams] = useSearchParams() // Достаем хук
 	const activeQuestionId = searchParams.get('questionId')
+	const activeSectionId = searchParams.get('section')
 	const { courseId } = useParams()
 
 	// Реф-карта для отслеживания ПЕРВОГО рендера КАЖДОГО блока по его id
@@ -375,7 +379,7 @@ const ContentView = ({
 							)
 						})}
 
-						{isEdit && (
+						{activeSectionId !== null && (
 							<ConstructorMenu onAdd={type => addBlock(sectionId, type)} />
 						)}
 					</div>
@@ -446,7 +450,7 @@ const ConstructorMenu = ({ onAdd }) => {
 					<button
 						key={index}
 						onClick={() => onAdd(item.type)}
-						className='flex flex-col aspect-square items-center justify-center gap-2 bg-[var(--light-middle)] rounded-xl h-25 hover:bg-[var(--hero-epta)] hover:text-white cursor-pointer text-[var(--middle)] transition-all duration-100'
+						className='flex flex-col aspect-square items-center justify-center gap-2 bg-[var(--light-middle)] rounded-xl h-25 hover:bg-[var(--hero)] hover:text-white cursor-pointer text-[var(--middle)] transition-all duration-100'
 					>
 						{item.icon}
 						<p className='text-base '>{item.title}</p>
@@ -518,9 +522,9 @@ const Content = ({ type, title, isSelected, onClick, role }) => {
 	const status = getStatus(score)
 
 	const colorClasses = {
-		bad: 'bg-[var(--red-base)] text-[var(--red-surface)]',
-		middle: 'bg-[var(--yellow-base)] text-[var(--yellow-surface)]',
-		good: 'bg-[var(--green-base)] text-[var(--green-surface)]',
+		bad: 'bg-[var(--red-base)] text-[var(--red-pale)]',
+		middle: 'bg-[var(--yellow-base)] text-[var(--yellow-pale)]',
+		good: 'bg-[var(--green-base)] text-[var(--green-pale)]',
 	}
 
 	return (
@@ -719,6 +723,130 @@ const ContentHeader = ({ role }) => {
 	)
 }
 
+const CourseSidebar = ({
+	role,
+	modules,
+	toggleModule,
+	activeSectionId,
+	handleSectionClick,
+	setActiveType,
+	createLesson,
+	createModule,
+}) => {
+	const [isOpen, setIsOpen] = useState(false)
+
+	const sidebarContent = (
+		<>
+			{modules?.map((module, idx) => (
+				<Module
+					key={module.id}
+					title={module.name}
+					index={idx + 1}
+					isExpanded={module.isExpanded}
+					onToggle={() => toggleModule(module.id)}
+				>
+					{module?.content?.map((section, index) => (
+						<motion.div
+							key={section.id}
+							initial={{ scale: 0.8, opacity: 0 }}
+							animate={{ scale: 1, opacity: 1 }}
+							transition={{
+								duration: 0.3,
+								delay: index * 0.1,
+								ease: 'easeOut',
+							}}
+						>
+							<Content
+								role={role}
+								title={section.name}
+								type={section.type}
+								isSelected={activeSectionId === section.id}
+								onClick={() => {
+									handleSectionClick(section.id)
+									setActiveType(section.type)
+									setIsOpen(false)
+								}}
+							/>
+						</motion.div>
+					))}
+
+					{role === 'teacher' && (
+						<CreateItemButton
+							type='lesson'
+							onAdd={lessonData => {
+								createLesson(
+									lessonData.name,
+									lessonData.module_content_type,
+									module.id,
+								)
+							}}
+						/>
+					)}
+				</Module>
+			))}
+
+			{role === 'teacher' && (
+				<CreateItemButton
+					type='module'
+					onAdd={moduleData => {
+						createModule(moduleData.name)
+					}}
+				/>
+			)}
+		</>
+	)
+
+	return (
+		<>
+			{/* ДЕСТКТОПНЫЙ ВАРИАНТ */}
+			<div className='hidden lg:block w-full h-full overflow-y-auto bg-[var(--white)] shadow-lg rounded-3xl p-4'>
+				<h2 className='text-xl font-bold mb-3 px-2 text-[var(--black)] flex justify-between items-center'>
+					Содержание курса
+					<button
+						onClick={() => setIsOpen(false)}
+						className='lg:hidden p-1 hover:bg-gray-100 rounded-full'
+					>
+						<ChevronRight className='rotate-180 w-5 h-5' />
+					</button>
+				</h2>
+				<div className=' w-full h-full'>{sidebarContent}</div>
+			</div>
+
+			{/* МОБИЛЬНЫЙ ВАРИАНТ */}
+			<div
+				className='visible lg:hidden fixed left-0 top-20 bottom-10 z-50 flex items-start'
+				onMouseLeave={() => setIsOpen(false)}
+			>
+				<div
+					onMouseEnter={() => setIsOpen(true)}
+					className='flex flex-col px-6 py-6 gap-3 shadow-[var(--shadow)] h-screen bg-[var(--white)] z-10'
+				>
+					<LibraryBig className='w-6 h-6 text-[var(--black)]' />
+					<span className='[writing-mode:vertical-lr] rotate-180 text-base font-semibold tracking-wider text-[var(--black)] uppercase whitespace-nowrap'>
+						Содержимое
+					</span>
+				</div>
+				{/* Вся плашка целиком: и кнопка, и выезжающий контент */}
+				<motion.div
+					animate={{ x: isOpen ? 0 : '-100%' }}
+					transition={{ type: 'spring', damping: 25, stiffness: 180 }}
+					className='relative flex items-start h-screen bg-[var(--white)] shadow-[var(--shadow)]' // Высота совпадает с сайдбаром
+				>
+					{/* Сам сайдбар (прячется за экраном слева благодаря -100% у родителя) */}
+					<div className='w-[75vw] md:w-[60vw] flex flex-col py-6 h-full px-4 transition-all delay-0 duration-75'>
+						<PanelLeftClose
+							onClick={() => setIsOpen(false)}
+							title={'Cкрыть боковую панель'}
+							className='text-[var(--black)] h-10 w-10 mb-3 hover:bg-[var(--light-middle)]/50 p-2 rounded-lg cursor-pointer self-end'
+						/>
+						{sidebarContent}
+					</div>
+				</motion.div>
+			</div>
+		</>
+	)
+}
+
 const CoursePage = () => {
 	const { courseId } = useParams()
 	const [searchParams, setSearchParams] = useSearchParams()
@@ -726,6 +854,14 @@ const CoursePage = () => {
 		searchParams.get('section') || '',
 	)
 	const [activeType, setActiveType] = useState('')
+
+	const [activeChapter, setActiveChapter] = useState('constructor')
+	const options = [
+		{ value: 'constructor', title: 'Конструктор' },
+		{ value: 'access', title: 'Управление доступом' },
+		{ value: 'activity', title: 'Активность' },
+		{ value: 'attachment', title: 'Приложение' },
+	]
 
 	const [role, setRole] = useState()
 	useEffect(() => {
@@ -837,86 +973,61 @@ const CoursePage = () => {
 	const [timeLeft, setTimeLeft] = useState()
 
 	return (
-		<div className='grid grid-cols-[350px_1fr] h-screen gap-6 pt-30 pb-10 '>
-			{/* Боковая панель (Sidebar) */}
-			<div className='w-full h-full overflow-y-auto bg-[var(--white)] shadow-lg rounded-3xl p-4'>
-				<h2 className='text-xl font-bold mb-3 px-2 text-[var(--black)]'>
-					Содержание курса
-				</h2>
-				{modules?.map((module, idx) => (
-					<Module
-						key={module.id}
-						title={module.name}
-						index={idx + 1}
-						isExpanded={module.isExpanded}
-						onToggle={() => toggleModule(module.id)}
-					>
-						{module?.content?.map((section, index) => (
-							<motion.div
-								key={section.id}
-								initial={{ scale: 0.8, opacity: 0 }}
-								animate={{ scale: 1, opacity: 1 }}
-								transition={{
-									duration: 0.3,
-									delay: index * 0.1,
-									ease: 'easeOut',
-								}}
-							>
-								<Content
-									role={role}
-									title={section.name}
-									type={section.type}
-									isSelected={activeSectionId === section.id}
-									onClick={() => {
-										handleSectionClick(section.id)
-										setActiveType(section.type)
-									}}
-								/>
-							</motion.div>
-						))}
-
-						{/* Кнопка создания УРОКА внутри модуля */}
-						{role === 'teacher' && (
-							<CreateItemButton
-								type='lesson'
-								onAdd={lessonData => {
-									// lessonData содержит { name, module_content_type }
-									createLesson(
-										lessonData.name,
-										lessonData.module_content_type,
-										module.id,
-									)
-								}}
-							/>
-						)}
-					</Module>
-				))}
-
-				{/* Кнопка создания МОДУЛЯ в самом низу списка */}
-				{role === 'teacher' && (
-					<CreateItemButton
-						type='module'
-						onAdd={moduleData => {
-							// moduleData содержит { name }
-							createModule(moduleData.name)
-						}}
-					/>
-				)}
-			</div>
-
-			{/* Основной контент */}
-			<div className='w-full h-full bg-[var(--white)] shadow-lg rounded-3xl p-4'>
-				{activeSection && <ContentHeader role={role} />}
-
-				<div className='w-full h-full overflow-y-auto px-2 py-4'>
-					{/* Передаем id активной секции внутрь ContentView, чтобы он знал, что загружать */}
-					<ContentView
-						isEdit={role === 'teacher' && true}
-						sectionId={activeSectionId}
-						SectionType={activeType}
-					/>
+		<div className='flex flex-col gap-6 pt-30 pb-10'>
+			<div className='flex justify-between'>
+				<div className='flex items-center gap-3'>
+					{options?.map(option => (
+						<RadioButton
+							key={option.value}
+							name='chapter'
+							value={option.value}
+							title={option.title}
+							icon={option.icon}
+							checked={activeChapter === option.value}
+							onChange={() => setActiveChapter(option.value)}
+							style='solid'
+						/>
+					))}
 				</div>
+				<p></p>
 			</div>
+			{activeChapter === 'constructor' ? (
+				<>
+					<div className='grid grid-cols-[350px_1fr] h-screen gap-6  '>
+						{/* Боковая панель (Sidebar) */}
+						<CourseSidebar
+							role={role}
+							modules={modules}
+							toggleModule={toggleModule}
+							activeSectionId={activeSectionId}
+							handleSectionClick={handleSectionClick}
+							setActiveType={setActiveType}
+							createLesson={createLesson}
+							createModule={createModule}
+						/>
+
+						{/* Основной контент */}
+						<div className='w-full h-full bg-[var(--white)] shadow-lg rounded-3xl p-4'>
+							{activeSection && <ContentHeader role={role} />}
+
+							<div className='w-full h-full overflow-y-auto px-2 py-4'>
+								{/* Передаем id активной секции внутрь ContentView, чтобы он знал, что загружать */}
+								<ContentView
+									isEdit={role === 'teacher' && true}
+									sectionId={activeSectionId}
+									SectionType={activeType}
+								/>
+							</div>
+						</div>
+					</div>
+				</>
+			) : activeChapter === 'access' ? (
+				<AccessManagement />
+			) : activeChapter === 'activity' ? (
+				<ActivityStudents />
+			) : (
+				activeChapter === 'attachment' && <Attachment />
+			)}
 		</div>
 	)
 }

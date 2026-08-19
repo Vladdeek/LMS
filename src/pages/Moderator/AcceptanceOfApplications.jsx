@@ -313,13 +313,13 @@ const StudentCourseRequestView = ({ requestId, onClose }) => {
 			<div className='flex gap-3 w-full items-center justify-end mb-2'>
 				<button
 					onClick={() => updateRequestStatus('accepted')}
-					className='px-6 py-3 bg-[var(--black)] text-[var(--white)] hover:bg-[var(--green-base)] hover:text-[var(--green-surface)] rounded-2xl shadow-[var(--shadow)] active:scale-99 active:shadow-inner active:brightness-90 transition-all cursor-pointer'
+					className='px-6 py-3 bg-[var(--black)] text-[var(--white)] hover:bg-[var(--green-base)] hover:text-[var(--green-pale)] rounded-2xl shadow-[var(--shadow)] active:scale-99 active:shadow-inner active:brightness-90 transition-all cursor-pointer'
 				>
 					Зачислить
 				</button>
 				<button
 					onClick={() => updateRequestStatus('rejected')}
-					className='px-6 py-3 text-[var(--black)] bg-[var(--light-middle)] hover:bg-[var(--red-base)] hover:text-[var(--red-surface)] rounded-2xl active:shadow-inner active:brightness-90 active:scale-99 transition-all cursor-pointer'
+					className='px-6 py-3 text-[var(--black)] bg-[var(--light-middle)] hover:bg-[var(--red-base)] hover:text-[var(--red-pale)] rounded-2xl active:shadow-inner active:brightness-90 active:scale-99 transition-all cursor-pointer'
 				>
 					Отклонить
 				</button>
@@ -451,11 +451,11 @@ const UserCard = ({
 	const statuses = {
 		accepted: {
 			label: 'Одобрен',
-			color: 'bg-[var(--green-base)] text-[var(--green-surface)]',
+			color: 'bg-[var(--green-base)] text-[var(--green-pale)]',
 		},
 		rejected: {
 			label: 'Отклонен',
-			color: 'bg-[var(--red-base)] text-[var(--red-surface)]',
+			color: 'bg-[var(--red-base)] text-[var(--red-pale)]',
 		},
 		pending: {
 			label: 'Ожидает одобрения',

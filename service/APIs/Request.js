@@ -1,4 +1,4 @@
-import api, { API } from '../../src/API'
+import api, { API_URL } from '../../src/API'
 
 export const CreateRequest = async courseData => {
 	const formData = new FormData()
@@ -11,7 +11,7 @@ export const CreateRequest = async courseData => {
 		}
 	})
 
-	const response = await api.post(`${API}/course/`, formData, {
+	const response = await api.post(`${API_URL}/course/`, formData, {
 		headers: {
 			// Axios обычно сам выставляет нужный Content-Type для FormData,
 			// но явное указание защищает от некоторых багов
@@ -23,17 +23,17 @@ export const CreateRequest = async courseData => {
 }
 
 export const GetСitizenship = async () => {
-	const response = await api.get(`${API}/citizenships/list`)
+	const response = await api.get(`${API_URL}/citizenships/list`)
 	return response.data
 }
 export const GetEducationInstitution = async () => {
-	const response = await api.get(`${API}/education-institutions/listed`)
+	const response = await api.get(`${API_URL}/education-institutions/listed`)
 	return response.data
 }
 
-export const createCourseRequest = async data => {
+export const CreateCourseRequest = async data => {
 	console.log('data: ', data)
-	const response = await api.post(`${API}/course-request`, data, {
+	const response = await api.post(`${API_URL}/course-request`, data, {
 		headers: {
 			// Axios обычно сам выставляет нужный Content-Type для FormData,
 			// но явное указание защищает от некоторых багов
@@ -44,12 +44,12 @@ export const createCourseRequest = async data => {
 }
 
 export const GetCourseRequestById = async request_id => {
-	const response = await api.get(`${API}/course-request/${request_id}`)
+	const response = await api.get(`${API_URL}/course-request/${request_id}`)
 	return response.data
 }
 
 export const UpdateRequestStatus = async (request_id, status) => {
-	const response = await api.patch(`${API}/course-request/${request_id}`, {
+	const response = await api.patch(`${API_URL}/course-request/${request_id}`, {
 		status,
 	})
 	return response.data

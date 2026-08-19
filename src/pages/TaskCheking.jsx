@@ -54,27 +54,27 @@ const TaskCard = ({ data, onClick }) => {
 		1: {
 			val: 1,
 			title: 'Неудовлетворительно',
-			color: 'bg-[var(--red-base)] text-[var(--red-surface)]',
+			color: 'bg-[var(--red-base)] text-[var(--red-pale)]',
 		},
 		2: {
 			val: 2,
 			title: 'Неудовлетворительно',
-			color: 'bg-[var(--orange-base)] text-[var(--orange-surface)]',
+			color: 'bg-[var(--orange-base)] text-[var(--orange-pale)]',
 		},
 		3: {
 			val: 3,
 			title: 'Удовлетворительно',
-			color: 'bg-[var(--yellow-base)] text-[var(--yellow-surface)]',
+			color: 'bg-[var(--yellow-base)] text-[var(--yellow-pale)]',
 		},
 		4: {
 			val: 4,
 			title: 'Хорошо',
-			color: 'bg-[var(--lime-base)] text-[var(--lime-surface)]',
+			color: 'bg-[var(--lime-base)] text-[var(--lime-pale)]',
 		},
 		5: {
 			val: 5,
 			title: 'Отлично',
-			color: 'bg-[var(--green-base)] text-[var(--green-surface)]',
+			color: 'bg-[var(--green-base)] text-[var(--green-pale)]',
 		},
 	}
 

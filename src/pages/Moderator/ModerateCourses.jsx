@@ -93,14 +93,14 @@ const CourseForm = ({ courseId, onChange }) => {
 					<div className='grid grid-cols-2 gap-4'>
 						<button
 							onClick={() => accessCourse('rejected_preview')}
-							className='flex flex-col items-center gap-2 p-4 rounded-2xl hover:bg-[var(--red-hover)] bg-[var(--red-base)] text-[var(--red-surface)] transition-all cursor-pointer'
+							className='flex flex-col items-center gap-2 p-4 rounded-2xl hover:bg-[var(--red-hover)] bg-[var(--red-base)] text-[var(--red-pale)] transition-all cursor-pointer'
 						>
 							<XCircle size={24} />
 							<span className='font-semibold'>Запретить</span>
 						</button>
 						<button
 							onClick={() => accessCourse('draft')}
-							className='flex flex-col items-center gap-2 p-4 rounded-2xl hover:bg-[var(--green-hover)] bg-[var(--green-base)] text-[var(--green-surface)] transition-all cursor-pointer'
+							className='flex flex-col items-center gap-2 p-4 rounded-2xl hover:bg-[var(--green-hover)] bg-[var(--green-base)] text-[var(--green-pale)] transition-all cursor-pointer'
 						>
 							<CheckCircle2 size={24} />
 							<span className='font-semibold'>Допустить</span>

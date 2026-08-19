@@ -12,7 +12,7 @@ import { ChevronDown, CircleCheck } from 'lucide-react'
 import { GetCourseInfoById } from '../../service/APIs/Moderation'
 import { useParams } from 'react-router-dom'
 import {
-	createCourseRequest,
+	CreateCourseRequest,
 	GetСitizenship,
 	GetEducationInstitution,
 } from '../../service/APIs/Request'
@@ -135,7 +135,7 @@ const StudentCourseRequest = () => {
 		}
 
 		try {
-			const result = await createCourseRequest(finalData)
+			const result = await CreateCourseRequest(finalData)
 			console.log('Успешно отправлено:', result)
 		} catch (err) {
 			console.error('Ошибка при отправке:', err)

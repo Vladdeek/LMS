@@ -1,133 +1,72 @@
 :root {
-	--transparent-hero: #2bb4f325;
-	--hero: #2bb4f3;
-	--darkness-hero: #157ac7;
-	--light-hero: #6edbfc;
-	--hero-glow: 1px 2px 8px rgba(110, 219, 252, 0.75);
+	--transparent-hero: #f32b6a25;
+	--base-hero: #f32b6a;
+	--darkness-hero: #aa0c3e;
+	--light-hero: #f65e8e;
 
 	/* Green - Success */
 	--green-base: #34d399;
 	--green-hover: #10b981;
-	--green-surface: #ecfdf5;
-	--green-text: #065f46;
+	--green-pale: #ecfdf5;
+	--green-dark: #065f46;
 
 	/* Lime/Yellow-Green Transition */
 	--lime-base: #98c961;
 	--lime-hover: #83ac46;
-	--lime-surface: #f6fcd0;
-	--lime-text: #4d502c;
+	--lime-pale: #f6fcd0;
+	--lime-dark: #4d502c;
 
 	/* Yellow - Warning */
 	--yellow-base: #fbbf24;
 	--yellow-hover: #f59e0b;
-	--yellow-surface: #fffbeb;
-	--yellow-text: #92400e;
+	--yellow-pale: #fffbeb;
+	--yellow-dark: #92400e;
 
 	/* Orange/Red-Yellow Transition */
 	--orange-base: #f9984b;
 	--orange-hover: #d77128;
-	--orange-surface: #ffeeeb;
-	--orange-text: #982b13;
+	--orange-pale: #ffeeeb;
+	--orange-dark: #982b13;
 
 	/* Red - Danger */
 	--red-base: #f87171;
 	--red-hover: #ef4444;
-	--red-surface: #fef2f2;
-	--red-text: #991b1b;
+	--red-pale: #fef2f2;
+	--red-dark: #991b1b;
 }
 
 :root[data-theme='light'] {
 	--bg: #ededed;
 	--white: #ffffff;
 	--black: #111111;
-	--hero-epta: var(--hero);
-
-	--hero-pale: #faf1f4;
 	--middle: #989898;
 	--light-middle: #ededed;
-	--light-gray: #f8f8f8;
-	--light-light-gray: #fbfbfb;
-
-	--yellow-status-text: #946f33;
-	--yellow-status-middle-text: #bda47c;
-	--yellow-status-bg: #fff5da;
-	--green-status-text: #339436;
-	--green-status-middle-text: #7dbe7f;
-	--green-status-bg: #daffe6;
-	--red-status-text: #943333;
-	--red-status-middle-text: #ce8e8e;
-	--red-status-bg: #ffdada;
-
-	--easy-lvl-bg: #e6f4ea; /* светло-зелёный */
-	--easy-lvl-text: #1b5e20; /* тёмно-зелёный текст */
-
-	--mid-lvl-bg: #fff8e1; /* светло-жёлтый */
-	--mid-lvl-text: #ff6f00; /* насыщенный оранжево-жёлтый */
-
-	--hard-lvl-bg: #ffebee; /* светло-красный */
-	--hard-lvl-text: #b71c1c; /* тёмно-красный */
-
-	--glow-hero-epta: rgb(244, 59, 117);
-	--hero-shadow: 1px 2px 8px rgba(244, 59, 117, 0.25);
-
 	--shadow: 1px 2px 8px rgba(0, 0, 0, 0.125);
+	--hero: var(--base-hero);
+	--hero-pale: #faf1f4;
 
-	--correct: #daffe6;
-	--not-correct: #ffebee;
-	--correct-glow: 0px 4px 5px rgba(51, 148, 54, 0.15);
-	--middle-correct-glow: #0px 4px 5px rgba(255, 196, 0, 0.15);
-	--not-correct-glow: 0px 4px 5px rgba(193, 15, 28, 0.15);
-	--correct-lvl: #54ac57;
-	--middle-correct-lvl: #ffc400;
-	--not-correct-lvl: #c52c36;
-	--correct-shadow: 1px 2px 8px rgba(51, 148, 54, 0.2);
-	--not-correct-shadow: 1px 2px 8px rgba(193, 15, 28, 0.15);
+	--yellow-text: var(--yellow-base);
+	--yellow-bg: var(--yellow-pale);
+	--green-text: var(--green-base);
+	--green-bg: var(--green-pale);
+	--red-text: var(--red-base);
+	--red-bg: var(--red-pale);
 }
 
 :root[data-theme='dark'] {
 	--bg: #1a1a1a;
 	--white: #252525;
 	--black: #f0f0f0;
-	--hero-epta: var(--hero);
-	--hero-pale: #463037;
 	--middle: #bbbbbb;
 	--light-middle: #222222;
-	--light-gray: #1a1a1a;
-
-	--yellow-status-text: #ffd36b;
-	--yellow-status-middle-text: #c6a96a;
-	--yellow-status-bg: #3a2d1a;
-
-	--green-status-text: #7fd49f;
-	--green-status-middle-text: #6fbf8a;
-	--green-status-bg: #1e3b2a;
-
-	--red-status-text: #ff7b7b;
-	--red-status-middle-text: #d98b8b;
-	--red-status-bg: #682c2c;
-
-	--easy-lvl-bg: #1e3b2a; /* тёмно-зелёный фон */
-	--easy-lvl-text: #a5d6a7; /* светло-зелёный текст */
-
-	--mid-lvl-bg: #3b331a; /* тёмно-жёлтый фон */
-	--mid-lvl-text: #ffb74d; /* светло-оранжевый текст */
-
-	--hard-lvl-bg: #3b1a1a; /* тёмно-красный фон */
-	--hard-lvl-text: #ef9a9a; /* светло-красный текст */
-
-	--glow-hero-epta: rgb(244, 59, 117);
-	--hero-shadow: 1px 2px 8px rgba(244, 59, 117, 0.5);
-
 	--shadow: 1px 2px 8px rgba(0, 0, 0, 0.25);
+	--hero: var(--base-hero);
+	--hero-pale: #463037;
 
-	--correct: #1e3b2a;
-	--not-correct: #3b1a1a;
-	--correct-glow: 0px 4px 5px rgba(127, 212, 159, 0.25);
-	--middle-correct-glow: 0px 4px 5px rgba(255, 196, 0, 0.25);
-	--not-correct-glow: 0px 4px 5px rgba(255, 123, 123, 0.25);
-	--correct-lvl: #7fd49f;
-	--middle-correct-lvl: #ffc400;
-	--not-correct-lvl: #ff7b7b;
-	--correct-shadow: 1px 2px 8px rgba(127, 212, 159, 0.3);
-	--not-correct-shadow: 1px 2px 8px rgba(255, 123, 123, 0.3);
+	--yellow-text: var(--yellow-dark);
+	--yellow-bg: var(--yellow-base);
+	--green-text: var(--green-dark);
+	--green-bg: var(--green-base);
+	--red-text: var(--red-dark);
+	--red-bg: var(--red-base);
 }

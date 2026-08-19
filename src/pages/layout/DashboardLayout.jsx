@@ -4,25 +4,20 @@ import { use, useContext, useEffect, useState } from 'react'
 import {
 	BookText,
 	BookUser,
+	CalendarDays,
 	CopyCheck,
 	FileUser,
 	GraduationCap,
 	ShieldAlert,
 } from 'lucide-react'
 import { Me } from '../../../service/APIs/Authorization'
+import { useUser } from '../../../service/context/UserContext'
 
 export default function DashboardLayout({ onChange }) {
 	const location = useLocation()
 	const navigate = useNavigate()
 	const HeaderLinkInfo = [
 		{
-			student: [
-				{
-					title: 'Курсы',
-					icon: GraduationCap,
-					to: '/catalog',
-				},
-			],
 			teacher: [
 				{
 					title: 'Мои курсы',
@@ -30,49 +25,60 @@ export default function DashboardLayout({ onChange }) {
 					to: '/catalog',
 				},
 				{
-					title: 'Проверка заданий',
+					title: 'Расписание',
+					icon: CalendarDays,
+					to: '/schedule',
+				},
+				{
+					title: 'Задания',
 					icon: CopyCheck,
-					to: '/checking',
+					to: '/students',
+					not_clickable: true,
+				},
+				// {
+				// 	title: 'Журнал',
+				// 	icon: CopyCheck,
+				// 	to: '/score',
+				// 	not_clickable: true,
+				// },
+			],
+			student: [
+				{
+					title: 'Курсы',
+					icon: GraduationCap,
+					to: '/catalog',
+				},
+				{
+					title: 'Расписание',
+					icon: CalendarDays,
+					to: '/schedule',
+				},
+
+				{
+					title: 'Оценки',
+					icon: CopyCheck,
+					to: '/score',
+					not_clickable: true,
 				},
 			],
 			moderator: [
 				{
-					title: 'Пользователи',
-					icon: BookUser,
-					to: '/moderation-users',
-				},
-				{
-					title: 'Курсы',
-					icon: BookText,
-					to: '/moderation-courses/pending_review',
-				},
-				{
-					title: 'Заявки',
-					icon: FileUser,
-					to: '/acceptance-of-applications',
+					title: 'Проверка курсов',
+					icon: ShieldAlert,
+					to: '/moderation',
 				},
 			],
 		},
 	]
 
-	const [userInfo, setUserInfo] = useState([])
+	const { role } = useUser()
 
-	useEffect(() => {
-		const getUserInfo = async e => {
-			try {
-				const res = await Me()
-				setUserInfo(res)
-			} catch (err) {}
-		}
-		getUserInfo()
-	}, [])
-
-	const links = HeaderLinkInfo[0][userInfo?.role]
+	const links = HeaderLinkInfo[0][role]
 
 	return (
 		<>
 			<div className='md:mx-10 mx-2 relative'>
-				<Header links={links} userInfo={userInfo} />
+				<Header links={links} />
 				<Outlet />
 			</div>
 			{/* <div className='md:hidden'>

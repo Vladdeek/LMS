@@ -23,11 +23,13 @@ import Authorization from './pages/Authorization'
 import StudentCourseRequest from './pages/StudentCourseRequest'
 import CoursePage from './pages/CoursePage'
 import { Me } from '../service/APIs/Authorization'
-import ModerateUsers from './pages/Moderator/ModerateUsers'
 import ModerateCourses from './pages/Moderator/ModerateCourses'
 import Profile from './pages/Profile'
 import AcceptanceOfApplications from './pages/Moderator/AcceptanceOfApplications'
 import TaskChecking from './pages/TaskCheking'
+import { Toaster } from 'sonner'
+import { UserProvider } from '../service/context/UserContext'
+import SchedulePage from './pages/Schedule'
 
 function MainApp() {
 	return (
@@ -37,7 +39,8 @@ function MainApp() {
 				<Route path='/' element={<DashboardLayout />}>
 					<Route path='/catalog/:type?' element={<Catalog />}></Route>
 					<Route path='/course/:courseId?' element={<CoursePage />} />
-					<Route path='/moderation-users' element={<ModerateUsers />} />
+					{/* <Route path='/moderation-users' element={<ModerateUsers />} /> */}
+					<Route path='/schedule' element={<SchedulePage />} />
 					<Route
 						path='/acceptance-of-applications'
 						element={<AcceptanceOfApplications />}
@@ -57,6 +60,14 @@ function MainApp() {
 
 createRoot(document.getElementById('root')).render(
 	<BrowserRouter>
-		<MainApp />
+		<UserProvider>
+			<MainApp />
+			<Toaster
+				theme={localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'}
+				position='top-right'
+				richColors
+				closeButton
+			/>
+		</UserProvider>
 	</BrowserRouter>,
 )
