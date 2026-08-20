@@ -1,3 +1,5 @@
+import { Check, X } from 'lucide-react'
+
 export const QuestionResultCard = ({
 	id,
 	question,

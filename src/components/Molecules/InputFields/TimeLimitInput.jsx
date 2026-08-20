@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Minus, Plus } from 'lucide-react'
 import { formatTime } from '../../../utils/formatTime'
+import { Minus, Plus } from 'lucide-react'
 
 export const TimeLimitInput = ({ COUNT_QUESTION = 0, onChange, value }) => {
 	const [time, setTime] = useState(0)

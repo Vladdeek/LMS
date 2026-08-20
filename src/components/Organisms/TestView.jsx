@@ -1,3 +1,9 @@
+import { useEffect, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { Input } from '../Molecules/InputFields/Input'
+import { AnimatePresence, motion } from 'framer-motion'
+import { SubmitButton } from '../Atoms/Buttons/SubmitButton'
+
 export const TestView = ({ isEdit, role }) => {
 	const [searchParams] = useSearchParams() // Достаем хук
 	const activeQuestionId = searchParams.get('questionId')
@@ -136,14 +142,14 @@ export const TestView = ({ isEdit, role }) => {
 			{/* Верхняя часть с вопросом и оценкой */}
 			{isEdit ? (
 				<div className='grid gap-4 grid-cols-[1fr_auto] w-full max-w-2xl'>
-					<InputDefault
+					<Input
 						title='Введите вопрос'
 						name='question'
 						value={data.question}
 						onChange={handleChange}
 					/>
 					<div className='w-20'>
-						<InputDefault
+						<Input
 							title='Оценка'
 							name='max_score'
 							value={data.max_score}
@@ -218,21 +224,21 @@ export const TestView = ({ isEdit, role }) => {
 							})}
 						</AnimatePresence>
 						{isEdit && (
-							<DefaultButton onClick={addOption} className='mt-2'>
+							<SubmitButton onClick={addOption} className='mt-2'>
 								<Plus strokeWidth={3} />
 								<p>Добавить вариант</p>
-							</DefaultButton>
+							</SubmitButton>
 						)}
 					</div>
 				) : (
 					<div className='flex flex-col items-center gap-4 w-full'>
 						{isEdit ? (
-							<DefaultButton onClick={() => handleChangeTypeOnOption('choice')}>
+							<SubmitButton onClick={() => handleChangeTypeOnOption('choice')}>
 								Добавить варианты ответа
-							</DefaultButton>
+							</SubmitButton>
 						) : (
 							<div className={`w-full`}>
-								<InputDefault
+								<Input
 									title='Введите ответ'
 									name='student_answer'
 									value={data.student_answer}
@@ -244,9 +250,9 @@ export const TestView = ({ isEdit, role }) => {
 				)}
 				{role === 'student' && (
 					<>
-						<DefaultButton onClick={submitAnswer} className='mt-2'>
+						<SubmitButton onClick={submitAnswer} className='mt-2'>
 							<p>Ответить на вопрос</p>
-						</DefaultButton>
+						</SubmitButton>
 					</>
 				)}
 			</div>

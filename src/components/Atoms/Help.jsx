@@ -1,7 +1,7 @@
 import { HelpCircle } from 'lucide-react'
 import { useState } from 'react'
 
-const Help = ({ children, width, size = 24 }) => {
+export const Help = ({ children, width, size = 24 }) => {
 	const [open, setOpen] = useState()
 	return (
 		<div className='relative'>
@@ -18,4 +18,3 @@ const Help = ({ children, width, size = 24 }) => {
 		</div>
 	)
 }
-export default Help

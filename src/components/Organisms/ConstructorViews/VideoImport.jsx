@@ -1,7 +1,8 @@
+import { useEffect, useState } from 'react'
+import { RemoveButton } from '../../Atoms/Buttons/RemoveButton'
+import { VideoPlayer } from '../VideoPlayer'
+import { FileUploaderZone } from './FileUploaderZone'
 import { X } from 'lucide-react'
-import { useState, useEffect } from 'react'
-import { FileUploaderZone, RemoveButton } from './FileUploaderZone'
-import VideoPlayer from '../VideoPlayer'
 
 export const VideoImport = ({
 	onStatusChange,

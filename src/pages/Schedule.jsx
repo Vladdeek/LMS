@@ -11,14 +11,7 @@ import {
 } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-
-import Loader from '../components/Loader'
-import { OptionSearch } from '../components/Inputs'
-import { useUser } from '../../service/context/UserContext'
-import {
-	fetchScheduleData,
-	fetchTeachersList,
-} from '../../service/APIs/Schedule'
+import { OptionSearch } from '../components/Molecules/InputFields/OptionSearch'
 
 const ScheduleCard = ({
 	lessonIndex,

@@ -1,12 +1,5 @@
 import { useEffect, useState } from 'react'
 import {
-	AddNewUser,
-	DeleteUsersById,
-	EditUserInfo,
-	GetUsersById,
-	ToSendTheMessageAgainUserById,
-} from '../../service/APIs/Moderation'
-import {
 	Camera,
 	Edit3,
 	Key,
@@ -15,11 +8,9 @@ import {
 	Trash2,
 	User,
 } from 'lucide-react'
-import { InputDefault } from '../components/Inputs'
-import { DefaultButton } from '../components/Buttons'
-import { Me } from '../../service/APIs/Authorization'
-import Modal from '../components/Modal'
-import { useUser } from '../../service/context/UserContext'
+import Modal from '../components/Atoms/Modal'
+import { Input } from '../components/Molecules/InputFields/Input'
+import { SubmitButton } from '../components/Atoms/Buttons/SubmitButton'
 
 const Profile = ({ mode, userId, onChange }) => {
 	const { userInfo } = useUser()
@@ -243,24 +234,24 @@ const Profile = ({ mode, userId, onChange }) => {
 							<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
 								{/* Email на всю ширину */}
 								<div className='md:col-span-2'>
-									<InputDefault
+									<Input
 										title='Электронная почта'
 										value={userInfo.email}
 										readOnly={true}
 									/>
 								</div>
-								<InputDefault
+								<Input
 									title='Фамилия'
 									value={userInfo.last_name}
 									readOnly={true}
 								/>
-								<InputDefault
+								<Input
 									title='Имя'
 									value={userInfo.first_name}
 									readOnly={true}
 								/>
 								<div className='md:col-span-2'>
-									<InputDefault
+									<Input
 										title='Отчество'
 										value={userInfo.patronymic}
 										readOnly={true}
@@ -307,12 +298,12 @@ const Profile = ({ mode, userId, onChange }) => {
 						</button>
 
 						{mode === 'create' && (
-							<DefaultButton
-								width='w-full md:w-auto px-10'
+							<SubmitButton
+								className={'w-full md:w-auto px-10'}
 								onClick={addNewUser}
 							>
 								Создать аккаунт
-							</DefaultButton>
+							</SubmitButton>
 						)}
 					</div>
 				</div>

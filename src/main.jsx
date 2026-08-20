@@ -17,19 +17,18 @@ import {
 } from 'react'
 import './index.css'
 import './themes.css'
+import { Toaster } from 'sonner'
+
+import Authorization from './pages/Authorization'
 import DashboardLayout from './pages/layout/DashboardLayout'
 import Catalog from './pages/Сatalog'
-import Authorization from './pages/Authorization'
-import StudentCourseRequest from './pages/StudentCourseRequest'
 import CoursePage from './pages/CoursePage'
-import { Me } from '../service/APIs/Authorization'
+import SchedulePage from './pages/Schedule'
 import ModerateCourses from './pages/Moderator/ModerateCourses'
 import Profile from './pages/Profile'
-import AcceptanceOfApplications from './pages/Moderator/AcceptanceOfApplications'
-import TaskChecking from './pages/TaskCheking'
-import { Toaster } from 'sonner'
-import { UserProvider } from '../service/context/UserContext'
-import SchedulePage from './pages/Schedule'
+import TaskChecking from './pages/TaskChecking'
+import { UserProvider } from './context/UserContext'
+import WebinarsCatalog from './pages/WebinarsСatalog'
 
 function MainApp() {
 	return (
@@ -37,21 +36,18 @@ function MainApp() {
 			<Routes>
 				<Route path='/authorization' element={<Authorization />}></Route>
 				<Route path='/' element={<DashboardLayout />}>
-					<Route path='/catalog/:type?' element={<Catalog />}></Route>
+					<Route path='/catalog/courses' element={<Catalog />}></Route>
+					<Route path='/catalog/webinars' element={<WebinarsCatalog />}></Route>
 					<Route path='/course/:courseId?' element={<CoursePage />} />
 					{/* <Route path='/moderation-users' element={<ModerateUsers />} /> */}
 					<Route path='/schedule' element={<SchedulePage />} />
-					<Route
-						path='/acceptance-of-applications'
-						element={<AcceptanceOfApplications />}
-					/>
+
 					<Route
 						path='/moderation-courses/:type'
 						element={<ModerateCourses />}
 					/>
 					<Route path='/profile' element={<Profile />} />
 					<Route path='/checking' element={<TaskChecking />} />
-					<Route path='/request/:courseId' element={<StudentCourseRequest />} />
 				</Route>
 			</Routes>
 		</Suspense>

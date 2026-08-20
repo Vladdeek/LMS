@@ -1,5 +1,5 @@
-import { useInput } from '../../hooks/useInput'
-import { InputBase } from '../atoms/InputBase'
+import { useInput } from '../../../hooks/useInput'
+import { InputBase } from '../../Atoms/InputField/InputBase'
 
 export const TextArea = ({
 	placeholder,

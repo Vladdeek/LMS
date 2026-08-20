@@ -1,7 +1,8 @@
 import { HintTooltip } from '../../../Atoms/HintTooltip'
+import { Show } from '../../../Atoms/Show'
+import { Text } from '../../../Atoms/Text'
 import { FileInput } from '../../../Molecules/InputFields/FileInput'
 import { Input } from '../../../Molecules/InputFields/Input'
-import { Text } from '../../../Atoms/Text'
 
 export const StepOneGeneral = ({
 	title,
@@ -39,7 +40,7 @@ export const StepOneGeneral = ({
 			value={url}
 			onChange={e => setUrl(e.target.value)}
 		/>
-		{!editMode && (
+		<Show when={!editMode}>
 			<div className='flex flex-col gap-3 w-full'>
 				<div className='inline-flex items-center gap-[10px]'>
 					<p className='text-[18px] text-[var(--middle)]'>Загрузите превью</p>
@@ -52,7 +53,7 @@ export const StepOneGeneral = ({
 				</div>
 				<FileInput onFileChange={setImg} />
 			</div>
-		)}
+		</Show>
 		<input
 			className={`px-[51px] py-[14.5px] font-medium text-xl rounded-lg w-fit transition ${
 				isFormValid

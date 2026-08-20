@@ -1,7 +1,6 @@
-import { Upload } from 'lucide-react'
-import { UploadProgressBar } from '../../Molecules/UploadProgressBar'
-import { UPLOAD_TYPES } from '../../../Constants/uploadTypes'
 import { useState } from 'react'
+import { UPLOAD_TYPES } from '../../../Constants/uploadTypes'
+import { UploadProgressBar } from '../../Molecules/UploadProgressBar'
 
 export const FileUploaderZone = ({
 	type = 'files',
@@ -22,7 +21,7 @@ export const FileUploaderZone = ({
 
 	const handleValidationFailed = () => {
 		setIsValid(false)
-		setTimeout(() => setIsValid(true), 1000)
+		setTimeouT(() => setIsValid(true), 1000)
 	}
 
 	// Логика отправки файлов на сервер

@@ -10,8 +10,8 @@ import {
 	Siren,
 	X,
 } from 'lucide-react'
-import { useState, useEffect, useMemo } from 'react'
-import { RemoveButton } from './FileUploaderZone'
+import { useEffect, useState } from 'react'
+import { RemoveButton } from '../../Atoms/Buttons/RemoveButton'
 
 export const Callout = ({
 	isEdit = false,

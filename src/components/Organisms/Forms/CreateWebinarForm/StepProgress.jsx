@@ -10,7 +10,7 @@ export const StepProgress = ({
 
 	const getStepStatusClass = stepNumber => {
 		if (step === stepNumber) {
-			return 'bg-[var(--white)] ring-[var(--hero)] shadow-[var(--hero-shadow)] text-[var(--hero)] ring-2'
+			return 'bg-[var(--hero-pale)] ring-[var(--hero)] shadow-[var(--hero-shadow)] text-[var(--hero)] ring-2'
 		}
 
 		const isValid =

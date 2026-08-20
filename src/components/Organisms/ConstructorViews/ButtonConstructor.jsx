@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
-import { X } from 'lucide-react'
-import { InputDefault } from '../Inputs'
-import { RemoveButton } from './FileUploaderZone'
+import { Input } from '../../Molecules/InputFields/Input'
+import { RemoveButton } from '../../Atoms/Buttons/RemoveButton'
 
 // Вспомогательный компонент инпута (можно вынести отдельно, если нужен в других местах)
-const ControlledInputDefault = ({ value, onChange, ...props }) => {
+const ControlledInput = ({ value, onChange, ...props }) => {
 	const [internalValue, setInternalValue] = useState(value || '')
 
 	useEffect(() => {
@@ -16,9 +15,7 @@ const ControlledInputDefault = ({ value, onChange, ...props }) => {
 		onChange?.(e)
 	}
 
-	return (
-		<InputDefault {...props} value={internalValue} onChange={handleChange} />
-	)
+	return <Input {...props} value={internalValue} onChange={handleChange} />
 }
 
 export const ButtonConstructor = ({
@@ -96,7 +93,7 @@ export const ButtonConstructor = ({
 					</div>
 				</div>
 
-				<ControlledInputDefault
+				<ControlledInput
 					title='Название кнопки'
 					placeholder='Введите название кнопки'
 					required
@@ -105,7 +102,7 @@ export const ButtonConstructor = ({
 					onChange={e => setButtonTitle(e.target.value)}
 				/>
 
-				<ControlledInputDefault
+				<ControlledInput
 					title='URL (Ссылка)'
 					placeholder='https://example.com'
 					required

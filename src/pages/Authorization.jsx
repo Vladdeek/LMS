@@ -1,14 +1,14 @@
 import { useContext, useEffect, useState } from 'react'
-import { InputDefault } from '../components/Inputs'
-import { LinkButton } from '../components/Buttons'
-import { executeWithAuthCheck } from '../../service/utils/apiHelper'
-import { Login } from '../../service/APIs/Authorization'
 import { useNavigate } from 'react-router-dom'
+import { Input } from '../components/Molecules/InputFields/Input'
+import { Link } from '../components/Atoms/Link'
+import { Login } from '../api/Authorization'
+import { toast } from 'sonner'
 
 const Authorization = ({ isRegister = false }) => {
 	const navigate = useNavigate()
 	const [formData, setFormData] = useState({
-		email: null,
+		email: '',
 		password: '',
 	})
 	const handleChange = e => {
@@ -36,16 +36,16 @@ const Authorization = ({ isRegister = false }) => {
 	}
 
 	const handleSubmit = async e => {
+		console.log('event')
 		e.preventDefault()
 
+		const data = { email: formData.email, password: formData.password }
+
 		try {
-			await executeWithAuthCheck(() => Login(formData.email, formData.password))
+			await Login(data)
 			navigate('/')
 		} catch (error) {
-			console.log('error', error)
-			if (error?.response?.data?.detail === 'Пользователь не найден') {
-			}
-			showMessageFunc(error?.response?.data?.detail)
+			toast.error(error?.response?.data?.detail)
 		}
 	}
 
@@ -81,7 +81,7 @@ const Authorization = ({ isRegister = false }) => {
 								onSubmit={handleSubmit}
 								className='flex flex-col gap-10 xl:mt-20'
 							>
-								<InputDefault
+								<Input
 									title='Почта'
 									name='email'
 									placeholder='Введите почту...'
@@ -89,7 +89,7 @@ const Authorization = ({ isRegister = false }) => {
 									onChange={handleChange}
 								/>
 
-								<InputDefault
+								<Input
 									title='Пароль'
 									name='password'
 									type='password'
@@ -97,11 +97,10 @@ const Authorization = ({ isRegister = false }) => {
 									value={formData.password}
 									onChange={handleChange}
 								/>
-								<LinkButton
+								<Link
 									to={'https://my.melsu.ru/request-access'}
 									title={'Нет аккаунта? Запросить доступ'}
-									textsize='text-lg'
-									underline={true}
+									textSize='lg'
 								/>
 								<input
 									type='submit'

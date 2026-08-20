@@ -4,10 +4,10 @@ import { useCreateCourseForm } from '../../../hooks/useCreateCourseForm'
 import { RadioGroup } from '../../Molecules/RadioGroup'
 import { Input } from '../../Molecules/InputFields/Input'
 import { TextArea } from '../../Molecules/InputFields/TextArea'
-import { CircleQuestionMark } from 'lucide-react'
-import Loader from '../../Loader'
 import { OptionInput } from '../../Molecules/InputFields/OptionInput'
+import { CircleQuestionMark } from 'lucide-react'
 import { PreviewInput } from '../../Molecules/InputFields/PreviewInput'
+import { Loader } from '../../Atoms/Loaders/Loader'
 
 // Константы опций для рендера
 const tabOptions = [

@@ -1,3 +1,6 @@
+import { Check } from 'lucide-react'
+import { useEffect, useState } from 'react'
+
 export const Checkbox = ({ children, text, title, onChange, flex = false }) => {
 	const [checked, setChecked] = useState(false)
 	useEffect(() => {

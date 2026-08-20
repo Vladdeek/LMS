@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { X, ChevronLeft, ChevronRight } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { FileUploaderZone, RemoveButton } from './FileUploaderZone'
-import { useEditor } from '@tiptap/react'
+import { ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { RemoveButton } from '../../Atoms/Buttons/RemoveButton'
+import { FileUploaderZone } from './FileUploaderZone'
 
 // Модалка просмотра (без изменений по логике)
 const FullScreenModal = ({ photos, index, close, setIndex }) => {
@@ -135,7 +134,7 @@ export const PhotoBlock = ({
 									// Абсолютное позиционирование, чтобы кнопка была поверх картинки
 									className='absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-lg opacity-0 group-hover:opacity-100 z-10'
 								>
-									<X size={16} strokeWidth={3} />
+									<x size={16} strokeWidth={3} />
 								</button>
 							)}
 						</motion.div>

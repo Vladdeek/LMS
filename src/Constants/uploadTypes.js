@@ -1,3 +1,6 @@
+import { FileCode2, FileText, Film, Image } from 'lucide-react'
+import { languageMap } from './lanaguagesMap'
+
 export const UPLOAD_TYPES = {
 	video: {
 		icon: Film,

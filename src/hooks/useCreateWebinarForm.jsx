@@ -1,4 +1,9 @@
 import { useState, useEffect } from 'react'
+import {
+	createWebinar,
+	getUnlinkedGroups,
+	updateWebinarAccess,
+} from '../api/Webinars'
 
 export const useCreateWebinarForm = ({
 	isOpen,
@@ -36,19 +41,33 @@ export const useCreateWebinarForm = ({
 		? false
 		: !(isFormValid && isStartDTValid && isAccessValid)
 
+	const resetForm = () => {
+		setTitle('')
+		setUrl('')
+		setDate(new Date().toISOString().slice(0, 10))
+		setSTime('')
+		setETime('')
+		setLinkedGroups([])
+		setImg(null)
+		setSearchGroups('')
+		setPage(1)
+	}
+
 	// Initialize edit/create mode state
 	useEffect(() => {
-		if (editmode && takeinfo) {
-			setEditMode(true)
-			setStep(3)
-			setTitle(takeinfo.name || '')
-			setUrl(takeinfo.link_url || '')
-			setLinkedGroups(takeinfo.linked_groups || [])
-			setSelectedAccess(takeinfo.webinar_access === 'restricted' ? 2 : 1)
-		} else {
-			setEditMode(false)
-			setStep(1)
-			resetForm()
+		if (isOpen) {
+			if (editmode && takeinfo) {
+				setEditMode(true)
+				setStep(1) // Переход на шаги
+				setTitle(takeinfo.name || '')
+				setUrl(takeinfo.link_url || '')
+				setLinkedGroups(takeinfo.linked_groups || [])
+				setSelectedAccess(takeinfo.webinar_access === 'restricted' ? 2 : 1)
+			} else {
+				setEditMode(false)
+				setStep(1)
+				resetForm()
+			}
 		}
 	}, [editmode, takeinfo, isOpen])
 
@@ -69,35 +88,18 @@ export const useCreateWebinarForm = ({
 		}
 	}, [searchGroups, page, step])
 
-	const resetForm = () => {
-		setTitle('')
-		setUrl('')
-		setDate(new Date().toISOString().slice(0, 10))
-		setSTime('')
-		setETime('')
-		setLinkedGroups([])
-		setImg(null)
-	}
-
 	const fetchUnlinkedGroups = async (term = '') => {
-		if (!takeinfo?.id) return
 		setIsLoading(true)
 		try {
-			const query = new URLSearchParams({
+			const data = await getUnlinkedGroups({
+				webinarId: takeinfo?.id,
 				page,
 				size: 25,
-				webinar_id: takeinfo.id,
-				...(term && { term }),
+				term,
 			})
-			const res = await api.get(
-				`${API}/webinar/student-group/unlinked?${query}`,
-				{
-					withCredentials: true,
-				},
-			)
-			setUnlinkedGroups(res.data)
+			setUnlinkedGroups(data)
 		} catch (e) {
-			setGlobalError('Ошибка при загрузке данных')
+			console.error('Ошибка при загрузке групп:', e)
 		} finally {
 			setIsLoading(false)
 		}
@@ -149,27 +151,19 @@ export const useCreateWebinarForm = ({
 		const { formData, linkedGroupIds } = buildFormData()
 
 		try {
-			let res
+			let resData
 			if (editMode) {
 				const accessData = linkedGroupIds ? formData : null
-				res = await api.put(
-					`${API}/webinar/access/edit/${takeinfo.id}`,
-					accessData,
-					{
-						withCredentials: true,
-					},
-				)
+				resData = await updateWebinarAccess(takeinfo.id, accessData)
 			} else {
-				res = await api.post(`${API}/webinar`, formData, {
-					withCredentials: true,
-				})
+				resData = await createWebinar(formData)
 			}
 
-			onCreate(res.data)
+			onCreate(resData)
 			onClose()
 			resetForm()
 		} catch (error) {
-			console.error('Ошибка сервера:', error)
+			console.error('Ошибка сервера при сохранении вебинара:', error)
 		}
 	}
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ScanSearch } from 'lucide-react'
-import Loader from '../../Loader'
+import { Loader } from '../../Atoms/Loaders/Loader'
 
 export const SearchInput = ({
 	width,
@@ -17,7 +17,7 @@ export const SearchInput = ({
 
 	return (
 		<div
-			className='w-[383px] max-md:w-full inline-flex group rounded-lg p-[6px] bg-[var(--white)] text-[var(--black)] shadow-[var(--shadow)] gap-3 outline-0 focus:ring-1 focus:ring-[var(--hero-epta)] transition'
+			className='w-[383px] max-md:w-full inline-flex group rounded-lg p-[6px] bg-[var(--white)] text-[var(--black)] shadow-[var(--shadow)] gap-3 outline-0 focus:ring-1 focus:ring-[var(--hero)] transition'
 			style={{ width, height }}
 		>
 			<ScanSearch className='h-full w-auto aspect-square' strokeWidth={1.5} />

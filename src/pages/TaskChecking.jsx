@@ -1,15 +1,15 @@
 import {
 	ArrowLeft,
 	BookMarked,
+	FlaskConical,
+	ImageOff,
 	LaptopMinimalCheck,
 	NotebookPen,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { GetAllCoursesForTeacher } from '../../service/APIs/Couses'
-import { CourseMiniCard } from '../components/Cards'
-import { DefaultButton } from '../components/Buttons'
-import { GetUsers } from '../../service/APIs/Moderation'
+import { CourseMiniCard } from '../components/Organisms/Cards/CourseMiniCard'
+import { SubmitButton } from '../components/Atoms/Buttons/SubmitButton'
 
 const UserCard = ({ FullName, avatar_url, email, role, onClick }) => {
 	const roles = {
@@ -82,6 +82,7 @@ const TaskCard = ({ data, onClick }) => {
 		lecture: <BookMarked />,
 		practice: <NotebookPen />,
 		test: <LaptopMinimalCheck />,
+		labs: <FlaskConical />,
 	}[data.type]
 
 	const score = scoreConfigs[data.score] // Используй свой объект scoreConfigs
@@ -104,7 +105,7 @@ const TaskCard = ({ data, onClick }) => {
 	)
 }
 
-const TestChecking = () => {
+const TaskChecking = () => {
 	const [searchParams, setSearchParams] = useSearchParams()
 
 	const courseId = searchParams.get('course_id')
@@ -151,7 +152,7 @@ const TestChecking = () => {
 				) : (
 					<>
 						<div className='flex items-center gap-2'>
-							<DefaultButton
+							<SubmitButton
 								paddings='px-2 py-1 gap-1'
 								width='w-fit'
 								flexParams='items-center'
@@ -162,7 +163,7 @@ const TestChecking = () => {
 							>
 								<ArrowLeft className='text-[var(--black)]' />
 								Курсы
-							</DefaultButton>
+							</SubmitButton>
 							<h2 className='font-bold'>Студенты курса</h2>
 						</div>
 						{/* Здесь список студентов этого курса */}
@@ -211,4 +212,4 @@ const TestChecking = () => {
 		</div>
 	)
 }
-export default TestChecking
+export default TaskChecking

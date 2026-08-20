@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useClickOutside } from '../../../hooks/useClickOutside'
+import { useScrollListener } from '../../../hooks/useScrollListener'
 import { InputBase } from '../../Atoms/InputField/InputBase'
 import { Input } from './Input'
-import { useClickOutside } from '../../../hooks/useClickOutside'
-import { useScrollListener } from '../../../../service/Hooks/useScrollListener'
 
 export const OptionInputWithSearch = ({
 	options = [],

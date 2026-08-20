@@ -1,67 +1,37 @@
 import {
-	ChevronUp,
-	Package,
 	BookMarked,
-	NotebookPen,
-	LaptopMinimalCheck,
-	Text,
+	ChevronRight,
+	ChevronUp,
 	Code,
-	Image,
-	Film,
-	Files,
-	Table,
-	AudioLines,
-	Layers2,
-	SquareFunction,
-	MousePointerClick,
-	Loader,
-	FlaskConical,
 	FilePlus2,
-	Plus,
+	Files,
+	Film,
+	FlaskConical,
+	Image,
+	LaptopMinimalCheck,
+	Layers2,
+	LibraryBig,
+	MousePointerClick,
+	NotebookPen,
+	Package,
+	PanelLeftClose,
+	SquareFunction,
+	Text,
 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { SubmitButton } from '../components/Atoms/Buttons/SubmitButton'
+import { Input } from '../components/Molecules/InputFields/Input'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { TextEditor } from '../components/ConstructorViews/TextEditor'
-import { PhotoBlock } from '../components/ConstructorViews/PhotoImport'
-import { VideoImport } from '../components/ConstructorViews/VideoImport'
-import { CodeUploader } from '../components/ConstructorViews/CodeImport'
-import { FileManager } from '../components/ConstructorViews/FilesImport'
-import { Formula } from '../components/ConstructorViews/FormulaConstructor'
-import { ButtonConstructor } from '../components/ConstructorViews/ButtonConstructor'
-import { Callout } from '../components/ConstructorViews/Callout'
-import { Checkbox, DefaultButton, RadioButton } from '../components/Buttons'
-import { InputDefault, TimeLimitInput } from '../components/Inputs'
-import {
-	CreateCourse,
-	CreateLesson,
-	CreateModule,
-	ReadCourseById,
-} from '../../service/APIs/Couses'
-import {
-	AppendLectureContent,
-	DeleteBlock,
-	DeleteFile,
-	ReadLectureContent,
-	UpdateLectureContent,
-} from '../../service/APIs/LectureContent'
-import { debounce } from 'lodash'
-import { Me } from '../../service/APIs/Authorization'
-import {
-	AddOptionOnQuestion,
-	AddQuestion,
-	DeleteOption,
-	EditQuestionType,
-	EditTest,
-	GetDetailQuestion,
-	GetQuestions,
-	GetSession,
-} from '../../service/APIs/Test'
-import TestManager from '../components/TestManager/TestManager'
-import { formatTime } from '../../service/utils/formatTime'
-import AccessManagement from './CoursePage/AccessManagement'
-import ActivityStudents from './CoursePage/ActivityStudents'
-import Attachment from './CoursePage/Attachment'
+import { TestManager } from '../components/Organisms/TestManager'
+import { TimeLimitInput } from '../components/Molecules/InputFields/TimeLimitInput'
+import { TextEditor } from '../components/Organisms/ConstructorViews/TextEditor'
+import { PhotoBlock } from '../components/Organisms/ConstructorViews/PhotoImport'
+import { VideoImport } from '../components/Organisms/ConstructorViews/VideoImport'
+import { CodeUploader } from '../components/Organisms/ConstructorViews/CodeImport'
+import { FileManager } from '../components/Organisms/ConstructorViews/FilesImport'
+import { Formula } from '../components/Organisms/ConstructorViews/FormulaConstructor'
+import { ButtonConstructor } from '../components/Organisms/ConstructorViews/ButtonConstructor'
+import { Callout } from '../components/Organisms/ConstructorViews/Callout'
 
 const COMPONENT_MAP = {
 	text: TextEditor,
@@ -82,6 +52,13 @@ const DEFAULT_LESSON_TYPES = [
 		icon: <BookMarked size={18} />,
 		description: 'Теоретический материал с блоками текста и медиа.',
 	},
+
+	{
+		label: 'Тест',
+		apiType: 'test',
+		icon: <LaptopMinimalCheck size={18} />,
+		description: 'Контрольное тестирование для проверки знаний.',
+	},
 	{
 		label: 'Практика',
 		apiType: 'practice',
@@ -89,12 +66,17 @@ const DEFAULT_LESSON_TYPES = [
 		description: 'Практическое задание для закрепления материала.',
 	},
 	{
-		label: 'Тест',
-		apiType: 'test',
-		icon: <LaptopMinimalCheck size={18} />,
-		description: 'Контрольное тестирование для проверки знаний.',
+		label: 'Лабораторная работа',
+		apiType: 'labs',
+		icon: <FlaskConical size={18} />,
+		description: 'Практическое задание для закрепления материала.',
 	},
 ]
+
+const lessonConfigMap = DEFAULT_LESSON_TYPES.reduce((acc, item) => {
+	acc[item.apiType] = item
+	return acc
+}, {})
 
 const CreateItemButton = ({
 	type = 'module',
@@ -130,18 +112,14 @@ const CreateItemButton = ({
 
 	return (
 		<div className='w-full'>
-			<DefaultButton
-				invert={true}
-				width='w-full'
-				onClick={() => setIsOpen(prev => !prev)}
-			>
+			<SubmitButton className='w-full' onClick={() => setIsOpen(prev => !prev)}>
 				<div className='flex items-center justify-center gap-3 w-full'>
 					{isModule ? <Package size={20} /> : <FilePlus2 size={20} />}
 					<span style={{ fontSize: '16px' }}>
 						{isModule ? 'Добавить модуль' : 'Добавить занятие'}
 					</span>
 				</div>
-			</DefaultButton>
+			</SubmitButton>
 
 			{isOpen && (
 				<div className='bg-[var(--white)] rounded-xl shadow-[var(--shadow)] p-4 mt-3 flex flex-col gap-3 z-10 w-full'>
@@ -167,9 +145,9 @@ const CreateItemButton = ({
 								{LESSON_TYPES[selectedTypeIndex].description}
 							</p>
 							<div className='flex justify-end mt-2'>
-								<DefaultButton width='w-full' onClick={() => setStep(1)}>
+								<SubmitButton className='w-full' onClick={() => setStep(1)}>
 									Далее
-								</DefaultButton>
+								</SubmitButton>
 							</div>
 						</>
 					)}
@@ -177,7 +155,7 @@ const CreateItemButton = ({
 					{/* Шаг ввода названия */}
 					{(isModule || step === 1) && (
 						<div className='flex flex-col gap-3'>
-							<InputDefault
+							<Input
 								title={isModule ? 'Название модуля' : 'Название занятия'}
 								placeholder='Введите название'
 								required={true}
@@ -187,23 +165,17 @@ const CreateItemButton = ({
 							/>
 							<div className='flex justify-between gap-2 mt-2'>
 								{!isModule && (
-									<DefaultButton
-										invert={true}
-										width='w-full'
-										flexParams='justify-center'
-										onClick={() => setStep(0)}
-									>
+									<SubmitButton className='w-full' onClick={() => setStep(0)}>
 										Назад
-									</DefaultButton>
+									</SubmitButton>
 								)}
-								<DefaultButton
-									width='w-full'
-									flexParams='justify-center'
+								<SubmitButton
+									className={'w-full'}
 									onClick={handleSave} // ИСПРАВЛЕНО: Вместо setStep(0) вызываем сохранение данных
 									disabled={!isNameValid}
 								>
 									{isModule ? 'Добавить модуль' : 'Создать'}
-								</DefaultButton>
+								</SubmitButton>
 							</div>
 						</div>
 					)}
@@ -497,22 +469,12 @@ const Module = ({ title, index, isExpanded, onToggle, children }) => {
 }
 
 // Компонент Контента (Лекция/Практика/Тест)
-const Content = ({ type, title, isSelected, onClick, role }) => {
-	const icons = {
-		lecture: <BookMarked size={18} />,
-		practice: <NotebookPen size={18} />,
-		test: <LaptopMinimalCheck size={18} />,
-	}
 
-	const labels = {
-		lecture: 'Лекция',
-		practice: 'Практика',
-		test: 'Тест',
-	}
+const Content = ({ type, title, isSelected, onClick, role }) => {
+	const currentType = lessonConfigMap[type] || DEFAULT_LESSON_TYPES[0]
 
 	const [score, setScore] = useState(3)
 
-	// Вычисляем статус прямо при рендере
 	const getStatus = s => {
 		if (s >= 4) return 'good'
 		if (s >= 3) return 'middle'
@@ -544,11 +506,11 @@ const Content = ({ type, title, isSelected, onClick, role }) => {
 							isSelected ? 'text-[var(--hero)]' : 'text-[var(--middle)]'
 						}
 					>
-						{icons[type]}
+						{currentType.icon}
 					</span>
 					<div className='flex flex-col'>
 						<span className='text-[10px] uppercase tracking-wider text-[var(--middle)] font-bold'>
-							{labels[type]}
+							{currentType.label}
 						</span>
 						<p className='font-medium text-sm text-[var(--black)]'>{title}</p>
 					</div>
@@ -571,7 +533,6 @@ const Content = ({ type, title, isSelected, onClick, role }) => {
 const ContentHeader = ({ role }) => {
 	const [searchParams, setSearchParams] = useSearchParams()
 
-	// Достаем текущий questionId из URL (строка, содержащая UUID)
 	const activeQuestionId = searchParams.get('questionId')
 	const activeSection = searchParams.get('section')
 
@@ -591,7 +552,7 @@ const ContentHeader = ({ role }) => {
 
 		const timer = setInterval(() => {
 			setTimeLeft(prev => Math.max(prev - 1, 0))
-		}, 1000) // Таймер обновляется каждую секунду
+		}, 1000)
 
 		return () => clearInterval(timer)
 	}, [timeLeft])
@@ -618,12 +579,11 @@ const ContentHeader = ({ role }) => {
 		const getSession = async () => {
 			try {
 				const res = await GetSession(activeSection)
-				const currentTime = Date.now() / 1000 // Текущее время в секундах
+				const currentTime = Date.now() / 1000
 				const tl = Math.floor(currentTime - res.expire_at)
 				setSessionIsActive(true)
 				setTimeLeft(totalTime - tl)
 			} catch (err) {
-				// Обработка ошибки
 				setSessionIsActive(false)
 			}
 		}
@@ -652,17 +612,8 @@ const ContentHeader = ({ role }) => {
 		}
 	}
 
-	const icons = {
-		lecture: <BookMarked size={18} />,
-		practice: <NotebookPen size={18} />,
-		test: <LaptopMinimalCheck size={18} />,
-	}
-
-	const labels = {
-		lecture: 'Лекция',
-		practice: 'Практика',
-		test: 'Тест',
-	}
+	const currentType =
+		lessonConfigMap[questionsData?.type] || DEFAULT_LESSON_TYPES[0]
 
 	return (
 		<div className='relative flex items-center justify-between w-full bg-[var(--white)] shadow-[var(--shadow)] rounded-xl pr-3 pl-4 py-2 overflow-hidden'>
@@ -670,13 +621,13 @@ const ContentHeader = ({ role }) => {
 				{questionsData && (
 					<>
 						<span className={'text-[var(--middle)] h-full w-auto'}>
-							{icons[questionsData.type]}
+							{currentType.icon}
 						</span>
 						<div className='flex flex-col'>
 							<p
 								className={'text-[var(--middle)] text-sm uppercase font-medium'}
 							>
-								{labels[questionsData.type]}
+								{currentType.label}
 							</p>
 							<p className={'text-[var(--black)] text-lg'}>
 								{questionsData.name}
@@ -689,19 +640,11 @@ const ContentHeader = ({ role }) => {
 			{accessToTheTest && (
 				<>
 					<p className='w-25 text-center text-[var(--black)] font-semibold'>
-						<p className='w-25 text-center text-[var(--black)] font-semibold'>
-							{formatTime(timeLeft >= 0 ? timeLeft : 0)}
-						</p>
+						{formatTime(timeLeft >= 0 ? timeLeft : 0)}
 					</p>
-					<DefaultButton
-						onClick={() => console.log('Завершить тест')}
-						rounded={'rounded-lg'}
-						width='w-fit'
-						flexParams='justify-center'
-					>
+					<SubmitButton onClick={() => console.log('Завершить тест')}>
 						Завершить тест
-					</DefaultButton>
-					{/* Прогресс-бар с динамической шириной */}
+					</SubmitButton>
 					<div
 						style={{
 							width: `${progressWidth}%`,
@@ -877,18 +820,15 @@ const CoursePage = () => {
 	const [blocks, setBlocks] = useState([])
 	const [isEdit, setIsEdit] = useState(false)
 	const [modules, setModules] = useState([])
-	const [isLoading, setIsLoading] = useState(true) // Состояние загрузки
+	const [isLoading, setIsLoading] = useState(true)
 
-	// Переносим чтение курса в useCallback, чтобы функцию можно было вызывать из других методов
 	const fetchCourseData = useCallback(async () => {
 		if (!courseId) return
 		try {
-			// Убираем setIsLoading(true) отсюда, чтобы интерфейс не «моргал» при создании уроков
 			const res = await ReadCourseById(courseId)
 			if (res && res.modules) {
 				setModules(res.modules)
 
-				// Если в URL еще не выбран section, выбираем первый доступный из пришедших данных
 				if (!searchParams.get('section') && res.modules[0]?.sections[0]?.id) {
 					setSearchParams(
 						{ section: res.modules[0].sections[0].id },
@@ -903,13 +843,11 @@ const CoursePage = () => {
 		}
 	}, [courseId, searchParams, setSearchParams])
 
-	// Первый рендер и смена courseId
 	useEffect(() => {
 		setIsLoading(true)
 		fetchCourseData()
 	}, [courseId, fetchCourseData])
 
-	// Поиск активной секции (лекции/теста) для отображения в шапке контента
 	const activeSection = modules
 		?.flatMap(m => m.content)
 		.find(s => s.id === activeSectionId)
@@ -924,11 +862,10 @@ const CoursePage = () => {
 		setSearchParams({ section: id }, { replace: true })
 	}
 
-	// Обработчики создания с async/await
 	const createModule = async name => {
 		try {
 			await CreateModule(name, courseId)
-			await fetchCourseData() // Обновляем данные с сервера
+			await fetchCourseData()
 		} catch (err) {
 			console.error('Ошибка при создании модуля:', err)
 		}
@@ -937,7 +874,7 @@ const CoursePage = () => {
 	const createLesson = async (name, module_content_type, module_id) => {
 		try {
 			await CreateLesson(name, module_content_type, module_id)
-			await fetchCourseData() // Обновляем данные с сервера
+			await fetchCourseData()
 		} catch (err) {
 			console.error('Ошибка при создании урока:', err)
 		}
@@ -945,23 +882,10 @@ const CoursePage = () => {
 
 	const addBlock = type => setBlocks(prev => [...prev, { type, content: null }])
 
-	const icons = {
-		lecture: <BookMarked />,
-		practice: <NotebookPen />,
-		test: <LaptopMinimalCheck />,
-	}
-
-	const labels = {
-		lecture: 'Лекция',
-		practice: 'Практика',
-		test: 'Тест',
-	}
-
 	useEffect(() => {
 		const id = searchParams.get('section')
 		setActiveSectionId(id)
 
-		// Находим тип активной секции из массива модулей
 		if (id && modules.length > 0) {
 			const section = modules.flatMap(m => m.content).find(s => s.id === id)
 			if (section) {
@@ -994,7 +918,6 @@ const CoursePage = () => {
 			{activeChapter === 'constructor' ? (
 				<>
 					<div className='grid grid-cols-[350px_1fr] h-screen gap-6  '>
-						{/* Боковая панель (Sidebar) */}
 						<CourseSidebar
 							role={role}
 							modules={modules}
@@ -1006,12 +929,10 @@ const CoursePage = () => {
 							createModule={createModule}
 						/>
 
-						{/* Основной контент */}
 						<div className='w-full h-full bg-[var(--white)] shadow-lg rounded-3xl p-4'>
 							{activeSection && <ContentHeader role={role} />}
 
 							<div className='w-full h-full overflow-y-auto px-2 py-4'>
-								{/* Передаем id активной секции внутрь ContentView, чтобы он знал, что загружать */}
 								<ContentView
 									isEdit={role === 'teacher' && true}
 									sectionId={activeSectionId}

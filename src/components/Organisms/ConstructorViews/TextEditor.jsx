@@ -24,7 +24,7 @@ import {
 	AlignCenter,
 	AlignRight,
 } from 'lucide-react'
-import { RemoveButton } from './FileUploaderZone'
+import { RemoveButton } from '../../Atoms/Buttons/RemoveButton'
 
 export const TextEditor = ({ data, onDelete, onChange, isEdit = false }) => {
 	// Храним строку последнего состояния, чтобы избежать бесконечного рендера при синхронизации

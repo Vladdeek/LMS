@@ -1,10 +1,9 @@
-// CreateCourseModal.jsx
 import Modal from '../../Atoms/Modal'
-import { Text } from '../../Atoms/Text'
 import { ScrollFadeContainer } from '../../Atoms/ScrollFadeContainer'
+import { Text } from '../../Atoms/Text'
 import { CreateWebinarForm } from '../Forms/CreateWebinarForm/CreateWebinarForm'
 
-export const CreateCourseModal = ({
+export const CreateWebinarModal = ({
 	isOpen,
 	onClose,
 	editmode = false,
@@ -12,7 +11,7 @@ export const CreateCourseModal = ({
 	onCreate,
 }) => {
 	return (
-		<Modal width={'w-175'} isOpen={isOpen} onClose={onClose}>
+		<Modal width={'w-fit'} isOpen={isOpen} onClose={onClose}>
 			<Text
 				size={'2xl'}
 				font={'medium'}
@@ -23,15 +22,13 @@ export const CreateCourseModal = ({
 					? 'Редактирование видео-конференции'
 					: 'Создание видео-конференции'}
 			</Text>
-			<ScrollFadeContainer height={'h-[70vh]'}>
-				<CreateWebinarForm
-					isOpen={isOpen}
-					onClose={onClose}
-					editmode={editmode}
-					takeinfo={takeinfo}
-					onCreate={onCreate}
-				/>
-			</ScrollFadeContainer>
+			<CreateWebinarForm
+				isOpen={isOpen}
+				onClose={onClose}
+				editmode={editmode}
+				takeinfo={takeinfo}
+				onCreate={onCreate}
+			/>
 		</Modal>
 	)
 }

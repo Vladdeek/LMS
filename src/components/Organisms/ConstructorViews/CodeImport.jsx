@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { X, Copy, Trash } from 'lucide-react'
-import { CodeBlock, github, a11yDark } from 'react-code-blocks'
-import { FileUploaderZone, RemoveButton } from './FileUploaderZone'
-import { languageMap } from '../../../service/data/lanaguagesMap'
+import { RemoveButton } from '../../Atoms/Buttons/RemoveButton'
+import { Copy, Trash } from 'lucide-react'
+import { CodeBlock } from 'react-code-blocks'
+import { FileUploaderZone } from './FileUploaderZone'
+import { languageMap } from '../../../Constants/lanaguagesMap'
 
 export const CodeUploader = ({
 	isEdit = true,

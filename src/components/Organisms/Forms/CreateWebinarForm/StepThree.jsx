@@ -1,8 +1,7 @@
-import React from 'react'
-import { motion } from 'framer-motion'
-import { RadioGroup } from '../../../Molecules/RadioGroup'
 import { Input } from '../../../Molecules/InputFields/Input'
-import BasicPagination from '../../../Pagination'
+import { BasicPagination } from '../../../Molecules/Pagination'
+import { RadioGroup } from '../../../Molecules/RadioGroup'
+import { motion } from 'framer-motion'
 
 export const StepThreeAccess = ({
 	accessOptions,

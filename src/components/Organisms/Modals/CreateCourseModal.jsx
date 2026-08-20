@@ -1,12 +1,11 @@
-import { ArrowDown } from 'lucide-react'
 import Modal from '../../Atoms/Modal'
-import { CreateCourseForm } from '../Forms/CreateCourseForm'
-import { Text } from '../../Atoms/Text'
 import { ScrollFadeContainer } from '../../Atoms/ScrollFadeContainer'
+import { Text } from '../../Atoms/Text'
+import { CreateCourseForm } from '../Forms/CreateCourseForm'
 
-export const CreateCourseModal = ({ isOpen }) => {
+export const CreateCourseModal = ({ isOpen, onClose }) => {
 	return (
-		<Modal width={'w-175'} isOpen={isOpen}>
+		<Modal width={'w-175'} isOpen={isOpen} onClose={onClose}>
 			<Text
 				size={'2xl'}
 				font={'medium'}

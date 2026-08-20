@@ -11,7 +11,8 @@ import {
 	Download,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { FileUploaderZone, RemoveButton } from './FileUploaderZone'
+import { RemoveButton } from '../../Atoms/Buttons/RemoveButton'
+import { FileUploaderZone } from './FileUploaderZone'
 
 export const FileManager = ({
 	data, // Принимаем объект: { type: "files", block: { files: [...] } }

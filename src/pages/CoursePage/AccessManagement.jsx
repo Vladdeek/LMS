@@ -2,12 +2,10 @@ import { Ban, ChevronsRight, GripVertical } from 'lucide-react'
 import { useEffect, useRef, useState, useCallback, memo } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-
-import { RadioButton } from '../../components/Buttons'
-import Loader from '../../components/Loader'
-import BasicPagination from '../../components/Pagination'
-import { SearchInput } from '../../components/Inputs'
-import { accessApi } from '../../../service/APIs/Access'
+import { RadioButton } from '../../components/Atoms/Buttons/RadioButton'
+import { BasicPagination } from '../../components/Molecules/Pagination'
+import { Loader } from '../../components/Atoms/Loaders/Loader'
+import { SearchInput } from '../../components/Molecules/InputFields/SearchInput'
 
 const ENTITY = {
 	STUDENTS: 'students',
@@ -235,47 +233,31 @@ const AccessBlock = ({
 			onDragOver={e => e.preventDefault()}
 		>
 			{/* Mobile Tabs */}
-			<div className='flex gap-3 min-lg:hidden'>
-				{['Недопущенные', 'Допущенные'].map((t, i) => (
-					<RadioButton
-						key={i}
-						value={i}
-						title={t}
-						style='solid'
-						checked={selectedChapter === i}
-						onChange={() => setSelectedChapter(i)}
-						width='100%'
-					/>
-				))}
-			</div>
+			<RadioGroup
+				options={['Недопущенные', 'Допущенные']}
+				value={selectedChapter}
+				onChange={setSelectedChapter}
+				wfull={true}
+				className='flex gap-3 min-lg:hidden'
+			/>
 
-			<div className='flex gap-3 min-lg:hidden'>
-				{['Группы студентов', 'Преподаватели'].map((t, i) => (
-					<RadioButton
-						key={i}
-						value={i}
-						title={t}
-						style='solid'
-						checked={selected === i}
-						onChange={() => setSelected(i)}
-					/>
-				))}
-			</div>
+			<RadioGroup
+				options={['Группы студентов', 'Преподаватели']}
+				value={selected}
+				onChange={setSelected}
+				wfull={true}
+				className='flex gap-3 min-lg:hidden'
+			/>
 
 			{/* Desktop Tabs */}
 			{!title && (
-				<div className='flex gap-2 max-lg:hidden'>
-					{['Группы студентов', 'Преподаватели'].map((t, i) => (
-						<RadioButton
-							key={i}
-							value={i}
-							title={t}
-							style='solid'
-							checked={selected === i}
-							onChange={() => setSelected(i)}
-						/>
-					))}
-				</div>
+				<RadioGroup
+					options={['Группы студентов', 'Преподаватели']}
+					value={selected}
+					onChange={setSelected}
+					wfull={true}
+					className='flex gap-2 max-lg:hidden'
+				/>
 			)}
 
 			{/* Search */}

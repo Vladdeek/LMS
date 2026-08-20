@@ -1,6 +1,8 @@
-import { StartTestingButton } from '../Atoms/Buttons/StartTestingButton'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { TestHeader } from '../Molecules/TestHeader'
 import { TestingScore } from './TestingScore'
+import { StartTestingButton } from '../Atoms/Buttons/StartTestingButton'
 import { TestView } from './TestView'
 
 export const TestManager = ({}) => {

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { Me } from '../APIs/Authorization'
 import { useLocation } from 'react-router-dom'
+import { Me } from '../api/Authorization'
+import { toast } from 'sonner'
 
 //сам контекст
 const UserContext = createContext()
@@ -9,16 +10,21 @@ const UserContext = createContext()
 export const UserProvider = ({ children }) => {
 	const [userInfo, setUserInfo] = useState(null)
 	const [role, setRole] = useState(null)
+	const [loadingUserInfo, setLoadingUserInfo] = useState(false)
 	const location = useLocation()
 
 	useEffect(() => {
+		setLoadingUserInfo(true)
 		const getUserInfo = async () => {
 			try {
 				const res = await Me()
 				setUserInfo(res)
-				setRole(res.role)
+				setRole(res.current_user_role)
 			} catch (err) {
-				console.error('Ошибка загрузки:', err)
+				console.log(err)
+				// toast.error(err)
+			} finally {
+				setLoadingUserInfo(false)
 			}
 		}
 
@@ -27,7 +33,7 @@ export const UserProvider = ({ children }) => {
 
 	return (
 		// Прокидываем и данные, и текущую роль, и функцию её смены
-		<UserContext.Provider value={{ userInfo, role }}>
+		<UserContext.Provider value={{ userInfo, role, loadingUserInfo }}>
 			{children}
 		</UserContext.Provider>
 	)

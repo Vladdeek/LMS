@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
-import { courseApi } from '../../../service/APIs/Attachment'
-import { FileManager } from '../../components/ConstructorViews/FilesImport'
+import { FileManager } from '../../components/Organisms/ConstructorViews/FilesImport'
 
 const Attachment = () => {
 	const { courseId } = useParams()

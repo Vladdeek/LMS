@@ -1,4 +1,6 @@
 import { NavLink } from 'react-router-dom'
+import { useUser } from '../../../context/UserContext'
+import { MEDIA_API_URL } from '../../../API'
 
 export const CourseCard = ({ courseInfo }) => {
 	const { role } = useUser()

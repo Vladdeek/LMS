@@ -1,7 +1,7 @@
 import { HintTooltip } from '../../../Atoms/HintTooltip'
+import { Text } from '../../../Atoms/Text'
 import { DateInput } from '../../../Molecules/InputFields/DateInput'
 import { Input } from '../../../Molecules/InputFields/Input'
-import { Text } from '../../../Atoms/Text'
 
 export const StepTwoSchedule = ({
 	date,

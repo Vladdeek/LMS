@@ -1,3 +1,5 @@
+import { QuestionResultCard } from './Cards/QuestionResultCard'
+
 export const TestingScore = ({ score = 4.1, min = 1, max = 5 }) => {
 	const scoreConfigs = {
 		1: {

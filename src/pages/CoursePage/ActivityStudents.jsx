@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { FilterIcon } from 'lucide-react'
-import { ActivityAPI } from '../../../service/APIs/Activity'
-import { formatDate, formatTime } from '../../../service/utils/formatTime'
-import { FilterOptionInput, SearchInput } from '../../components/Inputs'
+import { FilterOptionInput } from '../../components/Molecules/InputFields/FilterOptionInput'
+import { SearchInput } from '../../components/Molecules/InputFields/SearchInput'
 
 // Вынесенный компонент строки таблицы
 const TableEl = ({ name, group, lecture, activity = 0, last_activity }) => {

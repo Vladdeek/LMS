@@ -1,3 +1,4 @@
+import { NavLink } from 'react-router-dom'
 import { TEXT_SIZES } from '../../Constants/TextSizes'
 
 export const Link = ({ to, children, textSize = '2xl', underline = false }) => {

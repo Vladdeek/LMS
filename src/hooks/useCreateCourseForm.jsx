@@ -1,4 +1,17 @@
 import { useState, useEffect } from 'react'
+import {
+	createCourseRequest,
+	fetchDisciplinesRequest,
+	fetchYearsRequest,
+} from '../api/Courses'
+// 1. Импортируем методы из API
+
+// Константы уровней образования (нужна для логики в handleSubmit)
+const studyLevelOptions = [
+	{ value: 0, label: 'Бакалавриат' },
+	{ value: 2, label: 'Специалитет' },
+	{ value: 1, label: 'Магистратура' },
+]
 
 export const useCreateCourseForm = ({ onCreate, onClose }) => {
 	const [selectedTab, setSelectedTab] = useState(0)
@@ -21,7 +34,6 @@ export const useCreateCourseForm = ({ onCreate, onClose }) => {
 
 	const [isNameValid, setIsNameValid] = useState(false)
 
-	// Хэндлеры изменения состояния
 	const handleChange = e => {
 		const { name, value } = e.target
 		setFormData(prev => ({ ...prev, [name]: value }))
@@ -31,11 +43,9 @@ export const useCreateCourseForm = ({ onCreate, onClose }) => {
 		setFormData(prev => ({ ...prev, [name]: value }))
 	}
 
-	// Валидация форм перед отправкой
 	const isForm1Valid = isNameValid
 	const isForm2Valid = formData.selectedDisciplineIdx !== null
 
-	// Очистка формы
 	const resetForm = () => {
 		setFormData({
 			title: '',
@@ -55,7 +65,7 @@ export const useCreateCourseForm = ({ onCreate, onClose }) => {
 		if (selectedTab === 1) {
 			fetchYearsRequest()
 				.then(data => setYearsList(data))
-				.catch(err => console.error(err))
+				.catch(err => console.error('Ошибка при загрузке лет:', err))
 		} else {
 			setDisciplinesList([])
 			handleDirectChange('selectedDisciplineIdx', null)
@@ -71,7 +81,7 @@ export const useCreateCourseForm = ({ onCreate, onClose }) => {
 		) {
 			fetchDisciplinesRequest(yearsList[selectedYearIdx], selectedSemester)
 				.then(data => setDisciplinesList(data))
-				.catch(err => console.error(err))
+				.catch(err => console.error('Ошибка при загрузке дисциплин:', err))
 		}
 	}, [formData.selectedYearIdx, formData.selectedSemester, yearsList])
 
@@ -103,7 +113,7 @@ export const useCreateCourseForm = ({ onCreate, onClose }) => {
 					study_level:
 						formData.selectedStudyLevel === null
 							? null
-							: study_level_options.find(
+							: studyLevelOptions.find(
 									item => item.value === formData.selectedStudyLevel,
 								)?.label,
 					image: formData.img,
@@ -122,7 +132,8 @@ export const useCreateCourseForm = ({ onCreate, onClose }) => {
 				}
 			}
 
-			const createdCourse = await CreateCourse(payload, isFromLoad)
+			// 2. Вызываем наш вынесенный метод API
+			const createdCourse = await createCourseRequest(payload, isFromLoad)
 
 			if (onCreate) onCreate(createdCourse)
 			if (onClose) onClose()

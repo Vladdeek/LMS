@@ -1,47 +1,16 @@
-import { motion, AnimatePresence } from 'framer-motion'
-import {
-	ArrowBigDown,
-	ArrowDown,
-	ArrowRight,
-	Award,
-	Blocks,
-	BookOpen,
-	Calendar,
-	Clock,
-	Layers,
-	LayoutGrid,
-	RussianRuble,
-	User,
-	X,
-} from 'lucide-react'
-import {
-	DateInput,
-	FileInput,
-	FileInputZone,
-	InputDefault,
-	InputPrice,
-	OptionInputWithSearch,
-	OptionSearch,
-	TextArea,
-} from '../components/Inputs'
-import { useEffect, useState } from 'react'
-import { Checkbox, RadioButton } from '../components/Buttons'
-import { AddTag, GetTags } from '../../service/APIs/CourseTagsSpecific'
-import {
-	GetAllAvailableCoursesForStudent,
-	GetAllCourses,
-	GetAllCoursesForStudent,
-	GetAllCoursesForTeacher,
-	GetCertificates,
-	GetFormats,
-} from '../../service/APIs/Couses'
-import Modal from '../components/Modal'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { GetCourseInfoById } from '../../service/APIs/Moderation'
-import { Me } from '../../service/APIs/Authorization'
-import { useUser } from '../../service/context/UserContext'
-import { CourseCard } from '../components/Cards'
+import { ArrowDown, Blocks, Filter, RotateCcw } from 'lucide-react'
+import { useUser } from '../context/UserContext'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import Modal from '../components/Atoms/Modal'
 import { CreateCourseForm } from '../components/Organisms/Forms/CreateCourseForm'
+import { RadioGroup } from '../components/Molecules/RadioGroup'
+import { CourseCard } from '../components/Organisms/Cards/CourseCard'
+import { motion } from 'framer-motion'
+import { CreateCourseModal } from '../components/Organisms/Modals/CreateCourseModal'
+import { Show } from '../components/Atoms/Show'
+import { fetchCoursesApi } from '../api/Courses'
+import { FilterOptionInput } from '../components/Molecules/InputFields/FilterOptionInput'
 
 const CreateBtn = ({ onClick, title }) => {
 	return (
@@ -57,157 +26,257 @@ const CreateBtn = ({ onClick, title }) => {
 	)
 }
 
+export const SORTING_FILTERS = [
+	'Все',
+	'По дате создания (новые)',
+	'По дате создания (старые)',
+	'По названию курса (А-Я)',
+	'По названию курса (Я-А)',
+]
+
+export const STUDY_LEVELS = [
+	'Все',
+	'Бакалавриат',
+	'Специалитет',
+	'Магистратура',
+]
+
+export const STATUS_OPTIONS = [
+	'Все',
+	'Опубликован',
+	'Не опубликован',
+	'На рассмотрении',
+]
+
+export const SEMESTER_OPTIONS = [
+	{ value: 1, title: '1-й Семестр' },
+	{ value: 2, title: '2-й Семестр' },
+]
+
+export const COURSE_YEAR_OPTIONS = [
+	{ value: 1, title: '1-й' },
+	{ value: 2, title: '2-й' },
+	{ value: 3, title: '3-й' },
+	{ value: 4, title: '4-й' },
+	{ value: 5, title: '5-й' },
+	{ value: 6, title: '6-й' },
+]
+
 const Catalog = () => {
 	const { userInfo, role } = useUser()
-
-	const { type = 'courses' } = useParams() // Если type нет в URL, ставим 'all' по умолчанию
+	const { type = 'courses' } = useParams()
 	const navigate = useNavigate()
 
-	const options = [
-		{ value: 'courses', to: '/catalog/courses', title: 'Курсы' },
-		{ value: 'webinars', to: '/catalog/webinars', title: 'Видео-конференции' },
-	]
-
-	const NavigateTo = to => {
-		navigate(to)
-	}
-
-	const [courses, setCourses] = useState(null)
+	const [courses, setCourses] = useState([])
+	const [loading, setLoading] = useState(false)
 	const [isModalOpen, setIsModalOpen] = useState(false)
-	const [showArrow, setShowArrow] = useState(true)
+	const [isFilterOpen, setIsFilterOpen] = useState(false)
 
-	const [selectedCourse, setSelectedCourse] = useState(null)
+	// Единое состояние для фильтров (вместо 10 отдельных useState)
+	const [filters, setFilters] = useState({
+		sort: null,
+		studyLevel: null,
+		status: null,
+		semester: null,
+		courseOpt: null,
+	})
 
+	const updateFilter = (key, value) => {
+		setFilters(prev => ({ ...prev, [key]: value }))
+	}
+
+	const resetFilters = () => {
+		setFilters({
+			sort: null,
+			studyLevel: null,
+			status: null,
+			semester: null,
+			courseOpt: null,
+		})
+	}
+
+	// Считаем кол-во активных фильтров для бейджа
+	const activeFiltersCount = useMemo(() => {
+		return Object.values(filters).filter(v => v !== null && v !== undefined)
+			.length
+	}, [filters])
+
+	// Загрузка данных
+	const loadCourses = useCallback(async () => {
+		setLoading(true)
+		try {
+			const data = await fetchCoursesApi({
+				selectedSortFilter: filters.sort,
+				selectedSemester: filters.semester,
+				selectedStatus: filters.status,
+				selectedElvl: filters.studyLevel,
+				selectedCoursesOpt: filters.courseOpt,
+				sortingFilters: SORTING_FILTERS,
+				statusOptions: STATUS_OPTIONS,
+				studyLevelMap: STUDY_LEVELS,
+			})
+			setCourses(data || [])
+		} catch (err) {
+			console.error('Failed to fetch courses:', err)
+		} finally {
+			setLoading(false)
+		}
+	}, [filters])
+
+	// Триггерим загрузку при изменении фильтров
 	useEffect(() => {
-		const getAllTeacherCourses = async () => {
-			try {
-				const res = await GetAllCoursesForTeacher()
-				setCourses(res)
-			} catch (err) {}
-		}
-		const getAllStudentCourses = async () => {
-			try {
-				const res = await GetAllCoursesForStudent()
-				setCourses(res)
-			} catch (err) {}
-		}
-		const getAllAvailableCoursesForStudent = async () => {
-			try {
-				const res = await GetAllAvailableCoursesForStudent()
-				setCourses(res)
-			} catch (err) {}
-		}
-		if (userInfo?.role === 'teacher') {
-			getAllTeacherCourses()
-		} else if (userInfo?.role === 'student') {
-			if (type === 'all') {
-				getAllStudentCourses()
-			} else if (type === 'patched') {
-				getAllAvailableCoursesForStudent()
-			}
-		}
-	}, [userInfo, type])
+		loadCourses()
+	}, [loadCourses])
 
-	const handleScroll = e => {
-		const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
-
-		// Формула: полная высота контента минус прокрученная часть сверху
-		// должна быть равна видимой высоте экрана (с погрешностью в 5px)
-		const isAtBottom = scrollHeight - scrollTop <= clientHeight + 5
-
-		if (isAtBottom) {
-			setShowArrow(false)
-		} else {
-			setShowArrow(true)
-		}
-	}
-
-	const handleCourseClick = course => {
-		if (userInfo?.role === 'teacher') {
-			// Статусы, при которых преподаватель сразу переходит внутрь курса
-			const editableOrActiveStatuses = ['draft', 'rejected', 'approved']
-
-			if (editableOrActiveStatuses.includes(course.status)) {
-				navigate(`/course/${course.id}`)
-			} else {
-				// Для pending_review и rejected_preview открываем превью/модалку модерации
-				setSelectedCourse(course)
-			}
-		} else {
-			if (type === 'all') {
-				setSelectedCourse(course)
-			} else if (type === 'patched') {
-				navigate(`/course/${course.id}`)
-			}
-		}
-	}
-
-	const rowHeight = `h-125`
+	const rowHeight = 'h-125'
 
 	return (
 		<>
-			<Modal
-				width={'w-175'}
+			<CreateCourseModal
 				isOpen={isModalOpen}
-				onClose={() => {
-					setIsModalOpen(false)
-					setShowArrow(true)
-				}}
-			>
-				<h2 className='text-2xl font-medium text-[var(--black)] mb-5 text-center'>
-					Создание курса
-				</h2>
-				<div className='relative h-[70vh]'>
-					{/* Градиентный слой, который всегда "висит" вверху модалки */}
+				onClose={() => setIsModalOpen(false)}
+				onSuccess={loadCourses}
+			/>
 
-					<div className='pointer-events-none absolute top-0 left-0 right-0 h-10 bg-gradient-to-t to-[var(--white)] from-transparent' />
+			<div className='flex flex-col w-full gap-5 py-25 px-4'>
+				{/* Шапка с фильтрами */}
+				<div className='flex justify-end items-center relative'>
+					<div className='relative'>
+						<button
+							type='button'
+							onClick={() => setIsFilterOpen(prev => !prev)}
+							className='flex items-center gap-2 px-4 py-2 bg-[var(--white)] text-[var(--black)] rounded-lg shadow-[var(--shadow)] hover:bg-[var(--hero)] hover:text-white transition-all font-medium cursor-pointer'
+						>
+							<Filter className='w-5 h-5' />
+							<span>Фильтры</span>
+							{activeFiltersCount > 0 && (
+								<span className='ml-1 px-2 py-0.5 text-xs bg-[var(--hero)] text-white rounded-full font-bold'>
+									{activeFiltersCount}
+								</span>
+							)}
+						</button>
 
-					{/* Контентный блок со скроллом */}
-					<div
-						className='px-2 pt-6 pb-10 h-full overflow-y-scroll hide-scrollbar font'
-						onScroll={handleScroll}
-					>
-						<CreateCourseForm />
+						{/* Выпадающее окно фильтров */}
+						{isFilterOpen && (
+							<div className='absolute right-0 top-12 w-80 sm:w-96 p-4 bg-[var(--white)] rounded-xl shadow-[var(--shadow)] z-30 flex flex-col gap-3 text-sm'>
+								<div>
+									<label className='block text-xs font-semibold mb-1 text-gray-500'>
+										Уровень обучения
+									</label>
+									<FilterOptionInput
+										Options={STUDY_LEVELS}
+										placeholder='Все уровни'
+										value={filters.studyLevel}
+										onChange={val => updateFilter('studyLevel', val)}
+									/>
+								</div>
+
+								<div>
+									<label className='block text-xs font-semibold mb-1 text-gray-500'>
+										Статус
+									</label>
+									<FilterOptionInput
+										Options={STATUS_OPTIONS}
+										placeholder='Все статусы'
+										value={filters.status}
+										onChange={val => updateFilter('status', val)}
+									/>
+								</div>
+
+								<div>
+									<label className='block text-xs font-semibold mb-1 text-gray-500'>
+										Сортировка
+									</label>
+									<FilterOptionInput
+										Options={SORTING_FILTERS}
+										placeholder='По умолчанию'
+										value={filters.sort}
+										onChange={val => updateFilter('sort', val)}
+									/>
+								</div>
+
+								{/* Семестр */}
+								<div>
+									<label className='block text-xs font-semibold mb-1 text-gray-500'>
+										Семестр
+									</label>
+									<div className='grid grid-cols-2 gap-2'>
+										{SEMESTER_OPTIONS.map(sem => (
+											<button
+												key={sem.value}
+												type='button'
+												onClick={() =>
+													updateFilter(
+														'semester',
+														filters.semester === sem.value ? null : sem.value,
+													)
+												}
+												className={`py-1.5 px-3 rounded-md text-xs font-medium border transition-all cursor-pointer ${
+													filters.semester === sem.value
+														? 'bg-[var(--black)] text-white border-[var(--black)]'
+														: 'bg-transparent text-[var(--black)] border-gray-300 hover:border-gray-500'
+												}`}
+											>
+												{sem.title}
+											</button>
+										))}
+									</div>
+								</div>
+
+								{/* Курс обучения */}
+								<div>
+									<label className='block text-xs font-semibold mb-1 text-gray-500'>
+										Курс обучения
+									</label>
+									<div className='grid grid-cols-6 gap-1'>
+										{COURSE_YEAR_OPTIONS.map(c => (
+											<button
+												key={c.value}
+												type='button'
+												onClick={() =>
+													updateFilter(
+														'courseOpt',
+														filters.courseOpt === c.value ? null : c.value,
+													)
+												}
+												className={`py-1.5 rounded-md text-xs font-medium border transition-all cursor-pointer ${
+													filters.courseOpt === c.value
+														? 'bg-[var(--black)] text-white border-[var(--black)]'
+														: 'bg-transparent text-[var(--black)] border-gray-300 hover:border-gray-500'
+												}`}
+											>
+												{c.title}
+											</button>
+										))}
+									</div>
+								</div>
+
+								{/* Сброс фильтров */}
+								{activeFiltersCount > 0 && (
+									<button
+										type='button'
+										onClick={resetFilters}
+										className='mt-2 flex items-center justify-center gap-2 py-2 w-full bg-red-50 text-red-600 hover:bg-red-100 rounded-lg font-medium transition-all cursor-pointer'
+									>
+										<RotateCcw className='w-4 h-4' />
+										<span>Сбросить фильтры</span>
+									</button>
+								)}
+							</div>
+						)}
 					</div>
-
-					{/* Градиентный слой, который всегда "висит" внизу модалки */}
-					<div className='pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[var(--white)] to-transparent' />
-
-					{/* Стрелочка с динамическим классом видимости */}
-					<ArrowDown
-						className={`absolute bottom-2 text-[var(--black)] left-1/2 -translate-x-1/2 transition-opacity duration-300 pointer-events-none ${
-							showArrow ? 'opacity-50' : 'opacity-0'
-						}`}
-					/>
-				</div>
-			</Modal>
-			<div className='flex flex-col w-full gap-5 py-30'>
-				<div className='flex items-center gap-3'>
-					{options?.map(option => (
-						<RadioButton
-							key={option.value}
-							name='catalog-type'
-							value={option.value}
-							title={option.title}
-							icon={option.icon}
-							// Теперь checked железно сработает и на /catalog, и на /catalog/all
-							checked={type === option.value}
-							onChange={() => NavigateTo(option.to)}
-						/>
-					))}
 				</div>
 
-				<div
-					className={`grid 2xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-5 `}
-				>
-					{courses?.map((course, index) => (
+				{/* Сетка карточек */}
+				<div className='grid 2xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-5'>
+					{courses.map((course, index) => (
 						<motion.div
 							key={course.id}
 							initial={{ scale: 0.8, opacity: 0 }}
 							animate={{ scale: 1, opacity: 1 }}
 							transition={{
 								duration: 0.3,
-								delay: index * 0.1,
+								delay: index * 0.05,
 								ease: 'easeOut',
 							}}
 							className={rowHeight}
@@ -215,14 +284,15 @@ const Catalog = () => {
 							<CourseCard courseInfo={course} />
 						</motion.div>
 					))}
-					{userInfo?.role === 'teacher' && (
+
+					<Show when={role === 'teacher'}>
 						<motion.div
-							key={courses?.length + 1}
+							key='create-btn'
 							initial={{ scale: 0.8, opacity: 0 }}
 							animate={{ scale: 1, opacity: 1 }}
 							transition={{
 								duration: 0.3,
-								delay: courses?.length * 0.1,
+								delay: courses.length * 0.05,
 								ease: 'easeOut',
 							}}
 							className={rowHeight}
@@ -232,11 +302,10 @@ const Catalog = () => {
 								title='Создать новый курс'
 							/>
 						</motion.div>
-					)}
+					</Show>
 				</div>
 			</div>
 		</>
 	)
 }
-
 export default Catalog

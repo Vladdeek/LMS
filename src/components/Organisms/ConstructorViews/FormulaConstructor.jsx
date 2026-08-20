@@ -1,17 +1,14 @@
+import { MathJax, MathJaxContext } from 'better-react-mathjax'
 import {
 	Divide,
 	FunctionSquare,
 	Sigma,
 	SquareRadical,
 	Superscript,
-	X,
 } from 'lucide-react'
-import { useEffect, useState, useMemo, useCallback } from 'react'
-import { MathJax, MathJaxContext } from 'better-react-mathjax'
-import { InputDefault } from '../Inputs'
-import { RemoveButton } from './FileUploaderZone'
-// Импортируй свой InputDefault
-// import { InputDefault } from './ваша-путь-к-инпуту'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { RemoveButton } from '../../Atoms/Buttons/RemoveButton'
+import { Input } from '../../Molecules/InputFields/Input'
 
 const mathJaxConfig = {
 	loader: { load: ['input/tex', 'output/chtml'] },
@@ -115,7 +112,7 @@ export const Formula = ({
 						</div>
 
 						{/* Используем твой кастомный инпут */}
-						<InputDefault
+						<Input
 							placeholder='Введи формулу...'
 							value={formula}
 							onChange={e => setFormula(e.target.value)}

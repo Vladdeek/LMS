@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { InputBase } from '../atoms/InputBase'
+import { InputBase } from '../../Atoms/InputField/InputBase'
 
 export const MaskInput = ({
 	mask = 'XXX-XXX-XXX XX',

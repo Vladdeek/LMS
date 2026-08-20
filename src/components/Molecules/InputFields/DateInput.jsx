@@ -1,4 +1,4 @@
-import { InputBase } from '../atoms/InputBase'
+import { InputBase } from '../../Atoms/InputField/InputBase'
 
 export const DateInput = ({
 	value,
