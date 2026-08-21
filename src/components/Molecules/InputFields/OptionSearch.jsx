@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Show } from '../../Atoms/Show'
 
 export const OptionSearch = ({
 	options = [],
@@ -47,35 +48,20 @@ export const OptionSearch = ({
 					className='w-full bg-transparent outline-none'
 				/>
 			</div>
-
-			{isOpen && (
+			<Show when={isOpen}>
 				<div className='absolute w-full bg-[var(--white)] shadow-[var(--shadow)] rounded-2xl mt-1 max-h-35 overflow-y-scroll z-10'>
-					{filtered.length === 0 ? (
+					{filtered.map((item, i) => (
 						<button
+							key={i}
 							type='button'
-							onClick={() => {
-								onCreate?.(query)
-								setIsOpen(false)
-							}}
-							className='w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-[var(--hero)] hover:text-white'
+							onClick={() => handleSelect(item)}
+							className='w-full text-left px-3 py-2 hover:bg-[var(--hero)] hover:text-white'
 						>
-							<span className='text-lg'>+</span>
-							Создать "{query}"
+							{item[labelKey]}
 						</button>
-					) : (
-						filtered.map((item, i) => (
-							<button
-								key={i}
-								type='button'
-								onClick={() => handleSelect(item)}
-								className='w-full text-left px-3 py-2 hover:bg-[var(--hero)] hover:text-white'
-							>
-								{item[labelKey]}
-							</button>
-						))
-					)}
+					))}
 				</div>
-			)}
+			</Show>
 		</div>
 	)
 }

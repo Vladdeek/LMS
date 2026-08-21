@@ -12,6 +12,11 @@ import {
 import { ru } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { OptionSearch } from '../components/Molecules/InputFields/OptionSearch'
+import { useUser } from '../context/UserContext'
+import { fetchScheduleData } from '../api/Schedule'
+import { useTeacherSearch } from '../hooks/useTeacherSearch'
+import { Loader } from '../components/Atoms/Loaders/Loader'
+import { checkIsCurrentLesson } from '../utils/CheckIsCurrentLesson'
 
 const ScheduleCard = ({
 	lessonIndex,
@@ -164,6 +169,7 @@ const ScheduleHeader = ({
 							onSearch={setSearchTeachers}
 							Options={teachers}
 							onSelect={onClick}
+							onCreate={false}
 						/>
 					</div>
 				</div>
@@ -194,51 +200,6 @@ const ScheduleHeader = ({
 			</div>
 		</div>
 	)
-}
-
-// Общий хук для работы с логикой преподавателей (убирает дублирование стейтов)
-const useTeacherSearch = () => {
-	const [selected, setSelected] = useState(false)
-	const [teachers, setTeachers] = useState([])
-	const [searchTeachers, setSearchTeachers] = useState('')
-	const teachersDebounce = useRef(null)
-
-	useEffect(() => {
-		const loadTeachers = async () => {
-			try {
-				const data = await fetchTeachersList(searchTeachers)
-				setGlobalError(null)
-				setTeachers(data)
-			} catch (error) {
-				console.error(error)
-			}
-		}
-
-		if (searchTeachers === '') {
-			loadTeachers()
-			return
-		}
-
-		if (teachersDebounce.current) clearTimeout(teachersDebounce.current)
-		teachersDebounce.current = setTimeout(loadTeachers, 1500)
-
-		return () => clearTimeout(teachersDebounce.current)
-	}, [searchTeachers])
-
-	return { selected, setSelected, teachers, searchTeachers, setSearchTeachers }
-}
-
-// Функция проверки текущего урока
-const checkIsCurrentLesson = (lessonDate, lessonTime) => {
-	try {
-		const [hours, minutes] = lessonTime.split(':').map(Number)
-		const lessonStart = new Date(lessonDate)
-		lessonStart.setHours(hours, minutes, 0, 0)
-		const lessonEnd = new Date(lessonStart.getTime() + 90 * 60000)
-		return isWithinInterval(new Date(), { start: lessonStart, end: lessonEnd })
-	} catch {
-		return false
-	}
 }
 
 const ScheduleDesktop = ({
@@ -414,14 +375,14 @@ const SchedulePage = () => {
 	const [scheduleData, setScheduleData] = useState({})
 	const [allScheduleData, setAllScheduleData] = useState({})
 	const [loading, setLoading] = useState(false)
-	const [current_week, setCurrentWeek] = useState(0)
+	const [currentWeek, setCurrentWeek] = useState(0)
 	const [selected, setSelected] = useState(false)
 	const [teacher, setTeacher] = useState('')
 
 	const loadSchedule = async () => {
 		setLoading(true)
 		try {
-			const data = await fetchScheduleData(current_week, teacher, selected)
+			const data = await fetchScheduleData(currentWeek, teacher, selected)
 			setAllScheduleData(data)
 
 			const normalized = {}
@@ -487,7 +448,7 @@ const SchedulePage = () => {
 
 	useEffect(() => {
 		loadSchedule()
-	}, [current_week])
+	}, [currentWeek])
 
 	useEffect(() => {
 		if (!selected || (selected && teacher)) {
@@ -500,7 +461,7 @@ const SchedulePage = () => {
 		Offset: setCurrentWeek,
 		prev_active: allScheduleData?.has_prev,
 		next_active: allScheduleData?.has_next,
-		selectedOffset: current_week,
+		selectedOffset: currentWeek,
 		WeekNumber: allScheduleData?.current_week_number,
 		role,
 		onClick: setTeacher,
@@ -510,7 +471,7 @@ const SchedulePage = () => {
 	}
 
 	return (
-		<div className='flex flex-col gap-2 p-4 max-md:mb-20 md:min-h-[calc(100vh-100px)]'>
+		<div className='flex flex-col gap-2 px-4 py-20 max-md:mb-20 md:min-h-[calc(100vh-100px)]'>
 			{loading && (
 				<div className='fixed inset-0 flex items-center justify-center z-[9999]'>
 					<Loader />

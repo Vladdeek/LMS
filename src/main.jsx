@@ -42,10 +42,8 @@ function MainApp() {
 					{/* <Route path='/moderation-users' element={<ModerateUsers />} /> */}
 					<Route path='/schedule' element={<SchedulePage />} />
 
-					<Route
-						path='/moderation-courses/:type'
-						element={<ModerateCourses />}
-					/>
+					<Route path='/moderation-courses/' element={<ModerateCourses />} />
+					<Route path='/moderation-users/' element={<ModerateCourses />} />
 					<Route path='/profile' element={<Profile />} />
 					<Route path='/checking' element={<TaskChecking />} />
 				</Route>

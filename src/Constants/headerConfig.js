@@ -65,7 +65,12 @@ export const HEADER_CONFIG = [
 			{
 				title: 'Проверка курсов',
 				icon: ShieldAlert,
-				to: '/moderation',
+				to: '/moderation-courses/',
+			},
+			{
+				title: 'Пользователи',
+				icon: ShieldAlert,
+				to: '/moderation-users/',
 			},
 		],
 	},

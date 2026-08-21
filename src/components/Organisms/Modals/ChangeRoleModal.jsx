@@ -46,11 +46,11 @@ export const SelectRoleModal = ({ isOpen, onClose }) => {
 			const res = ChangeUserRoles(name, id)
 
 			if (name === 'moderator') {
-				navigate('/moderation')
+				navigate('/moderation-courses/')
 			} else if (name === 'student') {
-				navigate('/catalog')
+				navigate('/catalog/courses')
 			} else if (name === 'teacher') {
-				navigate('/catalog')
+				navigate('/catalog/courses')
 			}
 
 			if (res.data) {
