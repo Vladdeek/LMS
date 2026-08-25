@@ -5,7 +5,7 @@ import { ButtonCase } from '../../Atoms/Buttons/ButtonCase'
 export const ReviewConfirmModal = ({ isModalOpen, onClose }) => {
 	return (
 		<Modal width={'w-110'} isOpen={isModalOpen}>
-			<div className='flex flex-col gap-6 p-2'>
+			<div className='flex flex-col gap-6 p-2 w-full'>
 				<div className='flex flex-col items-center text-center gap-3'>
 					<div className='p-4 bg-[var(--transparent-hero)] rounded-full text-[var(--hero)]'>
 						<ShieldAlert size={40} />
@@ -19,8 +19,9 @@ export const ReviewConfirmModal = ({ isModalOpen, onClose }) => {
 					</p>
 				</div>
 
-				<div className='grid grid-cols-2 gap-4'>
+				<div className='flex items-center w-full gap-4'>
 					<ButtonCase
+						className='w-full flex items-center justify-center gap-3'
 						backgroundColor={'var(--green-base)'}
 						textColor={'var(--green-pale)'}
 						hoverStyles={'hover:bg-[var(--green-hover)]'}
@@ -30,6 +31,7 @@ export const ReviewConfirmModal = ({ isModalOpen, onClose }) => {
 						<span className='font-semibold'>Допустить</span>
 					</ButtonCase>
 					<ButtonCase
+						className='w-full flex items-center justify-center gap-3'
 						backgroundColor={'var(--red-base)'}
 						textColor={'var(--red-pale)'}
 						hoverStyles={'hover:bg-[var(--red-hover)]'}
@@ -41,6 +43,7 @@ export const ReviewConfirmModal = ({ isModalOpen, onClose }) => {
 				</div>
 
 				<ButtonCase
+					className='self-end'
 					backgroundColor={'transparent'}
 					textColor={'var(--middle)'}
 					hoverStyles={'hover:bg-[var(--light-middle)]'}

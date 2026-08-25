@@ -1,7 +1,8 @@
 import Modal from '../../Atoms/Modal'
 import { ScrollFadeContainer } from '../../Atoms/ScrollFadeContainer'
 import { Text } from '../../Atoms/Text'
-import { CreateWebinarForm } from '../Forms/CreateWebinarForm/CreateWebinarForm'
+
+import { WebinarForm } from '../Forms/WebinarForm'
 
 export const CreateWebinarModal = ({
 	isOpen,
@@ -16,13 +17,13 @@ export const CreateWebinarModal = ({
 				size={'2xl'}
 				font={'medium'}
 				style={'primary'}
-				className={'mb-5 text-center'}
+				className={'text-center'}
 			>
 				{editmode
 					? 'Редактирование видео-конференции'
 					: 'Создание видео-конференции'}
 			</Text>
-			<CreateWebinarForm
+			<WebinarForm
 				isOpen={isOpen}
 				onClose={onClose}
 				editmode={editmode}

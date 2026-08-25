@@ -3,6 +3,7 @@ import { RemoveButton } from '../../Atoms/Buttons/RemoveButton'
 import { VideoPlayer } from '../VideoPlayer'
 import { FileUploaderZone } from './FileUploaderZone'
 import { X } from 'lucide-react'
+import { Show } from '../../Atoms/Show'
 
 export const VideoImport = ({
 	onStatusChange,
@@ -72,7 +73,9 @@ export const VideoImport = ({
 	return (
 		<div className='flex gap-4 w-full items-start'>
 			{/* Кнопка удаления всего компонента из списка конструктора */}
-			{isEdit && <RemoveButton onDelete={onDelete} />}
+			<Show when={isEdit}>
+				<RemoveButton onDelete={onDelete} />
+			</Show>
 
 			<div className='flex justify-center w-full min-h-[350px]'>
 				{videoUrl ? (
@@ -91,7 +94,7 @@ export const VideoImport = ({
 						</button>
 					</div>
 				) : (
-					isEdit && (
+					<Show when={isEdit}>
 						<FileUploaderZone
 							sectionId={sectionId}
 							type='video'
@@ -100,7 +103,7 @@ export const VideoImport = ({
 							uploadProgress={progress}
 							onChange={onChange}
 						/>
-					)
+					</Show>
 				)}
 			</div>
 		</div>

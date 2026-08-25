@@ -34,8 +34,6 @@ export const CourseCard = ({ courseInfo }) => {
 		},
 	}
 
-	console.log(courseInfo)
-
 	const currentStatus = statusConfig[course_status]
 
 	return (

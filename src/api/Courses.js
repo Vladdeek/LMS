@@ -71,6 +71,29 @@ export const fetchDisciplinesRequest = async (year, semester) => {
 
 // Создание курса
 // Создание курса
+export const updateCourseRequest = async payload => {
+	const formData = new FormData()
+
+	// Наполнение FormData элементами из payload
+	Object.keys(payload).forEach(key => {
+		if (payload[key] !== undefined && payload[key] !== null) {
+			// Если передается массив или файл
+			if (Array.isArray(payload[key])) {
+				payload[key].forEach(item => formData.append(key, item))
+			} else {
+				formData.append(key, payload[key])
+			}
+		}
+	})
+
+	const response = await api.put(`${API_URL}/courses/`, formData, {
+		headers: {
+			'Content-Type': 'multipart/form-data',
+		},
+	})
+
+	return response.data
+}
 export const createCourseRequest = async payload => {
 	const formData = new FormData()
 
@@ -92,5 +115,10 @@ export const createCourseRequest = async payload => {
 		},
 	})
 
+	return response.data
+}
+
+export const deleteCourse = async courseId => {
+	const response = await api.delete(`${API_URL}/course/delete/${courseId}`)
 	return response.data
 }

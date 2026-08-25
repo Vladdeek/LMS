@@ -3,14 +3,13 @@ import { useUser } from '../context/UserContext'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Modal from '../components/Atoms/Modal'
-import { CreateCourseForm } from '../components/Organisms/Forms/CreateCourseForm'
 import { RadioGroup } from '../components/Molecules/RadioGroup'
 import { CourseCard } from '../components/Organisms/Cards/CourseCard'
 import { motion } from 'framer-motion'
-import { CreateCourseModal } from '../components/Organisms/Modals/CreateCourseModal'
 import { Show } from '../components/Atoms/Show'
 import { fetchCoursesApi } from '../api/Courses'
 import { FilterOptionInput } from '../components/Molecules/InputFields/FilterOptionInput'
+import { CourseModal } from '../components/Organisms/Modals/CourseModal'
 
 const CreateBtn = ({ onClick, title }) => {
 	return (
@@ -128,15 +127,20 @@ const Catalog = () => {
 		loadCourses()
 	}, [loadCourses])
 
+	useEffect(() => {
+		const handleReload = () => {
+			loadCourses()
+		}
+
+		window.addEventListener('courses:updated', handleReload)
+		return () => window.removeEventListener('courses:updated', handleReload)
+	}, [loadCourses])
+
 	const rowHeight = 'h-125'
 
 	return (
 		<>
-			<CreateCourseModal
-				isOpen={isModalOpen}
-				onClose={() => setIsModalOpen(false)}
-				onSuccess={loadCourses}
-			/>
+			<CourseModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
 			<div className='flex flex-col w-full gap-5 py-25 px-4'>
 				{/* Шапка с фильтрами */}

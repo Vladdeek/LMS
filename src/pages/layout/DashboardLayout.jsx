@@ -12,6 +12,7 @@ import {
 import { Header } from '../../components/Organisms/Header'
 import { useUser } from '../../context/UserContext'
 import { HEADER_CONFIG } from '../../Constants/headerConfig'
+import Footer from '../../components/Organisms/Footer'
 
 export default function DashboardLayout({ onChange }) {
 	const location = useLocation()
@@ -21,14 +22,12 @@ export default function DashboardLayout({ onChange }) {
 	const links = HEADER_CONFIG[0][role]
 
 	return (
-		<>
-			<div className='md:mx-10 mx-2 relative'>
+		<div className='min-h-screen flex flex-col'>
+			<main className='md:mx-10 mx-2 relative flex-1'>
 				<Header links={links} />
 				<Outlet />
-			</div>
-			{/* <div className='md:hidden'>
-				<MobileMenuBar links={HeaderButtonInfo} />
-			</div> */}
-		</>
+			</main>
+			<Footer />
+		</div>
 	)
 }

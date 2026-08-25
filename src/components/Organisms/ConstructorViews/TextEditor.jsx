@@ -25,10 +25,13 @@ import {
 	AlignRight,
 } from 'lucide-react'
 import { RemoveButton } from '../../Atoms/Buttons/RemoveButton'
+import { Show } from '../../Atoms/Show'
 
 export const TextEditor = ({ data, onDelete, onChange, isEdit = false }) => {
 	// Храним строку последнего состояния, чтобы избежать бесконечного рендера при синхронизации
 	const lastExternalDataRef = useRef(data)
+
+	console.log('textData: ', data)
 
 	// Парсер стал тупым как пробка: если строка — парсим, если объект — отдаем как есть
 	const parseContent = incomingData => {
@@ -122,10 +125,12 @@ export const TextEditor = ({ data, onDelete, onChange, isEdit = false }) => {
 
 	return (
 		<div className={`flex gap-4 ${!isEdit ? 'w-full' : ''}`}>
-			{isEdit && <RemoveButton onDelete={onDelete} />}
+			<Show when={isEdit}>
+				<RemoveButton onDelete={onDelete} />
+			</Show>
 
 			<div className='w-full flex flex-col'>
-				{isEdit && (
+				<Show when={isEdit}>
 					<div className='flex flex-wrap gap-1 mb-2 bg-[var(--white)] shadow-[var(--shadow)] p-1.5 rounded-xl w-fit'>
 						<ToolbarButton
 							onClick={() => editor.chain().focus().toggleBold().run()}
@@ -177,7 +182,7 @@ export const TextEditor = ({ data, onDelete, onChange, isEdit = false }) => {
 							icon={AlignRight}
 						/>
 					</div>
-				)}
+				</Show>
 
 				<div className='w-full'>
 					<style>

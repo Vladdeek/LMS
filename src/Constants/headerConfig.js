@@ -67,11 +67,11 @@ export const HEADER_CONFIG = [
 				icon: ShieldAlert,
 				to: '/moderation-courses/',
 			},
-			{
-				title: 'Пользователи',
-				icon: ShieldAlert,
-				to: '/moderation-users/',
-			},
+			// {
+			// 	title: 'Пользователи',
+			// 	icon: ShieldAlert,
+			// 	to: '/moderation-users/',
+			// },
 		],
 	},
 ]

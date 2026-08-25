@@ -1,117 +1,202 @@
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useCallback, useEffect, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import {
+	ArrowLeft,
+	BookOpen,
+	CheckCircle2,
+	Edit3,
+	ShieldAlert,
+	XCircle,
+} from 'lucide-react'
+
+import { motion } from 'framer-motion'
+
+import Modal from '../../components/Atoms/Modal'
+import ResponsiveSidebar from '../../components/Molecules/ResponsiveSidebar'
 import { CourseMiniCard } from '../../components/Organisms/Cards/CourseMiniCard'
 import { BasicPagination } from '../../components/Molecules/Pagination'
 import { SubmitButton } from '../../components/Atoms/Buttons/SubmitButton'
-import { ArrowLeft } from 'lucide-react'
-import { CourseForm } from '../../components/Organisms/Forms/CourseForm'
+import { getModerationCourses } from '../../api/moderator/Courses'
+import { ButtonCase } from '../../components/Atoms/Buttons/ButtonCase'
+import { ModeratorCourseForm } from '../../components/Organisms/Forms/ModeratorCourseForm'
+
+const formatDate = dateString => (dateString ? dateString.split('T')[0] : '')
 
 const ModerateCourses = () => {
+	const [pagesCount, setPagesCount] = useState(1)
+	const [isOpen, setIsOpen] = useState(false)
+	const [isModalOpen, setIsModalOpen] = useState(false)
+
 	const navigate = useNavigate()
-	const { type } = useParams() // Получаем 'admit' или 'release' из URL
+
 	const [searchParams, setSearchParams] = useSearchParams()
 	const activeCourseId = searchParams.get('course_id')
 
 	const [page, setPage] = useState(1)
 	const [courses, setCourses] = useState([])
 
-	// Маппинг для удобной работы с индексами ToggleButton
-	const types = ['pending_review', 'draft']
-	const selected = types.indexOf(type) !== -1 ? types.indexOf(type) : 0
+	const [isEdit, setIsEdit] = useState(false)
 
-	const handleSelectChange = index => {
-		// При смене таба меняем URL. course_id пока сбрасываем или оставляем по логике.
-		const newType = types[index]
-		navigate(`/moderation-courses/${newType}`)
+	const clearParams = () => {
+		setSearchParams({})
 	}
 
 	const handleCourseClick = id => {
-		// Пример добавления query-параметра при клике на курс
+		setIsEdit(false)
 		setSearchParams({ course_id: id })
 	}
 
-	useEffect(() => {
-		// Если зашли просто по базовому адресу, редиректим на 'admit'
-		if (!type) {
-			navigate('/moderation-courses/pending_review', { replace: true })
+	const options = [
+		{ value: 'pending', title: 'На рассмотрении' },
+		{ value: 'all', title: 'все' },
+	]
+
+	const [activeStatus, setActiveStatus] = useState('pending')
+	const [courseStatus, setCourseStatus] = useState(null)
+
+	const fetchCourses = async () => {
+		console.log('getCourses!')
+		try {
+			const res = await getModerationCourses(activeStatus === 'all', page)
+			setPagesCount(res.pages)
+			setCourses(res.items)
+		} catch (err) {
+			console.error(err)
 		}
-	}, [type, navigate])
+	}
 
 	useEffect(() => {
-		const getModerateCourses = async () => {
-			try {
-				// Здесь можно передавать selected или type в API
-				const res = await GetModerationCourses(type)
-				setCourses(res)
-			} catch (err) {}
+		fetchCourses()
+	}, [activeStatus, page])
+
+	const accessCourse = async status => {
+		try {
+			await ChangeStatus(activeCourseId, status)
+			setIsModalOpen(false)
+			clearParams()
+			fetchCourses() // Обновляем список курсов в сайдбаре после модерации
+		} catch (err) {
+			console.error(err)
 		}
-		getModerateCourses()
-	}, [type]) // Перезагружаем данные при смене типа в URL
+	}
 
 	return (
 		<>
-			<div className='grid grid-cols-[500px_1fr] h-screen gap-6 pt-30 pb-10 '>
-				<div className='flex flex-col gap-5'>
-					<div className='w-full h-full bg-[var(--white)] shadow-lg rounded-3xl p-4 flex flex-col justify-between'>
-						<div className='flex items-center gap-3 mb-3'>
-							<h2 className='text-xl font-bold text-[var(--black)]'>Курсы</h2>
-						</div>
-
+			<div className='lg:grid grid-cols-[400px_1fr] h-screen gap-6 lg:pl-0 pl-18 pt-25 bg-[var(--light-gray)]/30'>
+				<ResponsiveSidebar
+					title='Курсы на проверку'
+					triggerTitle='Курсы'
+					triggerIcon={BookOpen}
+					isOpen={isOpen}
+					setIsOpen={setIsOpen}
+				>
+					<div className='flex flex-col justify-between h-full overflow-hidden'>
+						{/* <div className='flex gap-1'>
+							{options?.map(option => (
+								<RadioButton
+									key={option.value}
+									name='catalog-type'
+									value={option.value}
+									title={option.title}
+									icon={option.icon}
+									checked={activeStatus === option.value}
+									onChange={() => {
+										setActiveStatus(option.value)
+									}}
+									wfull
+									fill
+								/>
+							))}
+						</div> */}
 						<div className='flex flex-col gap-3 h-full overflow-y-auto p-2'>
-							{/* Пример списка курсов */}
-							{courses?.map(course => (
+							{courses?.map((course, index) => (
 								<motion.div
+									key={course.id || index}
 									initial={{ scale: 0.9, opacity: 0 }}
 									animate={{ scale: 1, opacity: 1 }}
-									transition={{
-										duration: 0.125,
-										ease: 'easeOut',
-									}}
+									transition={{ duration: 0.125, ease: 'easeOut' }}
 								>
 									<CourseMiniCard
 										data={course}
 										onClick={() => {
 											handleCourseClick(course.id)
+											setIsOpen(false)
 										}}
 									/>
 								</motion.div>
 							))}
 						</div>
-
-						<BasicPagination
-							count={1}
-							page={page}
-							onPageChange={setPage}
-							siblingCount={0}
-						/>
+						<div className='pt-4 mt-auto shrink-0'>
+							<BasicPagination
+								count={pagesCount}
+								page={page}
+								onPageChange={setPage}
+								siblingCount={0}
+							/>
+						</div>
 					</div>
-				</div>
+				</ResponsiveSidebar>
 
 				{/* Основной контент */}
-				<div className='w-full h-full bg-[var(--white)] shadow-lg rounded-3xl p-4'>
+				<div className='w-full h-full bg-[var(--white)] overflow-y-auto shadow-lg rounded-t-3xl border-t border-x border-[var(--light-middle)]/10 p-6 relative'>
 					{!activeCourseId ? (
 						<div className='flex items-center justify-center w-full h-full'>
-							<p className='text-[var(--middle)] font-light text-2xl'>
-								Курс для модерации не выбран
+							<p className='text-[var(--middle)] font-light text-xl'>
+								Выберите курс из списка для проведения модерации
 							</p>
 						</div>
 					) : (
-						<div className='flex flex-col gap-5 h-full w-full'>
-							<div className='flex items-start w-full justify-between'>
-								<SubmitButton
-									className={'p-3 w-fit aspect-square'}
-									onClick={() => {
-										clearParams()
-									}}
+						<div className='flex flex-col gap-6 h-full w-full'>
+							{/* ВЕРХНЯЯ ПАНЕЛЬ: Навигация и Редактирование */}
+							<div className='flex items-center w-full justify-between border-b border-[var(--light-middle)]/10 pb-4 shrink-0'>
+								<ButtonCase
+									onClick={clearParams}
+									backgroundColor='var(--white)'
+									textColor='var(--black)'
+									hoverStyles='hover:bg-[var(--hero)] hover:text-white'
 								>
-									<ArrowLeft className='text-[var(--black)]' />
-								</SubmitButton>
+									<ArrowLeft className='text-[var(--black)]' size={20} />
+								</ButtonCase>
+
+								<div className='flex gap-3'>
+									<ButtonCase
+										onClick={() => setIsEdit(prev => !prev)}
+										backgroundColor={isEdit ? 'var(--hero)' : 'var(--white)'}
+										textColor={isEdit ? 'white' : 'var(--black)'}
+										hoverStyles='hover:bg-[var(--hero)] hover:text-white'
+										className={'px-5 py-2.5 text-sm flex items-center'}
+									>
+										{isEdit ? (
+											<>
+												<Edit3 size={16} />
+												Редактирование
+											</>
+										) : (
+											<>
+												<Edit3 size={16} />
+												Редактировать
+											</>
+										)}
+									</ButtonCase>
+
+									{courseStatus === 'pending_review' && (
+										<SubmitButton
+											width='px-6 py-2.5 text-sm flex items-center'
+											onClick={() => setIsModalOpen(true)}
+										>
+											<ShieldAlert size={16} />
+											Рецензировать
+										</SubmitButton>
+									)}
+								</div>
 							</div>
 
-							<CourseForm
-								courseId={activeCourseId}
-								onChange={data => {
-									handleUserClick(data)
+							{/* Сама анкета данных курса */}
+							<ModeratorCourseForm
+								isEdit={isEdit}
+								onIsEditChange={data => {
+									setIsEdit(data)
+									fetchCourses()
 								}}
 							/>
 						</div>
@@ -121,4 +206,5 @@ const ModerateCourses = () => {
 		</>
 	)
 }
+
 export default ModerateCourses

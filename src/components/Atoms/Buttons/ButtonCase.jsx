@@ -15,9 +15,11 @@ export const ButtonCase = ({
 	textColor = 'var(--white)',
 	hoverStyles = 'hover:bg-[var(--hero)] hover:text-white',
 	className = 'w-fit gap-3 ',
+	type = 'button',
 }) => {
 	return (
 		<button
+			type={type}
 			disabled={disabled}
 			onClick={onClick}
 			style={{ backgroundColor: backgroundColor, color: textColor }}

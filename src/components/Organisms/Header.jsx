@@ -25,6 +25,8 @@ import { SelectRoleModal } from './Modals/ChangeRoleModal'
 import { BurgerButton } from '../Atoms/Buttons/BurgerButton'
 import { MobileMenuDrawer } from './MobileMenuDrawler'
 import { HeaderButton } from '../Atoms/Buttons/HeaderButton'
+import { Logout } from '../../api/Authorization'
+import { toast } from 'sonner'
 
 const GradientIcon = ({ Icon, id, palette, size = '125%' }) => (
 	<svg width={size} height={size} className='rotate-y-180' viewBox='0 0 24 24'>
@@ -225,11 +227,11 @@ export const Header = ({ links = [], onChangeRole }) => {
 
 	const handleLogout = async () => {
 		try {
-			// await Logout()
-		} catch (err) {
-			console.error(err)
-		} finally {
+			await Logout()
 			navigate('/authorization')
+		} catch (err) {
+			console.error('Logout error:', err)
+			toast.error('Ошибка при выходе из аккаунта.')
 		}
 	}
 

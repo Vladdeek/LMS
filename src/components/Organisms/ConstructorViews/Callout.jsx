@@ -10,8 +10,9 @@ import {
 	Siren,
 	X,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { RemoveButton } from '../../Atoms/Buttons/RemoveButton'
+import { Show } from '../../Atoms/Show'
 
 export const Callout = ({
 	isEdit = false,
@@ -108,8 +109,7 @@ export const Callout = ({
 				>
 					{currentIconObj?.icon}
 				</button>
-
-				{isOpen && (
+				<Show when={isOpen}>
 					<div className='absolute top-full left-0 mt-2 z-10 grid grid-cols-3 gap-1 p-2 rounded-xl bg-[var(--white)] shadow-[var(--shadow)] min-w-max'>
 						{icons.map(item => (
 							<button
@@ -125,8 +125,7 @@ export const Callout = ({
 							</button>
 						))}
 					</div>
-				)}
-
+				</Show>
 				<div className='flex flex-col w-full gap-3 h-30'>
 					<input
 						type='text'

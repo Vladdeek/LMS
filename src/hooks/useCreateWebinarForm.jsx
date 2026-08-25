@@ -13,9 +13,8 @@ export const useCreateWebinarForm = ({
 	editmode,
 }) => {
 	const [editMode, setEditMode] = useState(false)
-	const [step, setStep] = useState(1)
 
-	// Form fields
+	// Поля формы
 	const [title, setTitle] = useState('')
 	const [url, setUrl] = useState('')
 	const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
@@ -23,7 +22,7 @@ export const useCreateWebinarForm = ({
 	const [etime, setETime] = useState('')
 	const [img, setImg] = useState(null)
 
-	// Access and Groups
+	// Доступ и Группы
 	const [selectedAccess, setSelectedAccess] = useState(1)
 	const [searchGroups, setSearchGroups] = useState('')
 	const [linkedGroups, setLinkedGroups] = useState([])
@@ -31,7 +30,7 @@ export const useCreateWebinarForm = ({
 	const [page, setPage] = useState(1)
 	const [isLoading, setIsLoading] = useState(false)
 
-	// Form Validations
+	// Валидация
 	const isFormValid = title.trim() !== '' && url.trim() !== ''
 	const isStartDTValid = Boolean(stime)
 	const isAccessValid =
@@ -53,40 +52,31 @@ export const useCreateWebinarForm = ({
 		setPage(1)
 	}
 
-	// Initialize edit/create mode state
+	// Инициализация данных при открытии / изменении режимов
 	useEffect(() => {
 		if (isOpen) {
 			if (editmode && takeinfo) {
 				setEditMode(true)
-				setStep(1) // Переход на шаги
 				setTitle(takeinfo.name || '')
 				setUrl(takeinfo.link_url || '')
 				setLinkedGroups(takeinfo.linked_groups || [])
 				setSelectedAccess(takeinfo.webinar_access === 'restricted' ? 2 : 1)
 			} else {
 				setEditMode(false)
-				setStep(1)
 				resetForm()
 			}
 		}
 	}, [editmode, takeinfo, isOpen])
 
-	// Clear groups if access level changed to public
+	// Авто-загрузка непривязанных групп при поиске / смене страницы
 	useEffect(() => {
-		if (step === 3 && selectedAccess === 1) {
-			setLinkedGroups([])
-		}
-	}, [selectedAccess, step])
-
-	// Fetch groups with debounce
-	useEffect(() => {
-		if (step === 3) {
+		if (isOpen) {
 			const timer = setTimeout(() => {
 				fetchUnlinkedGroups(searchGroups)
 			}, 500)
 			return () => clearTimeout(timer)
 		}
-	}, [searchGroups, page, step])
+	}, [searchGroups, page, isOpen])
 
 	const fetchUnlinkedGroups = async (term = '') => {
 		setIsLoading(true)
@@ -105,6 +95,7 @@ export const useCreateWebinarForm = ({
 		}
 	}
 
+	// Логика перекидывания групп между списками
 	const handleAddGroup = id => {
 		const group = unlinkedGroups?.items?.find(g => g.id === id)
 		if (!group) return
@@ -125,6 +116,7 @@ export const useCreateWebinarForm = ({
 		}))
 	}
 
+	// Сборка FormData для API
 	const buildFormData = () => {
 		const formData = new FormData()
 		formData.append('name', title)
@@ -146,6 +138,7 @@ export const useCreateWebinarForm = ({
 		return { formData, linkedGroupIds }
 	}
 
+	// Сабмит формы
 	const handleSubmit = async e => {
 		e.preventDefault()
 		const { formData, linkedGroupIds } = buildFormData()
@@ -159,8 +152,8 @@ export const useCreateWebinarForm = ({
 				resData = await createWebinar(formData)
 			}
 
-			onCreate(resData)
-			onClose()
+			if (onCreate) onCreate(resData)
+			if (onClose) onClose()
 			resetForm()
 		} catch (error) {
 			console.error('Ошибка сервера при сохранении вебинара:', error)
@@ -170,7 +163,6 @@ export const useCreateWebinarForm = ({
 	return {
 		state: {
 			editMode,
-			step,
 			title,
 			url,
 			date,
@@ -187,7 +179,6 @@ export const useCreateWebinarForm = ({
 			isSubmitDisabled,
 		},
 		actions: {
-			setStep,
 			setTitle,
 			setUrl,
 			setDate,

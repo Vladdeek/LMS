@@ -9,3 +9,7 @@ export const Login = async data => {
 	const res = await api.post(`${API_URL}/auth/jwt/login`, data)
 	return res
 }
+
+export const Logout = async () => {
+	await api.post(`${API_URL}/auth/jwt/logout`)
+}

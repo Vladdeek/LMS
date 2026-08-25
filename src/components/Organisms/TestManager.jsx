@@ -4,8 +4,9 @@ import { TestHeader } from '../Molecules/TestHeader'
 import { TestingScore } from './TestingScore'
 import { StartTestingButton } from '../Atoms/Buttons/StartTestingButton'
 import { TestView } from './TestView'
+import { getQuestions } from '../../api/CourseService'
 
-export const TestManager = ({}) => {
+export const TestManager = ({ isEdit }) => {
 	const [searchParams] = useSearchParams() // Достаем хук
 	const activeQuestionId = searchParams.get('questionId')
 	const activeSection = searchParams.get('section')
@@ -36,9 +37,9 @@ export const TestManager = ({}) => {
 	}
 
 	useEffect(() => {
-		const getQuestions = async () => {
+		const fetchQuestions = async () => {
 			try {
-				const res = await GetQuestions(activeSection)
+				const res = await getQuestions(activeSection)
 				return res.time_limit
 			} catch (err) {
 				console.log(err)
@@ -70,9 +71,7 @@ export const TestManager = ({}) => {
 		}
 	}, [sessionIsStart, timeLeft, role])
 
-	console.log(accessToTheTest)
-
-	console.log(activeQuestionId)
+	console.log(isEdit)
 
 	return (
 		<>
@@ -81,10 +80,10 @@ export const TestManager = ({}) => {
 					{sessionIsStart ? (
 						accessToTheTest ? (
 							<>
-								<TestHeader timeLeft={timeLeft} isEdit={role === 'teacher'} />
+								<TestHeader timeLeft={timeLeft} isEdit={role !== 'student'} />
 								{activeQuestionId ? (
 									<>
-										<TestView role={role} isEdit={role === 'teacher'} />
+										<TestView role={role} isEdit={role !== 'student'} />
 									</>
 								) : (
 									<div className='flex justify-center items-center w-full h-full text-center text-[var(--middle)] font-medium'>
@@ -106,10 +105,10 @@ export const TestManager = ({}) => {
 				</>
 			) : (
 				<>
-					<TestHeader timeLeft={timeLeft} isEdit={role === 'teacher'} />
+					<TestHeader timeLeft={timeLeft} isEdit={role !== 'student'} />
 					{activeQuestionId ? (
 						<>
-							<TestView role={role} isEdit={role === 'teacher'} />
+							<TestView role={role} isEdit={role !== 'student'} />
 						</>
 					) : (
 						<div className='flex justify-center items-center w-full h-full text-center text-[var(--middle)] font-medium'>

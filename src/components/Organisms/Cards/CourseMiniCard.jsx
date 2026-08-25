@@ -1,4 +1,5 @@
 import { ImageOff, RussianRuble } from 'lucide-react'
+import { MEDIA_API_URL } from '../../../API'
 
 export const CourseMiniCard = ({ data, onClick }) => {
 	const formatDate = dateStr => {
@@ -16,7 +17,7 @@ export const CourseMiniCard = ({ data, onClick }) => {
 			<div className='relative shrink-0'>
 				<img
 					className='rounded-2xl w-28 h-28 object-cover'
-					src={data.preview_url}
+					src={`${MEDIA_API_URL}${data.image_url}`}
 					alt={data.name}
 				/>
 				{data.student_request_count
@@ -37,7 +38,7 @@ export const CourseMiniCard = ({ data, onClick }) => {
 				<div>
 					<div className='flex justify-between items-start gap-2'>
 						<p
-							className='text-lg font-bold h-12 text-[var(--black)]'
+							className='text-lg font-bold h-12 line-clamp-2 leading-snug text-[var(--black)]'
 							title={data.name}
 						>
 							{data.name}
@@ -47,27 +48,23 @@ export const CourseMiniCard = ({ data, onClick }) => {
 
 				<div className='flex justify-between items-center mt-3 pt-2 border-t border-[var(--light-middle)]/50'>
 					<div className='flex gap-3 items-center'>
-						{data.creator?.avatar_url ? (
+						{data?.teacher_profile_personal_data?.photo ? (
 							<img
 								className='rounded-lg w-6 h-6 object-cover bg-gray-100'
-								src={data.creator?.avatar_url}
+								src={`${data.creator?.avatar_url}`}
 								alt='author'
 							/>
 						) : (
 							<ImageOff className='w-6 h-6 p-1 text-[var(--middle)] bg-gray-100 rounded-lg' />
 						)}
-						<p className='text-xs text-[var(--middle)] truncate'>
-							{data?.creator?.first_name} {data?.creator?.last_name[0]}.{' '}
+						<p
+							title={`${data?.teacher_profile_personal_data?.last_name + ' ' + data?.teacher_profile_personal_data?.first_name + ' ' + data?.teacher_profile_personal_data?.middle_name} 
+							`}
+							className='text-xs text-[var(--middle)] truncate'
+						>
+							{data?.teacher_profile_personal_data?.last_name}{' '}
+							{data?.teacher_profile_personal_data?.first_name[0]}.{' '}
 						</p>
-					</div>
-
-					<div className='flex items-center gap-0.5 text-[var(--hero)] font-semibold'>
-						<span className='text-md'>
-							{data.is_free
-								? 'Бесплатно'
-								: Math.round(data.price).toLocaleString()}
-						</span>
-						{!data.is_free && <RussianRuble size={14} strokeWidth={3.5} />}
 					</div>
 				</div>
 			</div>

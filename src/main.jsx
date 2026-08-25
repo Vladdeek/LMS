@@ -22,13 +22,14 @@ import { Toaster } from 'sonner'
 import Authorization from './pages/Authorization'
 import DashboardLayout from './pages/layout/DashboardLayout'
 import Catalog from './pages/Сatalog'
-import CoursePage from './pages/CoursePage'
+
 import SchedulePage from './pages/Schedule'
 import ModerateCourses from './pages/Moderator/ModerateCourses'
 import Profile from './pages/Profile'
 import TaskChecking from './pages/TaskChecking'
 import { UserProvider } from './context/UserContext'
 import WebinarsCatalog from './pages/WebinarsСatalog'
+import CoursePage from './pages/CoursePageСopy'
 
 function MainApp() {
 	return (

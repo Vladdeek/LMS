@@ -14,5 +14,3 @@ if (!config[env]) {
 	throw new Error(`Неизвестное окружение: ${env}`)
 }
 export const { API_URL, MEDIA_API_URL } = config[env]
-
-//====================== Axios API Error Context ===========================//

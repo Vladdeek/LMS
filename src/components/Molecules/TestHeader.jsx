@@ -33,9 +33,9 @@ export const TestHeader = ({ isEdit }) => {
 		}
 	}
 
-	const addQuestion = async () => {
+	const createQuestion = async () => {
 		try {
-			const res = await AddQuestion(activeSection)
+			const res = await addQ(activeSection)
 			if (res) {
 				handleBlockClick(res.question_id)
 			}

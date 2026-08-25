@@ -1,32 +1,35 @@
-import { FileCode2, FileText, Film, Image } from 'lucide-react'
+import { AudioLines, FileCode2, FileText, Film, Image } from 'lucide-react'
 import { languageMap } from './lanaguagesMap'
 
 export const UPLOAD_TYPES = {
 	video: {
 		icon: Film,
 		title: 'видео',
-		maxSize: Number(import.meta.env.VITE_MAX_VIDEO_SIZE), // Значение из env
+		maxSize: 50,
 		exts: ['.mp4', '.webm', '.mov', '.avi'],
+	},
+	audio: {
+		icon: AudioLines,
+		title: 'Аудио',
+		maxSize: 10,
+		exts: ['.mp3', '.wav'],
 	},
 	image: {
 		icon: Image,
 		title: 'изображение',
-		maxSize: Number(import.meta.env.VITE_MAX_IMAGE_SIZE),
+		maxSize: 25,
 		exts: ['.jpg', '.jpeg', '.png', '.webp'],
 	},
 	files: {
 		icon: FileText,
 		title: 'файл',
-		maxSize: Number(import.meta.env.VITE_MAX_TOTAL_FILES_SIZE),
+		maxSize: 50,
 		exts: ['.pdf', '.zip', '.rar', '.docx'],
 	},
 	code: {
 		icon: FileCode2, // из lucide-react
 		title: 'код',
-		maxSize: Number(import.meta.env.VITE_MAX_CODE_SIZE), // или из констант
-		// ВЫТАСКИВАЕМ ДИНАМИЧЕСКИ:
-		// Object.keys(languageMap) выдаст ['js', 'mjs', 'jsx', ...]
-		// .map(ext => `.${ext}`) превратит их в ['.js', '.mjs', '.jsx', ...]
+		maxSize: 10, // или из констант
 		exts: Object.keys(languageMap).map(ext => `.${ext}`),
 	},
 }

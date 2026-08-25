@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { RemoveButton } from '../../Atoms/Buttons/RemoveButton'
 import { Copy, Trash } from 'lucide-react'
-import { CodeBlock } from 'react-code-blocks'
+import { a11yDark, CodeBlock, github } from 'react-code-blocks'
 import { FileUploaderZone } from './FileUploaderZone'
 import { languageMap } from '../../../Constants/lanaguagesMap'
+import { Show } from '../../Atoms/Show'
 
 export const CodeUploader = ({
 	isEdit = true,
@@ -115,7 +116,9 @@ export const CodeUploader = ({
 
 	return (
 		<div className='flex gap-4 w-full my-4'>
-			{isEdit && <RemoveButton onDelete={onDelete} />}
+			<Show when>
+				<RemoveButton onDelete={onDelete} />
+			</Show>
 
 			<div className='flex-1'>
 				{codeData ? (
@@ -140,8 +143,7 @@ export const CodeUploader = ({
 									<Copy size={14} />{' '}
 									<span>{copied ? 'Скопировано' : 'Скопировать'}</span>
 								</button>
-
-								{isEdit && (
+								<Show when={isEdit}>
 									<button
 										onClick={() => {
 											setCodeData(null)
@@ -151,7 +153,8 @@ export const CodeUploader = ({
 									>
 										<Trash size={14} />
 									</button>
-								)}
+								</Show>
+								\
 							</div>
 						</div>
 
@@ -167,14 +170,15 @@ export const CodeUploader = ({
 						</div>
 					</div>
 				) : (
-					isEdit && (
+					<Show when={isEdit}>
 						<FileUploaderZone
 							type='code'
 							onFilesSelected={handleFilesSelected}
 							isUploading={isUploading}
 							uploadProgress={uploadProgress}
+							maxSize={15}
 						/>
-					)
+					</Show>
 				)}
 			</div>
 		</div>

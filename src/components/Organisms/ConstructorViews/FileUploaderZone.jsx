@@ -1,18 +1,26 @@
 import { useState } from 'react'
 import { UPLOAD_TYPES } from '../../../Constants/uploadTypes'
 import { UploadProgressBar } from '../../Molecules/UploadProgressBar'
+import { Upload } from 'lucide-react'
+import {
+	GetPresignedUrlToUploadMedia,
+	uploadFileToStorage,
+} from '../../../api/uploadFileToS3'
+import { Show } from '../../Atoms/Show'
 
 export const FileUploaderZone = ({
 	type = 'files',
-	sectionId, // Принимаем id секции из пропсов
-	onChange, // Сюда передаем итоговый URL (или массив URL)
-	onFilesSelected, // Оставляем на случай, если локально нужно имя файла
+	sectionId,
+	onChange,
+	onFilesSelected,
 	currentFilesWeight = 0,
+	currentFilesCount = 0,
+	maxSize,
+	maxCount = null,
 }) => {
 	const [isDragActive, setIsDragActive] = useState(false)
 	const [isValid, setIsValid] = useState(true)
 
-	// Переносим управление загрузкой внутрь, так как логика теперь здесь
 	const [isUploading, setIsUploading] = useState(false)
 	const [uploadProgress, setUploadProgress] = useState(0)
 
@@ -21,7 +29,7 @@ export const FileUploaderZone = ({
 
 	const handleValidationFailed = () => {
 		setIsValid(false)
-		setTimeouT(() => setIsValid(true), 1000)
+		setTimeout(() => setIsValid(true), 1000)
 	}
 
 	// Логика отправки файлов на сервер
@@ -35,29 +43,23 @@ export const FileUploaderZone = ({
 		setUploadProgress(0)
 
 		try {
-			const uploadedUrls = []
-
 			for (const file of validFiles) {
-				// Вытаскиваем расширение (например, 'png', 'mp4')
 				const fileExt = file.name.split('.').pop().toLowerCase()
 
-				// Формируем body строго по спецификации бэка
 				const fileMetadata = {
 					original_name: file.name,
 					file_extension: fileExt,
 					mime_type: file.type,
 					file_size: file.size,
-					type: type === 'image' ? 'images' : type, // Сверяем маппинг ('image' -> 'images')
+					type: type === 'image' ? 'images' : type,
 				}
 
-				// 1. Получаем pre-signed URL, передавая metadata в body
 				const responseData = await GetPresignedUrlToUploadMedia(
 					sectionId,
 					fileMetadata,
 				)
 
-				// 2. Загружаем файл в S3 через наш хелпер
-				const fileUrl = await uploadFileToStorage(
+				await uploadFileToStorage(
 					responseData.upload_url.url,
 					responseData.upload_url.fields,
 					file,
@@ -66,7 +68,8 @@ export const FileUploaderZone = ({
 					},
 				)
 
-				onChange(responseData.file_metadata_id)
+				onChange?.(responseData.file_metadata_id)
+				console.log(responseData.file_metadata_id)
 			}
 		} catch (error) {
 			console.error('Ошибка при загрузке медиа:', error)
@@ -77,9 +80,19 @@ export const FileUploaderZone = ({
 	}
 
 	const processFiles = newFiles => {
-		if (!newFiles.length || isUploading) return
+		if (!newFiles || !newFiles.length || isUploading) return
 
-		const maxSizeBytes = config.maxSize * 1024 * 1024
+		// Проверка на ограничение по количеству файлов
+		if (maxCount !== null) {
+			if (currentFilesCount + newFiles.length > maxCount) {
+				alert(`Максимальное количество файлов: ${maxCount}`)
+				handleValidationFailed()
+				return
+			}
+		}
+
+		const effectiveMaxSize = maxSize || config.maxSize
+		const maxSizeBytes = effectiveMaxSize * 1024 * 1024
 		let totalBatchWeight = 0
 		const validFiles = []
 
@@ -97,24 +110,22 @@ export const FileUploaderZone = ({
 		}
 
 		if (totalBatchWeight + currentFilesWeight > maxSizeBytes) {
-			alert(`Превышен общий лимит в ${config.maxSize} МБ`)
+			alert(`Превышен общий лимит в ${effectiveMaxSize} МБ`)
 			handleValidationFailed()
 			return
 		}
 
 		if (validFiles.length > 0) {
 			if (onFilesSelected) onFilesSelected(validFiles)
-			// Запускаем цепочку загрузки
 			handleMediaUpload(validFiles)
 		}
 	}
 
-	// --- Дальше идет твой JSX без изменений ---
 	const zoneClass = isDragActive
-		? 'bg-[var(--transparent-hero)] border-[var(--hero)] ring-[var(--transparent-hero)]'
+		? 'bg-[var(--hero-pale)] border-[var(--hero)] ring-[var(--hero-pale)]'
 		: !isValid
-			? 'bg-[var(--hard-lvl-bg)] border-[var(--hard-lvl-text)] ring-[var(--hard-lvl-bg)]'
-			: 'bg-[var(--light-gray)] border-[var(--middle)] ring-[var(--light-middle)]'
+			? 'bg-[var(--red-pale)] border-[var(--red-text)] ring-[var(--red-pale)]'
+			: 'bg-[var(--light-middle)]/50 border-[var(--middle)] ring-[var(--light-middle)]/50'
 
 	return (
 		<label
@@ -126,7 +137,7 @@ export const FileUploaderZone = ({
 			onDrop={e => {
 				e.preventDefault()
 				setIsDragActive(false)
-				processFiles(Array.from(e.dataTransfer.files))
+				processFiles(Array.from(e.dataTransfer.files || []))
 			}}
 			className={`p-6 w-full flex flex-col items-center justify-center rounded-2xl transition-all border-3 border-dashed ring-4  ${
 				isUploading ? 'cursor-not-allowed opacity-80' : 'cursor-pointer'
@@ -135,9 +146,9 @@ export const FileUploaderZone = ({
 			<input
 				type='file'
 				className='hidden'
-				multiple={type !== 'video' && type !== 'image'} // Например, ограничим видео/фото по одному, если бэк не принимает массив
+				multiple={maxCount !== 1 && type !== 'video' && type !== 'image'}
 				accept={config.exts.join(',')}
-				onChange={e => processFiles(Array.from(e.target.files))}
+				onChange={e => processFiles(Array.from(e.target.files || []))}
 				disabled={isUploading}
 			/>
 
@@ -152,10 +163,16 @@ export const FileUploaderZone = ({
 				или <br /> выберите их
 			</p>
 
-			<div className='flex gap-2 mb-8'>
+			<div className='flex flex-wrap gap-2 justify-center mb-8'>
 				<span className='bg-[var(--light-middle)] text-[var(--middle)] px-3 py-1 rounded-lg text-sm font-medium'>
-					общий вес до {config.maxSize} МБ
+					общий вес до {maxSize || config.maxSize} МБ
 				</span>
+
+				{/* Badge с максимальным количеством файлов */}
+				<span className='bg-[var(--light-middle)] text-[var(--middle)] px-3 py-1 rounded-lg text-sm font-medium'>
+					{maxCount !== null ? `до ${maxCount} файлов` : 'кол-во не ограничено'}
+				</span>
+
 				{config.exts.slice(0, 4).map(ext => (
 					<span
 						key={ext}

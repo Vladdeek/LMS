@@ -44,9 +44,7 @@ const Authorization = ({ isRegister = false }) => {
 		try {
 			await Login(data)
 			navigate('/')
-		} catch (error) {
-			toast.error(error?.response?.data?.detail)
-		}
+		} catch (error) {}
 	}
 
 	return (

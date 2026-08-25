@@ -2,6 +2,8 @@ import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { RemoveButton } from '../../Atoms/Buttons/RemoveButton'
 import { FileUploaderZone } from './FileUploaderZone'
+import { motion } from 'framer-motion'
+import { Show } from '../../Atoms/Show'
 
 // Модалка просмотра (без изменений по логике)
 const FullScreenModal = ({ photos, index, close, setIndex }) => {
@@ -128,7 +130,7 @@ export const PhotoBlock = ({
 								className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer'
 								alt=''
 							/>
-							{isEdit && (
+							<Show when={isEdit}>
 								<button
 									onClick={() => onDeleteFile?.(item.id)}
 									// Абсолютное позиционирование, чтобы кнопка была поверх картинки
@@ -136,7 +138,7 @@ export const PhotoBlock = ({
 								>
 									<x size={16} strokeWidth={3} />
 								</button>
-							)}
+							</Show>
 						</motion.div>
 					)
 				})}
@@ -163,15 +165,14 @@ export const PhotoBlock = ({
 					</motion.div>
 				)}
 			</div>
-
-			{fullScreenIdx !== null && (
+			<Show when={fullScreenIdx !== null}>
 				<FullScreenModal
 					photos={photos}
 					index={fullScreenIdx}
 					setIndex={setFullScreenIdx}
 					close={() => setFullScreenIdx(null)}
 				/>
-			)}
+			</Show>
 		</div>
 	)
 }

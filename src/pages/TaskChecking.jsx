@@ -156,7 +156,6 @@ const TaskChecking = () => {
 								paddings='px-2 py-1 gap-1'
 								width='w-fit'
 								flexParams='items-center'
-								invert={true}
 								onClick={() => {
 									clearParams()
 								}}
