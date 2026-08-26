@@ -10,6 +10,8 @@ import {
 	Trash2,
 	Download,
 } from 'lucide-react'
+import { MEDIA_API_URL } from '../../API'
+import { Show } from '../Atoms/Show'
 
 export const FileView = ({
 	files = [],
@@ -117,10 +119,41 @@ export const FileView = ({
 		)
 	}
 
-	const handleDownload = file => {
-		if (onDownload) {
-			onDownload(file)
-		} else if (file.file_path) {
+	const handleDownload = async file => {
+		if (!file || !file.file_path) {
+			console.warn('Ссылка на файл отсутствует')
+			return
+		}
+
+		try {
+			const response = await fetch(file.file_path)
+			if (!response.ok) throw new Error('Ошибка сети при скачивании')
+
+			const blob = await response.blob()
+
+			// 1. Очищаем URL от S3-параметров, чтобы вытащить дефолтное имя, если file.name пустой
+			const cleanPath = file.file_path.split('?')[0]
+			const fileName =
+				`${file.original_name}.${file.file_extension}` ||
+				cleanPath.split('/').pop() ||
+				'document.pdf'
+
+			// 2. Хак для обхода ограничений S3: упаковываем blob в File с нужным именем
+			const platformFile = new File([blob], fileName, { type: blob.type })
+			const url = window.URL.createObjectURL(platformFile)
+
+			const link = document.createElement('a')
+			link.href = url
+			link.setAttribute('download', fileName)
+
+			document.body.appendChild(link)
+			link.click()
+
+			// Чистим память
+			link.parentNode.removeChild(link)
+			window.URL.revokeObjectURL(url)
+		} catch (error) {
+			console.error('Ошибка при скачивании, открываем в новой вкладке:', error)
 			window.open(file.file_path, '_blank')
 		}
 	}
@@ -156,13 +189,12 @@ export const FileView = ({
 						<div className='flex items-center gap-2'>
 							<button
 								onClick={() => handleDownload(file)}
-								className='p-2 hover:bg-[var(--green-base)] hover:text-[var(--green-text)] cursor-pointer rounded-lg transition-all text-[var(--black)]'
+								className='p-2 hover:bg-[var(--green-pale)] hover:text-[var(--green-text)] cursor-pointer rounded-lg transition-all text-[var(--black)]'
 								title='Скачать'
 							>
 								<Download size={20} />
 							</button>
-
-							{isEdit && (
+							<Show when={isEdit}>
 								<button
 									onClick={() => onDeleteFile?.(file.id)}
 									className='p-2 hover:bg-red-500 hover:text-white rounded-lg transition-all cursor-pointer text-[var(--black)]'
@@ -170,7 +202,7 @@ export const FileView = ({
 								>
 									<Trash2 size={20} />
 								</button>
-							)}
+							</Show>
 						</div>
 					</div>
 				))}

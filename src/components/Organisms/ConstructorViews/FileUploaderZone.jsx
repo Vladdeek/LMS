@@ -127,6 +127,18 @@ export const FileUploaderZone = ({
 			? 'bg-[var(--red-pale)] border-[var(--red-text)] ring-[var(--red-pale)]'
 			: 'bg-[var(--light-middle)]/50 border-[var(--middle)] ring-[var(--light-middle)]/50'
 
+	const badgeClass = isDragActive
+		? 'bg-[var(--hero)] text-[var(--hero-pale)]'
+		: !isValid
+			? 'bg-[var(--red-text)] text-[var(--red-pale)]'
+			: 'bg-[var(--light-middle)] text-[var(--middle)] '
+
+	const textClass = isDragActive
+		? 'text-[var(--hero)]'
+		: !isValid
+			? 'text-[var(--red-text)] '
+			: 'text-[var(--middle)] '
+
 	return (
 		<label
 			onDragOver={e => {
@@ -155,42 +167,53 @@ export const FileUploaderZone = ({
 			<Icon
 				size={80}
 				strokeWidth={1.5}
-				className='mb-2 opacity-50 text-[var(--middle)]'
+				className={`mb-2 transition-all ${textClass}`}
 			/>
 
-			<p className='text-[var(--middle)] font-medium mb-4 tracking-tight text-center leading-4'>
+			<p
+				className={`${textClass} font-medium mb-4 transition-all tracking-tight text-base text-center leading-4`}
+			>
 				Перетащите {config.title === 'файл' ? 'файлы' : config.title} <br />
 				или <br /> выберите их
 			</p>
 
 			<div className='flex flex-wrap gap-2 justify-center mb-8'>
-				<span className='bg-[var(--light-middle)] text-[var(--middle)] px-3 py-1 rounded-lg text-sm font-medium'>
+				<span
+					className={`${badgeClass} transition-all px-3 py-1 rounded-lg text-sm  font-medium`}
+				>
 					общий вес до {maxSize || config.maxSize} МБ
 				</span>
 
 				{/* Badge с максимальным количеством файлов */}
-				<span className='bg-[var(--light-middle)] text-[var(--middle)] px-3 py-1 rounded-lg text-sm font-medium'>
+				<span
+					className={`${badgeClass} transition-all px-3 py-1 rounded-lg text-sm  font-medium`}
+				>
 					{maxCount !== null ? `до ${maxCount} файлов` : 'кол-во не ограничено'}
 				</span>
 
 				{config.exts.slice(0, 4).map(ext => (
 					<span
 						key={ext}
-						className='bg-[var(--light-middle)] text-[var(--middle)] px-3 py-1 rounded-lg text-sm font-medium'
+						className={`${badgeClass} transition-all px-3 py-1 rounded-lg text-sm font-medium`}
 					>
 						{ext}
 					</span>
 				))}
 			</div>
-
-			{isUploading ? (
-				<UploadProgressBar progress={uploadProgress} />
-			) : (
-				<div className='bg-[var(--black)] text-[var(--white)] px-8 py-4 rounded-xl flex gap-3 font-bold hover:bg-[var(--hero)] hover:text-white transition-all shadow-lg text-center'>
-					<Upload strokeWidth={3} />
-					Выбрать {config.title === 'файл' ? 'файлы' : config.title}
-				</div>
-			)}
+			<Show when={isUploading}>
+				<UploadProgressBar
+					progress={uploadProgress}
+					fallback={
+						<div className='bg-[var(--black)] text-[var(--white)] text-base px-8 py-4 rounded-xl flex gap-3 font-bold hover:bg-[var(--hero)] hover:text-white transition-all shadow-lg text-center'>
+							<Upload
+								className='lg:h-5 h-3 w-auto aspect-square'
+								strokeWidth={3}
+							/>
+							Выбрать {config.title === 'файл' ? 'файлы' : config.title}
+						</div>
+					}
+				/>
+			</Show>
 		</label>
 	)
 }

@@ -30,7 +30,7 @@ export const ConstructorMenu = ({ onAdd }) => (
 			<button
 				key={index}
 				onClick={() => onAdd(item.type)}
-				className='flex flex-col aspect-square items-center justify-center gap-2 bg-[var(--light-middle)] rounded-xl h-24 w-24 hover:bg-[var(--hero-epta)] hover:text-white cursor-pointer text-[var(--middle)] transition-all duration-100'
+				className='flex flex-col aspect-square items-center justify-center gap-2 bg-[var(--light-middle)] rounded-xl h-24 w-24 hover:bg-[var(--hero)] hover:text-white cursor-pointer text-[var(--middle)] transition-all duration-100'
 			>
 				{item.icon}
 				<p className='text-sm font-medium'>{item.title}</p>

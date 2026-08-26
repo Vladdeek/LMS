@@ -148,6 +148,7 @@ export const ContentView = ({ isEdit }) => {
 
 	// Удаление прикрепленного файла/изображения
 	const handleRemoveFile = async (fileType = 'file', blockId, fileId) => {
+		console.log('handleRemove - ', fileType, fileId)
 		try {
 			if (fileType === 'image') {
 				await DeleteImage(blockId, fileId)

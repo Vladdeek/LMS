@@ -102,6 +102,7 @@ export const VideoImport = ({
 							isUploading={uploading}
 							uploadProgress={progress}
 							onChange={onChange}
+							maxCount={1}
 						/>
 					</Show>
 				)}

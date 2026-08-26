@@ -6,7 +6,7 @@ export const ProgressBar = ({ progress, onSeek }) => (
 		onClick={onSeek}
 	>
 		<div
-			className='absolute h-full bg-[var(--hero)] transition-all'
+			className='absolute h-full bg-[var(--hero)] ease-linear transition-all'
 			style={{ width: `${progress * 100}%` }}
 		/>
 	</div>

@@ -13,9 +13,9 @@ export const CodeUploader = ({
 	onDelete,
 	isUploading = false,
 	uploadProgress = 0,
-	data,
+	data = null,
 }) => {
-	const [codeData, setCodeData] = useState(data)
+	const [codeData, setCodeData] = useState(data !== null ? data : null)
 	const [copied, setCopied] = useState(false)
 
 	//Создаем стейт под тему, чтобы триггерить ререндер
@@ -112,17 +112,31 @@ export const CodeUploader = ({
 		reader.readAsText(file)
 	}
 
-	if (!isEdit && !codeData) return null
+	// Проверяем, что codeData существует и содержит хотя бы одно свойство
+	const hasData = Boolean(codeData && Object.keys(codeData).length > 0)
 
 	return (
-		<div className='flex gap-4 w-full my-4'>
+		<div className='flex gap-4 w-full my-4 min-w-0'>
 			<Show when>
 				<RemoveButton onDelete={onDelete} />
 			</Show>
 
-			<div className='flex-1'>
-				{codeData ? (
-					<div className='relative bg-[var(--white)] rounded-xl shadow-[var(--shadow)] overflow-hidden border border-[var(--light-middle)]'>
+			<div className='flex-1 min-w-0'>
+				<Show
+					when={hasData}
+					fallback={
+						<Show when={isEdit}>
+							<FileUploaderZone
+								type='code'
+								onFilesSelected={handleFilesSelected}
+								isUploading={isUploading}
+								uploadProgress={uploadProgress}
+								maxSize={15}
+							/>
+						</Show>
+					}
+				>
+					<div className='w-full max-w-full relative bg-[var(--white)] rounded-xl shadow-[var(--shadow)] overflow-hidden border border-[var(--light-middle)]'>
 						<div className='flex justify-between items-center bg-[var(--white)] pr-2 pl-3 py-2 border-b border-[var(--light-middle)]'>
 							<div className='flex items-center gap-3'>
 								<div className='flex gap-1.5'>
@@ -135,10 +149,10 @@ export const CodeUploader = ({
 								</span>
 							</div>
 
-							<div className='flex gap-2'>
+							<div className='flex gap-2 items-center'>
 								<button
 									onClick={handleCopy}
-									className={`flex items-center gap-2 px-3 py-1.5 ${copied ? 'bg-[var(--green-base)] text-[var(--green-text)]' : 'bg-[var(--light-gray)] text-[var(--middle)]'}  rounded-md text-sm hover:brightness-95 transition-all`}
+									className={`flex items-center gap-2 px-3 py-1.5 ${copied ? 'bg-[var(--green-base)] text-[var(--green-text)]' : 'bg-[var(--light-gray)] text-[var(--middle)]'} rounded-md text-sm hover:brightness-95 transition-all`}
 								>
 									<Copy size={14} />{' '}
 									<span>{copied ? 'Скопировано' : 'Скопировать'}</span>
@@ -154,32 +168,19 @@ export const CodeUploader = ({
 										<Trash size={14} />
 									</button>
 								</Show>
-								\
 							</div>
 						</div>
 
-						<div className='p-0 overflow-x-auto max-h-[34rem] text-sm'>
+						<div className='w-full p-1 max-w-full overflow-x-auto max-h-[34rem] text-sm [&>span]:!block [&_code]:!font-mono'>
 							<CodeBlock
 								text={codeData.code}
 								language={codeData.language}
 								showLineNumbers={true}
-								// ТУТ ИСПРАВЛЕНО: Передаем актуальную тему из стейта
 								theme={themes[theme] || themes.light}
-								customStyle={{ background: 'transparent', padding: '1rem' }}
 							/>
 						</div>
 					</div>
-				) : (
-					<Show when={isEdit}>
-						<FileUploaderZone
-							type='code'
-							onFilesSelected={handleFilesSelected}
-							isUploading={isUploading}
-							uploadProgress={uploadProgress}
-							maxSize={15}
-						/>
-					</Show>
-				)}
+				</Show>
 			</div>
 		</div>
 	)

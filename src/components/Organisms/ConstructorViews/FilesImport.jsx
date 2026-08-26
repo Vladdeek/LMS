@@ -36,7 +36,7 @@ export const FileManager = ({
 				<FileView
 					files={localFiles}
 					isEdit={isEdit}
-					onDeleteFile={onDeleteFile}
+					onDeleteFile={data => onDeleteFile?.('file', data)}
 					onDownload={onDownload}
 				/>
 				<Show when={isEdit}>
