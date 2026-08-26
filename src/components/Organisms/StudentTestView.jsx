@@ -99,7 +99,7 @@ export const StudentTestView = ({ activeSectionId }) => {
 				<p className='text-lg font-semibold text-[var(--black)]'>
 					Тест завершен
 				</p>
-				<p className='px-6 py-3 font-medium rounded-xl bg-[var(--hero-epta)] text-white text-2xl shadow-md'>
+				<p className='px-6 py-3 font-medium rounded-xl bg-[var(--hero)] text-white text-2xl shadow-md'>
 					{score} / 5
 				</p>
 			</div>
@@ -109,7 +109,7 @@ export const StudentTestView = ({ activeSectionId }) => {
 	if (gradeStatus === 'pending') {
 		return (
 			<div className='w-full h-64 flex flex-col justify-center gap-3 items-center'>
-				<p className='px-6 py-3 font-medium rounded-xl bg-[var(--hero-epta)] text-white text-2xl shadow-md'>
+				<p className='px-6 py-3 font-medium rounded-xl bg-[var(--hero)] text-white text-2xl shadow-md'>
 					? / 5
 				</p>
 				<p className='font-light text-[var(--middle)] text-md'>
@@ -176,7 +176,7 @@ export const StudentTestView = ({ activeSectionId }) => {
 				{questions?.every(item => item.filled) ? (
 					<button
 						onClick={handleEndTest}
-						className='px-6 py-2.5 bg-[var(--black)] text-[var(--white)] rounded-xl font-medium hover:bg-[var(--hero-epta)] transition-all'
+						className='px-6 py-2.5 bg-[var(--black)] text-[var(--white)] rounded-xl font-medium hover:bg-[var(--hero)] transition-all'
 					>
 						Завершить тест
 					</button>
@@ -188,7 +188,7 @@ export const StudentTestView = ({ activeSectionId }) => {
 							className={`px-6 py-2 bg-[var(--black)] text-[var(--white)] rounded-xl font-medium flex ${
 								q?.filled || !answers
 									? 'opacity-30 cursor-not-allowed'
-									: 'hover:bg-[var(--hero-epta)] hover:scale-105 transition-all'
+									: 'hover:bg-[var(--hero)] hover:scale-105 transition-all'
 							}`}
 						>
 							Ответить

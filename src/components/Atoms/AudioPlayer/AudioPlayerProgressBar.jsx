@@ -25,7 +25,7 @@ export const AudioPlayerProgressBar = ({
 				onClick={handleClick}
 			>
 				<div
-					className='h-full bg-[var(--hero-epta)] rounded-full transition-all duration-150'
+					className='h-full bg-[var(--hero)] rounded-full transition-all duration-150'
 					style={{ width: `${progressPercent}%` }}
 				/>
 			</div>

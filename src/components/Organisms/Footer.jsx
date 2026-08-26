@@ -115,7 +115,7 @@ const Footer = () => {
 							href='https://t.me/VersaCRM_bot?start=1'
 							target='_blank'
 							rel='noopener noreferrer'
-							className='p-3 w-fit rounded-lg bg-[var(--hero-epta)] text-white'
+							className='p-3 w-fit rounded-lg bg-[var(--hero)] text-white'
 						>
 							<MessageCircleQuestionMark size={24} />
 						</a>

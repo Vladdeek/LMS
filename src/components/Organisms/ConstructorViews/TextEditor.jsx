@@ -31,8 +31,6 @@ export const TextEditor = ({ data, onDelete, onChange, isEdit = false }) => {
 	// Храним строку последнего состояния, чтобы избежать бесконечного рендера при синхронизации
 	const lastExternalDataRef = useRef(data)
 
-	console.log('textData: ', data)
-
 	// Парсер стал тупым как пробка: если строка — парсим, если объект — отдаем как есть
 	const parseContent = incomingData => {
 		if (!incomingData) return { type: 'doc', content: [] }
