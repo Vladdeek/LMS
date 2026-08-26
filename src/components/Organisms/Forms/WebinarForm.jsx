@@ -6,13 +6,13 @@ import { DateInput } from '../../Molecules/InputFields/DateInput'
 import { HintTooltip } from '../../Atoms/HintTooltip'
 import { Text } from '../../Atoms/Text'
 import { SubmitButton } from '../../Atoms/Buttons/SubmitButton'
-import { AltPreviewInput } from '../../Molecules/InputFields/AltPreviewInput'
-import { useCreateWebinarForm } from '../../../hooks/useCreateWebinarForm'
 import { SelectGroupsModal } from '../Modals/SelectGroupModal'
+import { ChangePreview } from '../ChangePreview'
+import { useWebinarForm } from '../../../hooks/useWebinarForm'
 
 export const WebinarForm = props => {
 	const { isOpen } = props
-	const { state, actions } = useCreateWebinarForm(props)
+	const { state, actions } = useWebinarForm(props)
 	const [isGroupModalOpen, setIsGroupModalOpen] = useState(false)
 
 	// Автосинхронизация типа доступа для бекенда/стейта
@@ -33,7 +33,16 @@ export const WebinarForm = props => {
 				className='w-full max-w-5xl mx-auto p-2 sm:p-4'
 			>
 				<div className='space-y-6'>
-					<AltPreviewInput />
+					<ChangePreview
+						initialUrl={state.defaultImageUrl || state.img}
+						onFileChange={data => {
+							if (data instanceof File) {
+								actions.setImg(data)
+							} else {
+								actions.setDefaultImageUrl(data)
+							}
+						}}
+					/>
 
 					{/* ОСНОВНАЯ СЕТКА В 2 КОЛОНКИ */}
 					<div className='grid grid-cols-1 lg:grid-cols-2 gap-6 items-start'>
@@ -197,6 +206,7 @@ export const WebinarForm = props => {
 					{/* КНОПКА САБМИТА */}
 					<div className='flex justify-end pt-4 border-t border-[var(--light-middle)]/30'>
 						<SubmitButton
+							onClick={actions.handleSubmit}
 							className='w-full sm:w-auto px-6 py-2.5'
 							disabled={state.isSubmitDisabled}
 						>

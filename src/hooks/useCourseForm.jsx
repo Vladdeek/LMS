@@ -22,6 +22,7 @@ const initialFormState = {
 	selectedStudyLevel: null,
 	selectedCourses: null,
 	img: null,
+	default_image_url: null,
 	selectedYearIdx: null,
 	selectedDisciplineIdx: null,
 }
@@ -47,7 +48,7 @@ export const useCourseForm = ({ onClose } = {}) => {
 		return found !== undefined ? found.value : null
 	}, [])
 
-	// Если есть courseId — тянем данные для PUT
+	// При получении данных курса заполняем default_image_url
 	useEffect(() => {
 		let isMounted = true
 
@@ -63,6 +64,7 @@ export const useCourseForm = ({ onClose } = {}) => {
 						selectedStudyLevel: getStudyLevelValue(res.study_level),
 						selectedCourses: res.course ? Number(res.course) : null,
 						img: res.image || null,
+						default_image_url: res.default_image_url || res.image || null,
 						selectedYearIdx: null,
 						selectedDisciplineIdx: null,
 					})
@@ -119,7 +121,7 @@ export const useCourseForm = ({ onClose } = {}) => {
 		}
 	}, [formData.selectedYearIdx, formData.selectedSemester, yearsList])
 
-	// Отправка формы (POST если нет courseId, PUT если есть)
+	// Отправка формы (POST или PUT)
 	const handleSubmit = async e => {
 		if (e) e.preventDefault()
 
@@ -149,6 +151,7 @@ export const useCourseForm = ({ onClose } = {}) => {
 									item => item.value === formData.selectedStudyLevel,
 								)?.label,
 					image: formData.img,
+					default_image_url: formData.default_image_url,
 				}
 			} else {
 				const activeDiscipline = disciplinesList[formData.selectedDisciplineIdx]
@@ -161,6 +164,7 @@ export const useCourseForm = ({ onClose } = {}) => {
 					study_plan: activeDiscipline?.study_plan,
 					study_year: activeDiscipline?.study_year,
 					image: formData.img,
+					default_image_url: formData.default_image_url,
 				}
 			}
 
@@ -170,7 +174,6 @@ export const useCourseForm = ({ onClose } = {}) => {
 			} else {
 				await createCourseRequest(payload, isFromLoad)
 				toast.success('Курс успешно создан!')
-				// Генерируем пользовательское событие
 				window.dispatchEvent(new Event('courses:updated'))
 			}
 

@@ -11,7 +11,7 @@ export const CourseModal = ({ isOpen, onClose, selectedCourse }) => {
 				size={'2xl'}
 				font={'medium'}
 				style={'primary'}
-				className={'mb-5 text-center'}
+				className={'text-center'}
 			>
 				{isEdit ? 'Редактирование курса' : 'Создание курса'}
 			</Text>

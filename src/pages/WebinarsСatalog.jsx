@@ -68,6 +68,15 @@ const WebinarsCatalog = () => {
 		}
 	}
 
+	useEffect(() => {
+		const handleReload = () => {
+			fetchWebinars()
+		}
+
+		window.addEventListener('webinars:updated', handleReload)
+		return () => window.removeEventListener('webinars:updated', handleReload)
+	}, [fetchWebinars])
+
 	const rowHeight = 'h-125'
 
 	return (

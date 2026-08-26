@@ -7,16 +7,15 @@ import { TextArea } from '../../Molecules/InputFields/TextArea'
 import { OptionInput } from '../../Molecules/InputFields/OptionInput'
 import { BookOpen, GraduationCap, Layers, Calendar } from 'lucide-react'
 import { Loader } from '../../Atoms/Loaders/Loader'
-import { AltPreviewInput } from '../../Molecules/InputFields/AltPreviewInput'
+
 import { studyLevelOptions, useCourseForm } from '../../../hooks/useCourseForm'
-import { SubmitButton } from '../../Atoms/Buttons/SubmitButton'
 import { Show } from '../../Atoms/Show'
 import { ButtonCase } from '../../Atoms/Buttons/ButtonCase'
 import { ConfirmModal } from '../Modals/ConfirmModal'
 import { deleteCourse } from '../../../api/Courses'
 import { useNavigate, useParams } from 'react-router-dom'
-import { button } from '@material-tailwind/react'
 import { toast } from 'sonner'
+import { ChangePreview } from '../ChangePreview'
 
 const tabOptions = [
 	{ value: 0, label: 'Свободное' },
@@ -71,7 +70,7 @@ export const CourseForm = ({ onClose, selectedCourse }) => {
 			navigate('/catalog/courses')
 			toast.success('Курс успешно удален!')
 		} catch (error) {
-			toast.error(error)
+			toast.error('Ошибка удаления курса!')
 		}
 	}
 
@@ -81,17 +80,22 @@ export const CourseForm = ({ onClose, selectedCourse }) => {
 				isOpen={confirmModalIsOpen}
 				onClose={() => setConfirmModalIsOpen(false)}
 				title='Удаление курса'
-				text={`Вы действительно хотите удалить этот курс?`}
+				text='Вы действительно хотите удалить этот курс?'
 				confirmLabel='Удалить'
 				confirmStyle='danger'
 				action={handleDelete}
 			/>
 			<div className='w-full max-w-4xl mx-auto p-2 sm:p-4'>
-				<AltPreviewInput />
+				<div className='mb-4 w-full'>
+					<ChangePreview
+						initialUrl={formData.default_image_url || formData.img}
+						onFileChange={data => handleDirectChange('default_image_url', data)}
+					/>
+				</div>
 
 				{/* Переключатель табов скрыт в режиме редактирования */}
 				<Show when={!isEdit}>
-					<div className='my-4 w-full max-w-md mx-auto'>
+					<div className='mb-4 w-full max-w-md mx-auto'>
 						<RadioGroup
 							options={tabOptions}
 							value={selectedTab}
@@ -302,7 +306,7 @@ export const CourseForm = ({ onClose, selectedCourse }) => {
 							<Show when={!isLoading} fallback={<Loader />}>
 								<Show when={isEdit}>
 									<ButtonCase
-										type={'button'}
+										type='button'
 										onClick={() => setConfirmModalIsOpen(true)}
 										backgroundColor='var(--red-pale)'
 										textColor='var(--red-text)'

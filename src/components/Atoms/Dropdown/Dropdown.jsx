@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { Show } from '../Show'
 
 export const Dropdown = ({ trigger, children, align = 'right' }) => {
 	const [isOpen, setIsOpen] = useState(false)
@@ -26,8 +27,7 @@ export const Dropdown = ({ trigger, children, align = 'right' }) => {
 			<div onClick={toggle} className='cursor-pointer'>
 				{trigger(isOpen)}
 			</div>
-
-			{isOpen && (
+			<Show when={isOpen}>
 				<div
 					className={`absolute ${alignmentClasses[align]} mt-2 w-48 rounded-xl bg-[var(--white)] shadow-lg border border-[var(--light-middle)] py-1 z-50 animate-in fade-in slide-in-from-top-2 duration-150`}
 				>
@@ -35,7 +35,7 @@ export const Dropdown = ({ trigger, children, align = 'right' }) => {
 						? children({ close: () => setIsOpen(false) })
 						: children}
 				</div>
-			)}
+			</Show>
 		</div>
 	)
 }

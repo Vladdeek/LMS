@@ -5,7 +5,7 @@ import {
 	updateWebinarAccess,
 } from '../api/Webinars'
 
-export const useCreateWebinarForm = ({
+export const useWebinarForm = ({
 	isOpen,
 	onClose,
 	onCreate,
@@ -21,6 +21,7 @@ export const useCreateWebinarForm = ({
 	const [stime, setSTime] = useState('')
 	const [etime, setETime] = useState('')
 	const [img, setImg] = useState(null)
+	const [defaultImageUrl, setDefaultImageUrl] = useState(null)
 
 	// Доступ и Группы
 	const [selectedAccess, setSelectedAccess] = useState(1)
@@ -48,6 +49,7 @@ export const useCreateWebinarForm = ({
 		setETime('')
 		setLinkedGroups([])
 		setImg(null)
+		setDefaultImageUrl(null)
 		setSearchGroups('')
 		setPage(1)
 	}
@@ -61,6 +63,8 @@ export const useCreateWebinarForm = ({
 				setUrl(takeinfo.link_url || '')
 				setLinkedGroups(takeinfo.linked_groups || [])
 				setSelectedAccess(takeinfo.webinar_access === 'restricted' ? 2 : 1)
+				setImg(takeinfo.image || null)
+				setDefaultImageUrl(takeinfo.default_image_url || takeinfo.image || null)
 			} else {
 				setEditMode(false)
 				resetForm()
@@ -134,6 +138,7 @@ export const useCreateWebinarForm = ({
 		formData.append('linked_groups', linkedGroupIds)
 
 		if (img) formData.append('image', img)
+		if (defaultImageUrl) formData.append('default_image_url', defaultImageUrl)
 
 		return { formData, linkedGroupIds }
 	}
@@ -155,6 +160,7 @@ export const useCreateWebinarForm = ({
 			if (onCreate) onCreate(resData)
 			if (onClose) onClose()
 			resetForm()
+			window.dispatchEvent(new Event('webinars:updated'))
 		} catch (error) {
 			console.error('Ошибка сервера при сохранении вебинара:', error)
 		}
@@ -168,6 +174,8 @@ export const useCreateWebinarForm = ({
 			date,
 			stime,
 			etime,
+			img,
+			defaultImageUrl,
 			selectedAccess,
 			searchGroups,
 			linkedGroups,
@@ -185,6 +193,7 @@ export const useCreateWebinarForm = ({
 			setSTime,
 			setETime,
 			setImg,
+			setDefaultImageUrl,
 			setSelectedAccess,
 			setSearchGroups,
 			setPage,
