@@ -1,0 +1,131 @@
+import { API_URL } from '../API'
+import api from './client'
+
+// ---> GetQuestions - Отдает массив id'шников вопросов теста <---
+export const GetQuestions = async test_id => {
+	const response = await api.get(`${API_URL}/tests/${test_id}/questions/ids`)
+	return response.data
+}
+
+// ---> GetDetailQuestion - Отдает детали вопроса (сам вопрос, тип, массив вариантов ответов и т.д.) <---
+export const GetDetailQuestion = async question_id => {
+	const response = await api.get(`${API_URL}/questions/${question_id}/details`)
+	return response.data
+}
+// ---> AddQuestion - Создает вопрос (изначально типа "open") <---
+export const AddQuestion = async (test_id, type) => {
+	const response = await api.post(`${API_URL}/questions/test/${test_id}`, {
+		type,
+	})
+	return response.data
+}
+// ---> EditQuestion - Обновляет поле name(сам вопрос) и score(оценка) <---
+export const EditQuestion = async (question_id, title, score) => {
+	const response = await api.put(`${API_URL}/questions/${question_id}`, {
+		title,
+		score,
+	})
+	return response.data
+}
+// ---> DeleteQuestion - Удалить вопрос полностью <---
+export const DeleteQuestion = async question_id => {
+	const response = await api.delete(
+		`${API_URL}/test-content/question/${question_id}`,
+	)
+	return response.data
+}
+
+// ---> AddOptionOnQuestion - создает вариант ответа <---
+export const AddOptionOnQuestion = async (question_id, option_code) => {
+	const response = await api.post(
+		`${API_URL}/questions/options/${question_id}`,
+		{ name: '', option_code },
+	)
+	return response.data
+}
+// ---> EditOptionName - обновляет вариант ответа (name) <---
+export const EditOptionName = async (option_id, name) => {
+	const response = await api.patch(
+		`${API_URL}/questions/options/${option_id}/name`,
+		{ name },
+	)
+	return response.data
+}
+// ---> EditOptionCorrectStatus - обновляет статус варианта ответа (correct/) <---
+export const EditOptionCorrectStatus = async (question_id, correct) => {
+	const response = await api.patch(
+		`${API_URL}/questions/options/${question_id}/choice/correct-status`,
+		{ correct },
+	)
+	return response.data
+}
+// ---> DeleteOption - Удаляет вариант ответа <---
+export const DeleteOption = async option_id => {
+	const response = await api.delete(`${API_URL}/questions/options/${option_id}`)
+	return response.data
+}
+
+// ---> SubmitAnswer - Отправляет ответ студента <---
+export const SubmitAnswer = async (question_id, type, answer, test_id) => {
+	const response = await api.post(
+		`${API_URL}/test-content/question/${question_id}/student-answer/submit`,
+		{
+			data: { type, answer },
+			test_id,
+		},
+	)
+	return response.data
+}
+
+// ---> EditTest - Редактирование всех данных теста <---
+export const EditTest = async (
+	test_id,
+	name,
+	description,
+	time_limit,
+	passing_score,
+) => {
+	const response = await api.put(`${API_URL}/test-content/${test_id}`, {
+		name,
+		description,
+		time_limit,
+		passing_score,
+	})
+	return response.data
+}
+
+// ---> GetSession - Отправляет данные сессии теста <---
+export const GetSession = async test_id => {
+	const response = await api.get(
+		`${API_URL}/test-content/student-session/active/${test_id}`,
+	)
+	return response.data
+}
+// ---> StartSession - начинает сессию тестирования <---
+export const StartSession = async test_id => {
+	const response = await api.post(
+		`${API_URL}/test-content/student-session/start/${test_id}`,
+		{},
+	)
+	return response.data
+}
+// ---> EndSession - заканчивает сессию тестирования <---
+export const EndSession = async test_id => {
+	const response = await api.post(
+		`${API_URL}/test-content/student-session/end/${test_id}`,
+		{},
+	)
+	return response.data
+}
+// ---> GetStudentAnswers - отдает ответы студента <---
+export const GetStudentAnswer = async (test_id, question_id) => {
+	const response = await api.get(
+		`${API_URL}/test-content/student-session/active/${test_id}/question-answer/${question_id}`,
+	)
+	return response.data
+}
+// ---> GetResultStudentAnswers - отдает результаты тестирования студента <---
+export const GetResultStudentAnswers = async test_id => {
+	const response = await api.get(`${API_URL}/test-content/${test_id}/result`)
+	return response.data
+}

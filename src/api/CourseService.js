@@ -109,12 +109,6 @@ export const sendResultOfWork = async (sectionId, workData) => {
 	return res.data
 }
 
-// --- Тестирование ---
-export const getQuestions = async sectionId => {
-	const res = await api.get(`${API_URL}/tests/${sectionId}/questions`)
-	return res.data
-}
-
 export const getSession = async sectionId => {
 	const res = await api.get(`${API_URL}/tests/is-active/${sectionId}`)
 	return res.data

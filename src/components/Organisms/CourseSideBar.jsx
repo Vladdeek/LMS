@@ -28,6 +28,17 @@ export const CourseSidebar = ({
 
 	const [isOpen, setIsOpen] = useState(false)
 
+	const redirect = (type, id) => {
+		// Создаем копию текущих параметров, чтобы НЕ СТЕРЕТЬ существующий параметр ?section=...
+		const newParams = new URLSearchParams(searchParams)
+
+		// Добавляем или обновляем только questionId
+		newParams.set('type', type, 'section', id)
+
+		// Обновляем URL строки браузера
+		setSearchParams(newParams)
+	}
+
 	const CreateModule = async name => {
 		try {
 			await createModule(name, courseId)
@@ -40,12 +51,12 @@ export const CourseSidebar = ({
 
 	const CreateLesson = async (name, type, moduleId) => {
 		try {
-			await createLesson(name, type, moduleId)
-
+			const res = await createLesson(name, type, moduleId)
 			toast.success(
 				`${LESSON_LABELS[type]} "${name}" успешно ${type === 'test' ? 'создан!' : 'создана!'}`,
 			)
 			onSuccess?.()
+			redirect(res.type, res.id)
 		} catch (error) {
 			toast.error(`Не удалось создать занятие`)
 		}

@@ -4,7 +4,9 @@ import { TestHeader } from '../Molecules/TestHeader'
 import { TestingScore } from './TestingScore'
 import { StartTestingButton } from '../Atoms/Buttons/StartTestingButton'
 import { TestView } from './TestView'
-import { getQuestions } from '../../api/CourseService'
+
+import { Show } from '../Atoms/Show'
+import { Text } from '../Atoms/Text'
 
 export const TestManager = ({ isEdit }) => {
 	const [searchParams] = useSearchParams() // Достаем хук
@@ -18,61 +20,6 @@ export const TestManager = ({ isEdit }) => {
 
 	const [role, setRole] = useState()
 
-	useEffect(() => {
-		const getUserInfo = async e => {
-			try {
-				const res = await Me()
-				setRole(res?.role)
-			} catch (err) {}
-		}
-		getUserInfo()
-	}, [])
-
-	const startSession = async () => {
-		try {
-			await StartSession(activeSection)
-		} catch (err) {
-			console.log(err)
-		}
-	}
-
-	useEffect(() => {
-		const fetchQuestions = async () => {
-			try {
-				const res = await getQuestions(activeSection)
-				return res.time_limit
-			} catch (err) {
-				console.log(err)
-			}
-		}
-		const getSession = async () => {
-			try {
-				const res = await GetSession(activeSection)
-				const currentTime = Date.now() / 1000 // Текущее время в секундах
-				const tl = Math.floor(currentTime - res.expire_at)
-				setSessionIsStart(true)
-				setTimeLeft(getQuestions() - tl)
-			} catch (err) {
-				// Обработка ошибки
-				setSessionIsStart(false)
-			}
-		}
-
-		if (role === 'student' && activeSection) {
-			getSession()
-		}
-	}, [activeSection, role])
-
-	useEffect(() => {
-		if (sessionIsStart === true && timeLeft > 0 && role === 'student') {
-			setAccessToTheTest(true)
-		} else {
-			setAccessToTheTest(false)
-		}
-	}, [sessionIsStart, timeLeft, role])
-
-	console.log(isEdit)
-
 	return (
 		<>
 			{role === 'student' ? (
@@ -83,7 +30,7 @@ export const TestManager = ({ isEdit }) => {
 								<TestHeader timeLeft={timeLeft} isEdit={role !== 'student'} />
 								{activeQuestionId ? (
 									<>
-										<TestView role={role} isEdit={role !== 'student'} />
+										<TestView />
 									</>
 								) : (
 									<div className='flex justify-center items-center w-full h-full text-center text-[var(--middle)] font-medium'>
@@ -106,15 +53,18 @@ export const TestManager = ({ isEdit }) => {
 			) : (
 				<>
 					<TestHeader timeLeft={timeLeft} isEdit={role !== 'student'} />
-					{activeQuestionId ? (
-						<>
-							<TestView role={role} isEdit={role !== 'student'} />
-						</>
-					) : (
-						<div className='flex justify-center items-center w-full h-full text-center text-[var(--middle)] font-medium'>
-							Вопрос не выбран
-						</div>
-					)}
+					<Show
+						when={activeQuestionId}
+						fallback={
+							<div className='flex justify-center items-center w-full h-[50vh]'>
+								<Text size={'xl'} style={'secondary'}>
+									Вопрос не выбран
+								</Text>
+							</div>
+						}
+					>
+						<TestView role={role} isEdit={role !== 'student'} />
+					</Show>
 				</>
 			)}
 		</>

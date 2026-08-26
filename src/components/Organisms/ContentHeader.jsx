@@ -1,14 +1,21 @@
 import { useEffect, useState } from 'react'
-import { BookMarked, LaptopMinimalCheck, NotebookPen } from 'lucide-react'
+import {
+	BookMarked,
+	LaptopMinimalCheck,
+	NotebookPen,
+	Settings,
+} from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { useUser } from '../../context/UserContext'
 import { LESSON_ICONS, LESSON_LABELS } from '../../Constants/lessonTypes'
 import { Toggle } from '../Atoms/Buttons/Toggle'
 import { SubmitButton } from '../Atoms/Buttons/SubmitButton'
 import { TimeLimitInput } from '../Molecules/InputFields/TimeLimitInput'
-import { getQuestions, getSectionInfo } from '../../api/CourseService'
+import { getSectionInfo } from '../../api/CourseService'
 import { Show } from '../Atoms/Show'
 import { Loading } from '../Atoms/Loaders/Loading'
+import { ButtonCase } from '../Atoms/Buttons/ButtonCase'
+import { Text } from '../Atoms/Text'
 
 const formatTime = seconds => {
 	const mins = Math.floor(seconds / 60)
@@ -53,24 +60,6 @@ export const ContentHeader = ({ isEdit, onIsEditChange }) => {
 		}
 		fetchInfo()
 	}, [activeSection])
-
-	useEffect(() => {
-		if (!sectionInfo || activeType !== 'test') return
-
-		const fetchTestQuestions = async () => {
-			try {
-				const res = await getQuestions(activeSection)
-				if (res) {
-					setQuestionsData(res)
-					setTotalTime(res.time_limit || 0)
-				}
-			} catch (err) {
-				console.error(err)
-			}
-		}
-
-		fetchTestQuestions()
-	}, [sectionInfo, activeSection, activeType])
 
 	const fetchTestSessionInfo = async () => {
 		if (!activeSection) return
@@ -141,14 +130,25 @@ export const ContentHeader = ({ isEdit, onIsEditChange }) => {
 						</>
 					</Show>
 				</div>
-				<Show when={role !== 'student' && activeType === 'test'}>
+				{/* <Show when={role !== 'student' && activeType === 'test'}>
 					<TimeLimitInput
 						COUNT_QUESTION={questionsData?.question_ids?.length}
 						value={questionsData?.time_limit}
 						onChange={data => changeTimeLimit(data)}
 					/>
+				</Show> */}
+
+				<Show when={role !== 'student' && activeType === 'test'}>
+					<button
+						className={
+							'flex items-center justify-center group cursor-pointer bg-[var(--white)] shadow-[var(--shadow)] h-full w-auto aspect-square rounded-lg hover:bg-[var(--light-middle)]  transition-all'
+						}
+						invert
+					>
+						<Settings className='group-hover:rotate-360 duration-500 transition-all group-hover:scale-105' />
+					</button>
 				</Show>
-				<Show when={role !== 'student'}>
+				<Show when={role !== 'student' && activeType !== 'test'}>
 					<Toggle
 						label='Режим редактирования'
 						isActive={isEdit}

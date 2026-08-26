@@ -3,6 +3,11 @@ import { Input } from './Input'
 import { useSearchParams } from 'react-router-dom'
 import { useState } from 'react'
 import { useDebounce } from '../../../hooks/useDebounce'
+import {
+	DeleteOption,
+	EditOptionCorrectStatus,
+	EditOptionName,
+} from '../../../api/Test'
 
 export const QuestionOptionInput = ({
 	id,
@@ -13,17 +18,21 @@ export const QuestionOptionInput = ({
 	isEdit,
 }) => {
 	const [searchParams] = useSearchParams() // Достаем хук
-	const [textValue, setTextValue] = useState(initialText || '')
-	const [isCorrect, setIsCorrect] = useState(initialIsCorrect || false)
+	const [textValue, setTextValue] = useState(initialText)
+	const [isCorrect, setIsCorrect] = useState(initialIsCorrect)
 	const activeQuestionId = searchParams.get('questionId')
 
-	// Дебаунс для текста
-	const debouncedSaveName = useDebounce(async newText => {
+	const editOptionName = async newText => {
 		try {
 			await EditOptionName(id, newText)
 		} catch (error) {
 			console.error('Ошибка имени:', error)
 		}
+	}
+
+	// Дебаунс для текста
+	const debouncedSaveName = useDebounce(async newText => {
+		editOptionName(newText)
 	}, 1000)
 
 	const handleTextChange = e => {
@@ -35,8 +44,9 @@ export const QuestionOptionInput = ({
 	// Обработка чекбокса внутри компонента
 	const handleToggleCorrect = async () => {
 		setIsCorrect(prev => !prev)
+
 		try {
-			await EditOptionCorrectStatus(activeQuestionId, id)
+			await EditOptionCorrectStatus(id, !isCorrect)
 		} catch (err) {
 			console.error(err)
 			setIsCorrect(prev => !prev)

@@ -216,7 +216,7 @@ export const ModuleItem = ({
 					</div>
 				</div>
 				<Show when={isExpanded}>
-					<div className='flex flex-col gap-2 pl-2 border-l-1 border-[var(--light-middle)]/25 ml-2 transition-all'>
+					<div className='flex flex-col gap-2 pl-3 border-l-2 border-[var(--light-middle)] ml-2 transition-all'>
 						{children}
 					</div>
 				</Show>

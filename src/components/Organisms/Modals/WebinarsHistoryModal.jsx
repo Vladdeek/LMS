@@ -117,7 +117,7 @@ export const WebinarHistory = ({ isOpen, onClose }) => {
 
 				{/* Уменьшенная зона со скроллом и лоадером */}
 				<div className='h-[35vh] bg-[var(--light-middle)] rounded-3xl overflow-y-auto hide-scrollbar flex flex-col gap-3 p-2 relative'>
-					{webinars !== [] ? (
+					{webinars.length !== 0 ? (
 						<AnimatePresence mode='wait'>
 							{activeWebinar ? (
 								<motion.div

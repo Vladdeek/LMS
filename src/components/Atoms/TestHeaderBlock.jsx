@@ -6,7 +6,6 @@ export const TestHeaderBlock = ({
 	isActive,
 	onClick,
 	delQuestion,
-	isEdit,
 }) => {
 	const STYLES = {
 		// По умолчанию все блоки в дефолтном стиле
@@ -23,12 +22,6 @@ export const TestHeaderBlock = ({
             `}
 		>
 			<p>{num}</p> {/* Порядковый номер для красоты отображения */}
-			{isEdit && (
-				<X
-					onClick={e => delQuestion(e)}
-					className='w-[16px] h-[16px] absolute -top-1 -right-1 bg-[var(--red-base)] rounded-full p-[3px] text-[var(--red-pale)] opacity-0 group-hover:opacity-100 hover:contrast-150 hover:scale-105 active:scale-95 transition-all z-10'
-				/>
-			)}
 		</div>
 	)
 }

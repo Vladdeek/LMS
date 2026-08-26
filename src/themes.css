@@ -4,6 +4,16 @@
 	--darkness-hero: #aa0c3e;
 	--light-hero: #f65e8e;
 
+	/* --transparent-hero: #82000025;
+	--base-hero: #820000;
+	--darkness-hero: #540000;
+	--light-hero: #b32d2d; */
+
+	/* --transparent-hero: #ff6b0025;
+	--base-hero: #ff6b00;
+	--darkness-hero: #b34b00;
+	--light-hero: #ff944d; */
+
 	/* Green - Success */
 	--green-base: #34d399;
 	--green-hover: #10b981;
@@ -43,7 +53,7 @@
 	--light-middle: #ededed;
 	--shadow: 1px 2px 8px rgba(0, 0, 0, 0.125);
 	--hero: var(--base-hero);
-	--hero-pale: #faf1f4;
+	--hero-pale: var(--transparent-hero);
 
 	--yellow-text: var(--yellow-base);
 	--yellow-bg: var(--yellow-pale);
@@ -61,7 +71,7 @@
 	--light-middle: #222222;
 	--shadow: 1px 2px 8px rgba(0, 0, 0, 0.25);
 	--hero: var(--base-hero);
-	--hero-pale: #463037;
+	--hero-pale: var(--transparent-hero);
 
 	--yellow-text: var(--yellow-dark);
 	--yellow-bg: var(--yellow-base);

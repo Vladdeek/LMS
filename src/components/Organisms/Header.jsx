@@ -27,6 +27,7 @@ import { MobileMenuDrawer } from './MobileMenuDrawler'
 import { HeaderButton } from '../Atoms/Buttons/HeaderButton'
 import { Logout } from '../../api/Authorization'
 import { toast } from 'sonner'
+import { MEDIA_API_URL } from '../../API'
 
 const GradientIcon = ({ Icon, id, palette, size = '125%' }) => (
 	<svg width={size} height={size} className='rotate-y-180' viewBox='0 0 24 24'>
@@ -323,7 +324,7 @@ export const Header = ({ links = [], onChangeRole }) => {
 								{userInfo?.avatar_url ? (
 									<img
 										className='h-10 w-10 md:h-12 md:w-12 rounded-md object-cover aspect-square'
-										src={userInfo?.avatar_url}
+										src={MEDIA_API_URL + userInfo?.avatar_url}
 										alt='Avatar'
 									/>
 								) : (
