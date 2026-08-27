@@ -113,7 +113,7 @@ export const CourseForm = ({ onClose, selectedCourse }) => {
 								{/* Основная информация */}
 								<section className='space-y-4'>
 									<div className='flex items-center gap-2.5 pb-2 border-b border-[var(--light-middle)]/30'>
-										<div className='p-1.5 bg-[var(--transparent-hero)] rounded-lg text-[var(--hero)]'>
+										<div className='p-1.5 bg-[var(--hero-pale)] rounded-lg text-[var(--hero)]'>
 											<BookOpen size={18} />
 										</div>
 										<h3 className='text-base font-bold text-[var(--black)]'>
@@ -146,7 +146,7 @@ export const CourseForm = ({ onClose, selectedCourse }) => {
 								{/* Параметры обучения */}
 								<section className='space-y-4'>
 									<div className='flex items-center gap-2.5 pb-2 border-b border-[var(--light-middle)]/30'>
-										<div className='p-1.5 bg-[var(--transparent-hero)] rounded-lg text-[var(--hero)]'>
+										<div className='p-1.5 bg-[var(--hero-pale)] rounded-lg text-[var(--hero)]'>
 											<GraduationCap size={18} />
 										</div>
 										<h3 className='text-base font-bold text-[var(--black)]'>
@@ -210,7 +210,7 @@ export const CourseForm = ({ onClose, selectedCourse }) => {
 							<div className='space-y-6'>
 								<section className='space-y-3'>
 									<div className='flex items-center gap-2.5 pb-2 border-b border-[var(--light-middle)]/30'>
-										<div className='p-1.5 bg-[var(--transparent-hero)] rounded-lg text-[var(--hero)]'>
+										<div className='p-1.5 bg-[var(--hero-pale)] rounded-lg text-[var(--hero)]'>
 											<Calendar size={18} />
 										</div>
 										<h3 className='text-base font-bold text-[var(--black)]'>
@@ -248,7 +248,7 @@ export const CourseForm = ({ onClose, selectedCourse }) => {
 
 								<section className='space-y-3'>
 									<div className='flex items-center gap-2.5 pb-2 border-b border-[var(--light-middle)]/30'>
-										<div className='p-1.5 bg-[var(--transparent-hero)] rounded-lg text-[var(--hero)]'>
+										<div className='p-1.5 bg-[var(--hero-pale)] rounded-lg text-[var(--hero)]'>
 											<Layers size={18} />
 										</div>
 										<h3 className='text-base font-bold text-[var(--black)]'>

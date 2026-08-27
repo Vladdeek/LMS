@@ -104,7 +104,7 @@ export const Formula = ({
 								<button
 									key={index}
 									onClick={() => insertTemplate(item.tpl)}
-									className='flex items-center gap-1 px-3 py-1 bg-[var(--transparent-hero)] text-[var(--hero)] rounded-lg hover:scale-105 transition-all cursor-pointer text-sm'
+									className='flex items-center gap-1 px-3 py-1 bg-[var(--hero-pale)] text-[var(--hero)] rounded-lg hover:scale-105 transition-all cursor-pointer text-sm'
 								>
 									{item.icon} {item.title}
 								</button>

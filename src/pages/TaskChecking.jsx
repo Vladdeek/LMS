@@ -37,7 +37,7 @@ const UserCard = ({ FullName, avatar_url, email, role, onClick }) => {
 							{'. '}
 							{FullName?.patronymic[0]}.
 						</p>
-						<p className='text-sm bg-[var(--transparent-hero)] text-[var(--hero)] px-2 rounded-full'>
+						<p className='text-sm bg-[var(--hero-pale)] text-[var(--hero)] px-2 rounded-full'>
 							{role && <p>{roles[role]}</p>}
 						</p>
 					</div>

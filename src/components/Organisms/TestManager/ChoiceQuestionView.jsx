@@ -66,7 +66,10 @@ export const ChoiceQuestionView = ({
 				))}
 			</AnimatePresence>
 			<Show when={role !== 'student'}>
-				<SubmitButton onClick={onAddOption} className='mt-2'>
+				<SubmitButton
+					onClick={onAddOption}
+					className='mt-2 w-full flex justify-center items-center'
+				>
 					<Plus strokeWidth={3} />
 					<p>Добавить вариант</p>
 				</SubmitButton>

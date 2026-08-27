@@ -26,7 +26,7 @@ export const UserCard = ({ FullName, avatar_url, email, role, onClick }) => {
 							{FullName?.last_name} {FullName?.first_name}{' '}
 							{FullName?.patronymic}
 						</Text>
-						<p className='text-sm bg-[var(--transparent-hero)] text-[var(--hero)] px-2 rounded-full'>
+						<p className='text-sm bg-[var(--hero-pale)] text-[var(--hero)] px-2 rounded-full'>
 							{role && <p>{roles[role]}</p>}
 						</p>
 					</div>

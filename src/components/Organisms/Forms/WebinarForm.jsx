@@ -49,7 +49,7 @@ export const WebinarForm = props => {
 						{/* ЛЕВАЯ КОЛОНКА */}
 						<section className='space-y-3'>
 							<div className='flex items-center gap-2.5 pb-2 border-b border-[var(--light-middle)]/30'>
-								<div className='p-1.5 bg-[var(--transparent-hero)] rounded-lg text-[var(--hero)]'>
+								<div className='p-1.5 bg-[var(--hero-pale)] rounded-lg text-[var(--hero)]'>
 									<Video size={18} />
 								</div>
 								<h3 className='text-base font-bold text-[var(--black)]'>
@@ -90,7 +90,7 @@ export const WebinarForm = props => {
 						{/* ПРАВАЯ КОЛОНКА */}
 						<section className='space-y-3'>
 							<div className='flex items-center gap-2.5 pb-2 border-b border-[var(--light-middle)]/30'>
-								<div className='p-1.5 bg-[var(--transparent-hero)] rounded-lg text-[var(--hero)]'>
+								<div className='p-1.5 bg-[var(--hero-pale)] rounded-lg text-[var(--hero)]'>
 									<Calendar size={18} />
 								</div>
 								<h3 className='text-base font-bold text-[var(--black)]'>
@@ -142,7 +142,7 @@ export const WebinarForm = props => {
 					<section className='flex flex-col w-full pt-2 border-t border-[var(--light-middle)]/30'>
 						<div className='flex w-full items-center justify-between pb-2 border-b border-[var(--light-middle)]/30'>
 							<div className='flex items-center gap-2.5'>
-								<div className='p-1.5 bg-[var(--transparent-hero)] rounded-lg text-[var(--hero)]'>
+								<div className='p-1.5 bg-[var(--hero-pale)] rounded-lg text-[var(--hero)]'>
 									<Users size={18} />
 								</div>
 								<h3 className='text-base font-bold text-[var(--black)]'>
@@ -183,7 +183,7 @@ export const WebinarForm = props => {
 										>
 											<div
 												onClick={() => actions.handleRemoveGroup(item.id)}
-												className='bg-[var(--transparent-hero)] text-[var(--hero)] border border-[var(--hero)]/20 rounded-lg px-3 py-1.5 cursor-pointer hover:bg-red-500 hover:text-white hover:border-red-500 transition-all flex items-center gap-2 text-xs font-medium group'
+												className='bg-[var(--hero-pale)] text-[var(--hero)] border border-[var(--hero)]/20 rounded-lg px-3 py-1.5 cursor-pointer hover:bg-red-500 hover:text-white hover:border-red-500 transition-all flex items-center gap-2 text-xs font-medium group'
 											>
 												<span className='truncate max-w-[180px]'>
 													{item.name}

@@ -16,6 +16,7 @@ import { Show } from '../Atoms/Show'
 import { Loading } from '../Atoms/Loaders/Loading'
 import { ButtonCase } from '../Atoms/Buttons/ButtonCase'
 import { Text } from '../Atoms/Text'
+import { TestSettingsModal } from './Modals/TestSettingsModal'
 
 const formatTime = seconds => {
 	const mins = Math.floor(seconds / 60)
@@ -32,6 +33,7 @@ export const ContentHeader = ({ isEdit, onIsEditChange }) => {
 
 	const [sectionInfo, setSectionInfo] = useState(null)
 	const [questionsData, setQuestionsData] = useState(null)
+	const [testSettingsIsOpen, setTestSettingsIsOpen] = useState(false)
 
 	const [totalTime, setTotalTime] = useState(0)
 	const [timeLeft, setTimeLeft] = useState(0)
@@ -109,77 +111,77 @@ export const ContentHeader = ({ isEdit, onIsEditChange }) => {
 	const labels = LESSON_LABELS
 
 	return (
-		<div className='flex flex-col gap-3'>
-			<div className='relative flex items-center justify-between w-full bg-[var(--white)] shadow-[var(--shadow)] rounded-xl pr-3 pl-4 py-2 overflow-hidden'>
-				<div className='flex items-center gap-3'>
-					<Show when={sectionInfo}>
-						<>
-							<span className='text-[var(--middle)] h-full w-auto'>
-								{icons[activeType]}
-							</span>
-							<div className='flex flex-col'>
-								<p className='text-[var(--middle)] text-xs uppercase font-medium'>
-									{labels[activeType]}
-								</p>
-								<Show when={sectionInfo !== null} fallback={<Loading />}>
-									<p className='text-[var(--black)] text-lg font-semibold'>
-										{sectionInfo?.title}
+		<>
+			<TestSettingsModal
+				isOpen={testSettingsIsOpen}
+				onClose={() => setTestSettingsIsOpen(false)}
+			/>
+			<div className='flex flex-col gap-3'>
+				<div className='relative flex items-center justify-between w-full bg-[var(--white)] shadow-[var(--shadow)] rounded-xl pr-3 pl-4 py-2 overflow-hidden'>
+					<div className='flex items-center gap-3'>
+						<Show when={sectionInfo}>
+							<>
+								<span className='text-[var(--middle)] h-full w-auto'>
+									{icons[activeType]}
+								</span>
+								<div className='flex flex-col'>
+									<p className='text-[var(--middle)] text-xs uppercase font-medium'>
+										{labels[activeType]}
 									</p>
-								</Show>
-							</div>
+									<Show when={sectionInfo !== null} fallback={<Loading />}>
+										<p className='text-[var(--black)] text-lg font-semibold'>
+											{sectionInfo?.title}
+										</p>
+									</Show>
+								</div>
+							</>
+						</Show>
+					</div>
+
+					<Show when={role !== 'student' && activeType === 'test'}>
+						<button
+							onClick={() => setTestSettingsIsOpen(true)}
+							className={
+								'flex items-center justify-center group cursor-pointer bg-[var(--white)] shadow-[var(--shadow)] h-full w-auto aspect-square rounded-lg hover:bg-[var(--light-middle)]  transition-all'
+							}
+							invert
+						>
+							<Settings className='group-hover:rotate-360 duration-500 transition-all group-hover:scale-105' />
+						</button>
+					</Show>
+					<Show when={role !== 'student' && activeType !== 'test'}>
+						<Toggle
+							label='Режим редактирования'
+							isActive={isEdit}
+							defaultValue={true}
+							onChange={data => onIsEditChange?.(data)}
+						/>
+					</Show>
+
+					<Show when={activeType === 'test' && testStatus === 'pending'}>
+						<>
+							<p className='w-24 text-center text-[var(--black)] font-semibold'>
+								{formatTime(timeLeft >= 0 ? timeLeft : 0)}
+							</p>
+							<SubmitButton
+								onClick={handleEndSession}
+								rounded='rounded-lg'
+								className='w-fit'
+								flexParams='justify-center'
+							>
+								Завершить тест
+							</SubmitButton>
+							<div
+								style={{
+									width: `${progressWidth}%`,
+									transition: 'width 1s linear',
+								}}
+								className='absolute bg-[var(--hero)] bottom-0 left-0 h-1 rounded-full'
+							/>
 						</>
 					</Show>
 				</div>
-				{/* <Show when={role !== 'student' && activeType === 'test'}>
-					<TimeLimitInput
-						COUNT_QUESTION={questionsData?.question_ids?.length}
-						value={questionsData?.time_limit}
-						onChange={data => changeTimeLimit(data)}
-					/>
-				</Show> */}
-
-				<Show when={role !== 'student' && activeType === 'test'}>
-					<button
-						className={
-							'flex items-center justify-center group cursor-pointer bg-[var(--white)] shadow-[var(--shadow)] h-full w-auto aspect-square rounded-lg hover:bg-[var(--light-middle)]  transition-all'
-						}
-						invert
-					>
-						<Settings className='group-hover:rotate-360 duration-500 transition-all group-hover:scale-105' />
-					</button>
-				</Show>
-				<Show when={role !== 'student' && activeType !== 'test'}>
-					<Toggle
-						label='Режим редактирования'
-						isActive={isEdit}
-						defaultValue={true}
-						onChange={data => onIsEditChange?.(data)}
-					/>
-				</Show>
-
-				<Show when={activeType === 'test' && testStatus === 'pending'}>
-					<>
-						<p className='w-24 text-center text-[var(--black)] font-semibold'>
-							{formatTime(timeLeft >= 0 ? timeLeft : 0)}
-						</p>
-						<SubmitButton
-							onClick={handleEndSession}
-							rounded='rounded-lg'
-							className='w-fit'
-							flexParams='justify-center'
-						>
-							Завершить тест
-						</SubmitButton>
-						<div
-							style={{
-								width: `${progressWidth}%`,
-								transition: 'width 1s linear',
-							}}
-							className='absolute bg-[var(--hero)] bottom-0 left-0 h-1 rounded-full'
-						/>
-					</>
-				</Show>
 			</div>
-		</div>
+		</>
 	)
 }

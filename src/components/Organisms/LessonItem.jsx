@@ -166,7 +166,7 @@ export const LessonItem = ({
 				onClick={onClick}
 				className={`flex flex-col gap-1 w-full p-3 rounded-xl transition-all shadow-[var(--shadow)] border ${
 					isSelected
-						? 'border-[var(--hero)] bg-[var(--transparent-hero)]'
+						? 'border-[var(--hero)] bg-[var(--hero-pale)]'
 						: 'border-transparent bg-[var(--white)] hover:bg-[var(--light-middle)]/25 cursor-pointer'
 				}`}
 			>

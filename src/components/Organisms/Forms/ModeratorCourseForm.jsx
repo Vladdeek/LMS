@@ -136,7 +136,7 @@ export const ModeratorCourseForm = ({ onChange, isEdit = false }) => {
 						<>
 							<section className='space-y-5'>
 								<div className='flex items-center gap-3'>
-									<div className='p-2 bg-[var(--transparent-hero)] rounded-lg text-[var(--hero)]'>
+									<div className='p-2 bg-[var(--hero-pale)] rounded-lg text-[var(--hero)]'>
 										<BookOpen size={20} />
 									</div>
 									<h3 className='text-lg font-bold text-[var(--black)]'>
@@ -160,7 +160,7 @@ export const ModeratorCourseForm = ({ onChange, isEdit = false }) => {
 
 							<section className='space-y-5'>
 								<div className='flex items-center gap-3'>
-									<div className='p-2 bg-[var(--transparent-hero)] rounded-lg text-[var(--hero)]'>
+									<div className='p-2 bg-[var(--hero-pale)] rounded-lg text-[var(--hero)]'>
 										<BookOpen size={20} />
 									</div>
 									<h3 className='text-lg font-bold text-[var(--black)]'>

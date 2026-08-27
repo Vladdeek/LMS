@@ -183,9 +183,9 @@ const CoursePage = () => {
 						/>
 
 						<div className='w-full h-full bg-[var(--white)] overflow-hidden shadow-lg rounded-3xl p-4 mb-5 flex flex-col'>
-							{activeSectionId && (
+							<Show when={activeSectionId}>
 								<ContentHeader onIsEditChange={setIsEdit} isEdit={isEdit} />
-							)}
+							</Show>
 
 							<div className='w-full flex-1 overflow-y-auto px-2 py-4'>
 								<ContentView isEdit={role !== 'student' && isEdit} />

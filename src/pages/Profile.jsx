@@ -202,7 +202,7 @@ const Profile = ({ mode, userId, onChange }) => {
 								</h2>
 								{/* РОЛЬ: Аккуратный бейдж */}
 							</div>
-							<div className='inline-flex w-fit items-center justify-center px-3 py-1 rounded-lg bg-[var(--transparent-hero)] text-[var(--hero)] text-xs font-bold uppercase tracking-wider self-center md:self-auto'>
+							<div className='inline-flex w-fit items-center justify-center px-3 py-1 rounded-lg bg-[var(--hero-pale)] text-[var(--hero)] text-xs font-bold uppercase tracking-wider self-center md:self-auto'>
 								{roles[userInfo.role]}
 							</div>
 

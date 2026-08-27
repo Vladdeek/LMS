@@ -196,7 +196,7 @@ export const UserForm = ({ mode, userId, onChange }) => {
 					<div className='col-span-12 lg:col-span-8 flex flex-col justify-between space-y-8'>
 						<div className='space-y-6'>
 							<div className='flex items-center gap-3 mb-2'>
-								<div className='p-2 bg-[var(--transparent-hero)] rounded-lg text-[var(--hero)]'>
+								<div className='p-2 bg-[var(--hero-pale)] rounded-lg text-[var(--hero)]'>
 									<ShieldCheck size={20} />
 								</div>
 								<h3 className='text-lg font-medium text-[var(--black)]'>

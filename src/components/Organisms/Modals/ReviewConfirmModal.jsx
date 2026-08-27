@@ -7,7 +7,7 @@ export const ReviewConfirmModal = ({ isModalOpen, onClose }) => {
 		<Modal width={'w-110'} isOpen={isModalOpen}>
 			<div className='flex flex-col gap-6 p-2 w-full'>
 				<div className='flex flex-col items-center text-center gap-3'>
-					<div className='p-4 bg-[var(--transparent-hero)] rounded-full text-[var(--hero)]'>
+					<div className='p-4 bg-[var(--hero-pale)] rounded-full text-[var(--hero)]'>
 						<ShieldAlert size={40} />
 					</div>
 					<h2 className='text-2xl font-bold text-[var(--black)]'>

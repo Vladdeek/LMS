@@ -1,18 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Input } from '../Molecules/InputFields/Input'
-import { SubmitButton } from '../Atoms/Buttons/SubmitButton'
-import { useDebounce } from '../../hooks/useDebounce'
 import {
 	AddOptionOnQuestion,
 	EditQuestion,
 	GetDetailQuestion,
-} from '../../api/Test'
-import { ChoiceQuestionView } from './TestManager/ChoiceQuestionView'
-import { OpenQuestionView } from './TestManager/OpenQuestionView'
-import { useUser } from '../../context/UserContext'
-import { Show } from '../Atoms/Show'
-import { Loader } from '../Atoms/Loaders/Loader'
+} from '../../../api/Test'
+import { Loader } from '../../Atoms/Loaders/Loader'
+import { Show } from '../../Atoms/Show'
+import { Input } from '../../Molecules/InputFields/Input'
+import { ChoiceQuestionView } from './ChoiceQuestionView'
+import { OpenQuestionView } from './OpenQuestionView'
+import { SubmitButton } from '../../Atoms/Buttons/SubmitButton'
+import { useUser } from '../../../context/UserContext'
+import { useDebounce } from '../../../hooks/useDebounce'
 
 export const TestView = ({}) => {
 	const [searchParams] = useSearchParams()
@@ -91,16 +91,6 @@ export const TestView = ({}) => {
 		}
 	}
 
-	const handleChangeTypeOnOption = async type => {
-		try {
-			await EditQuestionType(activeQuestionId, type)
-		} catch (err) {
-			console.error(err)
-		} finally {
-			getQuestionDetails()
-		}
-	}
-
 	const debouncedEditQuestion = useDebounce(async (q, s) => {
 		try {
 			await EditQuestion(activeQuestionId, q, s)
@@ -139,7 +129,7 @@ export const TestView = ({}) => {
 
 	if (data === null)
 		return (
-			<div className='w-full h-[30vh]'>
+			<div className='w-full flex items-center justify-center h-[30vh]'>
 				<Loader />
 			</div>
 		)
@@ -175,24 +165,25 @@ export const TestView = ({}) => {
 
 			{/* Контент вопроса в зависимости от типа */}
 			<div className='w-full max-w-2xl flex flex-col items-center gap-4'>
-				{data?.question_type === 'choice' ? (
-					<ChoiceQuestionView
-						isEdit={role !== 'student'}
-						options={options}
-						selectedOptions={selectedOptions}
-						onToggleOption={toggleOption}
-						onAddOption={addOption}
-						onChangeTypeToOpen={() => handleChangeTypeOnOption('open')}
-						onOptionUpdate={getQuestionDetails}
-					/>
-				) : (
-					<OpenQuestionView
-						isEdit={role !== 'student'}
-						studentAnswer={data?.student_answer}
-						onChange={handleChange}
-						onChangeTypeToChoice={() => handleChangeTypeOnOption('choice')}
-					/>
-				)}
+				<Show when={data !== null}>
+					<Show when={data?.question_type === 'choice'}>
+						<ChoiceQuestionView
+							isEdit={role !== 'student'}
+							options={options}
+							selectedOptions={selectedOptions}
+							onToggleOption={toggleOption}
+							onAddOption={addOption}
+							onOptionUpdate={getQuestionDetails}
+						/>
+					</Show>
+					<Show when={data?.question_type === 'open'}>
+						<OpenQuestionView
+							isEdit={role !== 'student'}
+							studentAnswer={data?.student_answer}
+							onChange={handleChange}
+						/>
+					</Show>
+				</Show>
 
 				<Show when={role === 'student'}>
 					<SubmitButton onClick={submitAnswer} className='mt-2'>

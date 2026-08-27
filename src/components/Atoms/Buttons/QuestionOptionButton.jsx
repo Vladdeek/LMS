@@ -22,7 +22,7 @@ export const QuestionOptionButton = ({
 			{/* Инпут с дебаунсом */}
 			<div className='flex-1'>
 				<p
-					className={`flex justify-between rounded-2xl p-3 shadow-[var(--shadow)] outline-0 transition-all cursor-pointer  hover:ring-3 ${isSelected ? 'bg-[var(--hero)] text-white ring-[var(--transparent-hero)]' : 'text-[var(--black)] bg-[var(--white)] ring-[var(--hero)]'}`}
+					className={`flex justify-between rounded-2xl p-3 shadow-[var(--shadow)] outline-0 transition-all cursor-pointer  hover:ring-3 ${isSelected ? 'bg-[var(--hero)] text-white ring-[var(--hero-pale)]' : 'text-[var(--black)] bg-[var(--white)] ring-[var(--hero)]'}`}
 				>
 					{initialText}
 					<Check

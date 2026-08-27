@@ -11,8 +11,6 @@ import { Formula } from './ConstructorViews/FormulaConstructor'
 import { ButtonConstructor } from './ConstructorViews/ButtonConstructor'
 import { Callout } from './ConstructorViews/Callout'
 
-import { StudentTestView } from './StudentTestView'
-import { TestManager } from './TestManager'
 import { StudentPracticeView } from './StudentPracticeView'
 import { ConstructorMenu } from '../Molecules/ContructorMenu'
 import { useUser } from '../../context/UserContext'
@@ -29,6 +27,8 @@ import {
 import { useParams, useSearchParams } from 'react-router-dom'
 import { DynamicTable } from './ConstructorViews/TableConstructor'
 import { AudioManager } from './ConstructorViews/AudioManager'
+import { TestManager } from './TestManager/TestManager'
+import { StudentTestView } from './StudentTestView'
 
 const COMPONENT_MAP = {
 	text: TextEditor,

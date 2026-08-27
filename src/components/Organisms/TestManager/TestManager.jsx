@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { TestHeader } from '../Molecules/TestHeader'
-import { TestingScore } from './TestingScore'
-import { StartTestingButton } from '../Atoms/Buttons/StartTestingButton'
-import { TestView } from './TestView'
 
-import { Show } from '../Atoms/Show'
-import { Text } from '../Atoms/Text'
+import { Show } from '../../Atoms/Show'
+import { Text } from '../../Atoms/Text'
+import { TestHeader } from '../../Molecules/TestHeader'
+import { TestView } from './TestView'
+import { TestingScore } from './TestingScore'
+import { StartTestingButton } from '../../Atoms/Buttons/StartTestingButton'
 
 export const TestManager = ({ isEdit }) => {
 	const [searchParams] = useSearchParams() // Достаем хук
