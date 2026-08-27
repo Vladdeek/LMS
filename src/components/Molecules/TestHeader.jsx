@@ -9,33 +9,7 @@ import Modal from '../Atoms/Modal'
 import { Text } from '../Atoms/Text'
 import { SubmitButton } from '../Atoms/Buttons/SubmitButton'
 import { toast } from 'sonner'
-
-const QUESTION_TYPES = [
-	{
-		id: 'choice',
-		icon: <CheckSquare size={48} />,
-		label: 'Выбор ответа',
-		description:
-			'Тестовый вопрос с выбором одного или нескольких правильных вариантов',
-		apiType: 'choice',
-	},
-	{
-		id: 'open',
-		icon: <MessageSquare size={48} />,
-		label: 'Открытый ответ',
-		description:
-			'Вопрос, предполагающий развернутый текстовый ответ в свободной форме',
-		apiType: 'open',
-	},
-	{
-		id: 'matching',
-		icon: <ArrowRightLeft size={48} />,
-		label: 'Сопоставление',
-		description:
-			'Задание на установление соответствия между элементами двух списков',
-		apiType: 'matching',
-	},
-]
+import { QUESTION_TYPES } from '../../Constants/questionTypes'
 
 export const TestHeader = ({ isEdit }) => {
 	const [searchParams, setSearchParams] = useSearchParams()
