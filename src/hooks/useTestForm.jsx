@@ -11,11 +11,22 @@ export const useTestForm = props => {
 
 	// Настройки прохождения
 	const [timeLimit, setTimeLimit] = useState(initialData?.timeLimit || '')
+	const [hasTimeLimit, setHasTimeLimit] = useState(
+		Boolean(initialData?.timeLimit),
+	)
 	const [hasAttemptsLimit, setHasAttemptsLimit] = useState(
 		Boolean(initialData?.attemptsCount),
 	)
 	const [attemptsCount, setAttemptsCount] = useState(
 		initialData?.attemptsCount || '',
+	)
+
+	// Новые поля
+	const [showAnswersToStudent, setShowAnswersToStudent] = useState(
+		initialData?.showAnswersToStudent ?? false,
+	)
+	const [gradingStrategy, setGradingStrategy] = useState(
+		initialData?.gradingStrategy ?? 1, // 0: Высший балл, 1: Средний балл, 2: Последняя попытка
 	)
 
 	// Вопросы
@@ -58,6 +69,13 @@ export const useTestForm = props => {
 		fetchQuestions()
 	}, [testId])
 
+	// Хэндлер для установки лимита времени
+	const handleTimeLimitChange = val => {
+		const nextVal =
+			typeof val === 'object' && val?.target ? val.target.value : val
+		setTimeLimit(nextVal)
+	}
+
 	// Хэндлеры с ограничением
 	const handleQuestionsToUseChange = value => {
 		const numValue = Number(value)
@@ -81,13 +99,20 @@ export const useTestForm = props => {
 		}
 	}
 
-	// Минимальное время
+	const handleHasTimeLimitChange = checked => {
+		setHasTimeLimit(checked)
+		if (!checked) {
+			setTimeLimit('')
+		}
+	}
+
+	// Минимальное время в секундах
 	const effectiveQuestionsCount = isQuestionBank
 		? Number(questionsToUse) || 0
 		: totalQuestionsCount
 
-	const minTimeLimit =
-		effectiveQuestionsCount * TEST_CONFIG.TIME_PER_QUESTION_MINUTES
+	const TIME_FOR_ONE_QUESTION_SECONDS = 90
+	const minTimeLimit = effectiveQuestionsCount * TIME_FOR_ONE_QUESTION_SECONDS
 
 	// Валидация
 	const isAttemptsInvalid =
@@ -103,10 +128,12 @@ export const useTestForm = props => {
 			(totalQuestionsCount > 0 && Number(questionsToUse) > totalQuestionsCount))
 
 	const isPassingScoreInvalid =
-		hasPassingScore && (!passingScore || Number(passingScore) <= 0)
+		hasPassingScore &&
+		(!passingScore || Number(passingScore) <= 0 || Number(passingScore) > 100)
 
 	const isTimeLimitInvalid =
-		timeLimit !== '' && Number(timeLimit) < minTimeLimit
+		hasTimeLimit &&
+		(!timeLimit || Number(timeLimit) <= 0 || Number(timeLimit) < minTimeLimit)
 
 	const isSubmitDisabled =
 		isAttemptsInvalid ||
@@ -121,9 +148,12 @@ export const useTestForm = props => {
 
 		const payload = {
 			testId,
-			timeLimit: timeLimit ? Number(timeLimit) : null,
+			hasTimeLimit,
+			timeLimit: hasTimeLimit && timeLimit ? Number(timeLimit) : null,
 			hasAttemptsLimit,
 			attemptsCount: hasAttemptsLimit ? Number(attemptsCount) : null,
+			gradingStrategy: hasAttemptsLimit ? gradingStrategy : null,
+			showAnswersToStudent,
 			isQuestionBank,
 			questionsToUse: isQuestionBank ? Number(questionsToUse) : null,
 			hasPassingScore,
@@ -138,9 +168,12 @@ export const useTestForm = props => {
 	return {
 		state: {
 			testId,
+			hasTimeLimit,
 			timeLimit,
 			hasAttemptsLimit,
 			attemptsCount,
+			gradingStrategy,
+			showAnswersToStudent,
 			isQuestionBank,
 			questionsToUse,
 			hasPassingScore,
@@ -153,9 +186,12 @@ export const useTestForm = props => {
 			minTimeLimit,
 		},
 		actions: {
-			setTimeLimit,
+			setHasTimeLimit: handleHasTimeLimitChange,
+			setTimeLimit: handleTimeLimitChange,
 			setHasAttemptsLimit,
 			setAttemptsCount: handleAttemptsCountChange,
+			setGradingStrategy,
+			setShowAnswersToStudent,
 			setIsQuestionBank,
 			setQuestionsToUse: handleQuestionsToUseChange,
 			setHasPassingScore,

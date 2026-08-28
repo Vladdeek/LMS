@@ -7,11 +7,28 @@ export const GetQuestions = async test_id => {
 	return response.data
 }
 
-// ---> GetDetailQuestion - Отдает детали вопроса (сам вопрос, тип, массив вариантов ответов и т.д.) <---
+// ---> GetDetailQuestion - Отдает детали вопроса (сам вопрос, тип, оценку за вопрос) <---
 export const GetDetailQuestion = async question_id => {
 	const response = await api.get(`${API_URL}/questions/${question_id}/details`)
 	return response.data
 }
+
+// ---> GetChoiceOptions - Отдает варианты ответа (choice) <---
+export const GetChoiceOptions = async question_id => {
+	const response = await api.get(
+		`${API_URL}/questions/options/choice/${question_id}`,
+	)
+	return response.data
+}
+
+// ---> GetChoiceOptions - Отдает варианты ответа (matching) <---
+export const GetMatchingOptions = async question_id => {
+	const response = await api.get(
+		`${API_URL}/questions/options/matching/${question_id}`,
+	)
+	return response.data
+}
+
 // ---> AddQuestion - Создает вопрос (изначально типа "open") <---
 export const AddQuestion = async (test_id, type) => {
 	const response = await api.post(`${API_URL}/questions/test/${test_id}`, {
@@ -29,9 +46,7 @@ export const EditQuestion = async (question_id, title, score) => {
 }
 // ---> DeleteQuestion - Удалить вопрос полностью <---
 export const DeleteQuestion = async question_id => {
-	const response = await api.delete(
-		`${API_URL}/test-content/question/${question_id}`,
-	)
+	const response = await api.delete(`${API_URL}/questions/${question_id}`)
 	return response.data
 }
 
@@ -43,6 +58,52 @@ export const AddOptionOnQuestion = async (question_id, option_code) => {
 	)
 	return response.data
 }
+
+// ---> AddOptionOnQuestion - создает вариант ответа <---
+export const AddOptionToMatchingQuestion = async (
+	question_id,
+	option_code,
+	column,
+) => {
+	const response = await api.post(
+		`${API_URL}/questions/options/matching/${question_id}`,
+		{ name: '', option_code, column },
+	)
+	return response.data
+}
+
+// ---> CreatePair - создает пару <---
+export const CreatePair = async (
+	question_id,
+	left_option_id,
+	right_option_id,
+) => {
+	const response = await api.post(
+		`${API_URL}/questions/options/matching/${question_id}/correct`,
+		{ left_option_id, right_option_id },
+	)
+	return response.data
+}
+
+// ---> AddMediaToQuestion - создает пару <---
+export const AddMediaToQuestion = async (question_id, file_metadata_id) => {
+	const response = await api.post(`${API_URL}/questions/${question_id}/media`, {
+		file_metadata_id,
+	})
+	return response.data
+}
+
+// ---> AddMediaToQuestion - создает пару <---
+export const DeleteMediaInQuestion = async (question_id, file_metadata_id) => {
+	const response = await api.delete(
+		`${API_URL}/questions/${question_id}/media`,
+		{
+			file_metadata_id,
+		},
+	)
+	return response.data
+}
+
 // ---> EditOptionName - обновляет вариант ответа (name) <---
 export const EditOptionName = async (option_id, name) => {
 	const response = await api.patch(

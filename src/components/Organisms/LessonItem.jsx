@@ -14,6 +14,11 @@ import { ButtonCase } from '../Atoms/Buttons/ButtonCase'
 import { LESSON_ICONS, LESSON_LABELS } from '../../Constants/lessonTypes'
 import { useClickOutside } from '../../hooks/useClickOutside'
 import { useScrollListener } from '../../hooks/useScrollListener'
+import {
+	deleteSection,
+	renameSection,
+	translateSection,
+} from '../../api/courseService'
 
 export const LessonItem = ({
 	type,
@@ -46,6 +51,10 @@ export const LessonItem = ({
 	useClickOutside(menuRef, () => setMenuIsOpen(false), menuIsOpen)
 	useScrollListener(() => setMenuIsOpen(false), menuIsOpen)
 
+	const ReloadSideBar = () => {
+		window.dispatchEvent(new Event('course:sidebar:update'))
+	}
+
 	const menuItems = [
 		{
 			title: 'Переименовать',
@@ -77,6 +86,7 @@ export const LessonItem = ({
 		try {
 			await deleteSection(section_id)
 			onChange?.()
+			ReloadSideBar()
 		} catch (err) {
 			console.error(err)
 		} finally {
@@ -88,6 +98,7 @@ export const LessonItem = ({
 		try {
 			await renameSection(section_id, newTitle)
 			onChange?.()
+			ReloadSideBar()
 		} catch (err) {
 			console.error(err)
 		} finally {
@@ -99,6 +110,7 @@ export const LessonItem = ({
 		try {
 			await translateSection(module_id, section_id, direction)
 			onChange?.()
+			ReloadSideBar()
 		} catch (err) {
 			console.error(err)
 		}

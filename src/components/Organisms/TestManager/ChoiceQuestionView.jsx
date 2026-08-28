@@ -1,4 +1,3 @@
-// ChoiceQuestionView.jsx
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus } from 'lucide-react'
 import { QuestionOptionButton } from '../../Atoms/Buttons/QuestionOptionButton'
@@ -7,18 +6,114 @@ import { Show } from '../../Atoms/Show'
 import { useUser } from '../../../context/UserContext'
 import { SubmitButton } from '../../Atoms/Buttons/SubmitButton'
 import { TEST_CONFIG } from '../../../Constants/testConfig'
+import {
+	AddOptionOnQuestion,
+	GetChoiceOptions,
+	EditOptionName,
+	EditOptionCorrectStatus,
+	DeleteOption,
+} from '../../../api/Test'
+import { useSearchParams } from 'react-router-dom'
+import { useEffect, useState, useCallback } from 'react'
+import { useDebounce } from '../../../hooks/useDebounce'
+
+const alphabet = ['а', 'б', 'в', 'г', 'д', 'е', 'ж']
 
 export const ChoiceQuestionView = ({
-	options = [],
 	selectedOptions,
 	onToggleOption,
-	onAddOption,
-	onChangeTypeToOpen,
 	onOptionUpdate,
 }) => {
+	const [searchParams] = useSearchParams()
+	const activeQuestionId = searchParams.get('questionId')
+
+	const [options, setOptions] = useState([])
 	const { role } = useUser()
-	const alphabet = ['а', 'б', 'в', 'г', 'д', 'е', 'ж']
-	const sortedOptions = options.sort((a, b) =>
+
+	useEffect(() => {
+		const fetchOptions = async () => {
+			if (!activeQuestionId) return
+			try {
+				const res = await GetChoiceOptions(activeQuestionId)
+				setOptions(res)
+			} catch (error) {
+				console.error(error)
+			}
+		}
+		fetchOptions()
+	}, [activeQuestionId])
+
+	// Дебаунс сохранение имени опции
+	const debouncedSaveName = useDebounce(async (id, newText) => {
+		try {
+			await EditOptionName(id, newText)
+		} catch (error) {
+			console.error('Ошибка сохранения названия:', error)
+		}
+	}, 1000)
+
+	const handleTextChange = (id, newText) => {
+		setOptions(prev =>
+			prev.map(opt => (opt.id === id ? { ...opt, name: newText } : opt)),
+		)
+		debouncedSaveName(id, newText)
+	}
+
+	// Переключение правильности (Оптимистичное обновление)
+	const handleToggleCorrect = async (id, currentStatus) => {
+		const nextStatus = !currentStatus
+		setOptions(prev =>
+			prev.map(opt => (opt.id === id ? { ...opt, correct: nextStatus } : opt)),
+		)
+
+		try {
+			await EditOptionCorrectStatus(id, nextStatus)
+		} catch (err) {
+			console.error('Ошибка переключения статуса:', err)
+			setOptions(prev =>
+				prev.map(opt =>
+					opt.id === id ? { ...opt, correct: currentStatus } : opt,
+				),
+			)
+		}
+	}
+
+	// Удаление опции
+	const handleDeleteOption = async id => {
+		try {
+			await DeleteOption(id)
+			setOptions(prev => prev.filter(opt => opt.id !== id))
+			onOptionUpdate?.()
+		} catch (err) {
+			console.error('Ошибка удаления:', err)
+		}
+	}
+
+	// Добавление опции
+	const addOption = async () => {
+		const existingCodes = new Set(options?.map(opt => opt.option_code))
+		let newCode = 1
+		while (existingCodes.has(String(newCode))) {
+			newCode++
+		}
+
+		try {
+			const res = await AddOptionOnQuestion(activeQuestionId, String(newCode))
+			setOptions(prev => [
+				...prev,
+				{
+					id: res.id,
+					name: res.name,
+					option_code: res.option_code,
+					correct: false,
+				},
+			])
+		} catch (err) {
+			console.error(err)
+		}
+	}
+
+	const sortedOptions = [...options].sort((a, b) =>
 		a.option_code.localeCompare(b.option_code, undefined, { numeric: true }),
 	)
 
@@ -45,11 +140,12 @@ export const ChoiceQuestionView = ({
 					>
 						{role !== 'student' ? (
 							<QuestionOptionInput
-								id={q.id}
-								initialText={q.name}
-								initialIsCorrect={q.correct}
-								onOptionUpdate={onOptionUpdate}
+								value={q.name}
+								isCorrect={q.correct}
 								disabled={options.length <= TEST_CONFIG.MIN_OPTION_COUNT}
+								onChangeText={newText => handleTextChange(q.id, newText)}
+								onToggleCorrect={() => handleToggleCorrect(q.id, q.correct)}
+								onDelete={() => handleDeleteOption(q.id)}
 							/>
 						) : (
 							<>
@@ -65,9 +161,10 @@ export const ChoiceQuestionView = ({
 					</motion.div>
 				))}
 			</AnimatePresence>
+
 			<Show when={role !== 'student'}>
 				<SubmitButton
-					onClick={onAddOption}
+					onClick={addOption}
 					className='mt-2 w-full flex justify-center items-center'
 				>
 					<Plus strokeWidth={3} />

@@ -1,4 +1,11 @@
-import { AudioLines, FileCode2, FileText, Film, Image } from 'lucide-react'
+import {
+	AudioLines,
+	FileCode2,
+	FileText,
+	Film,
+	Image,
+	Paperclip,
+} from 'lucide-react'
 import { languageMap } from './lanaguagesMap'
 
 export const UPLOAD_TYPES = {
@@ -31,5 +38,11 @@ export const UPLOAD_TYPES = {
 		title: 'код',
 		maxSize: 10, // или из констант
 		exts: Object.keys(languageMap).map(ext => `.${ext}`),
+	},
+	questionMedia: {
+		icon: Paperclip, // или FileUp
+		title: 'медиа-файл к вопросу',
+		maxSize: 10,
+		exts: ['.mp3', '.wav', '.jpg', '.png', '.jpeg', '.webp'],
 	},
 }

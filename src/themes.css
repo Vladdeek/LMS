@@ -14,6 +14,36 @@
 	--darkness-hero: #b34b00;
 	--light-hero: #ff944d; */
 
+	/* Желтая палитра */
+	/* --transparent-hero: #ffcc0025;
+	--base-hero: #ffcc00;
+	--darkness-hero: #b38f00;
+	--light-hero: #ffdb4d; */
+
+	/* Зеленая палитра */
+	/* --transparent-hero: #00cc6625;
+	--base-hero: #00cc66;
+	--darkness-hero: #008f47;
+	--light-hero: #4dff99; */
+
+	/* Голубая палитра (Cyan / Sky Blue) */
+	/* --transparent-hero: #00b4d825;
+	--base-hero: #00b4d8;
+	--darkness-hero: #007791;
+	--light-hero: #48cae4; */
+
+	/* Синяя палитра */
+	/* --transparent-hero: #0066ff25;
+	--base-hero: #0066ff;
+	--darkness-hero: #0047b3;
+	--light-hero: #4d94ff; */
+
+	/* Фиолетовая палитра */
+	/* --transparent-hero: #9933ff25;
+	--base-hero: #9933ff;
+	--darkness-hero: #6b00b3;
+	--light-hero: #b766ff; */
+
 	/* Green - Success */
 	--green-base: #34d399;
 	--green-hover: #10b981;
@@ -43,6 +73,18 @@
 	--red-hover: #ef4444;
 	--red-pale: #fef2f2;
 	--red-dark: #991b1b;
+
+	/* Pair Highlight Palette (10 distinct colors) */
+	--pair-color-1: #3b82f6; /* Blue */
+	--pair-color-2: #10b981; /* Emerald */
+	--pair-color-3: #f59e0b; /* Amber */
+	--pair-color-4: #8b5cf6; /* Violet */
+	--pair-color-5: #ec4899; /* Pink */
+	--pair-color-6: #06b6d4; /* Cyan */
+	--pair-color-7: #84cc16; /* Lime */
+	--pair-color-8: #f97316; /* Orange */
+	--pair-color-9: #6366f1; /* Indigo */
+	--pair-color-10: #14b8a6; /* Teal */
 }
 
 :root[data-theme='light'] {

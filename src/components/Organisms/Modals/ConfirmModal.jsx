@@ -71,8 +71,8 @@ export const ConfirmModal = ({
 							backgroundColor={CONFIRM_STYLES[confirmStyle].bg}
 							textColor={CONFIRM_STYLES[confirmStyle].text}
 							hoverStyles={CONFIRM_STYLES[confirmStyle].hover}
-							onClick={() => {
-								action
+							onClick={async () => {
+								await action?.()
 								onClose?.(null)
 							}}
 						>

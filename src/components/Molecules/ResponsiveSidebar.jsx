@@ -24,7 +24,7 @@ const ResponsiveSidebar = ({
 
 			{/* МОБИЛЬНЫЙ ВАРИАНТ */}
 			<div
-				className='lg:hidden visible fixed left-0 top-20 bottom-10 z-40 flex items-start'
+				className='lg:hidden visible fixed left-0 md:top-20 top-18 bottom-10 z-40 flex items-start'
 				style={{ pointerEvents: 'none' }}
 				onMouseLeave={() => setIsOpen(false)}
 			>

@@ -6,8 +6,8 @@ import {
 	fetchDisciplinesRequest,
 	fetchYearsRequest,
 } from '../api/Courses'
-import { fetchCourseById } from '../api/CoursePage'
 import { toast } from 'sonner'
+import { fetchCourseById } from '../api/courseService'
 
 export const studyLevelOptions = [
 	{ value: 0, label: 'Бакалавриат' },

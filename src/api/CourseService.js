@@ -1,6 +1,15 @@
 import { API_URL } from '../API'
 import api from './client'
 
+export const fetchCourseById = async courseId => {
+	const res = await api.get(`${API_URL}/courses/${courseId}`)
+	return res.data
+}
+export const editCourseById = async courseId => {
+	const res = await api.put(`${API_URL}/courses/${courseId}`)
+	return res.data
+}
+
 // --- Работа с модулями ---
 export const createModule = async (name, courseId) => {
 	const res = await api.post(`${API_URL}/modules/${courseId}`, {
@@ -41,8 +50,8 @@ export const deleteSection = async sectionId => {
 	return res.data
 }
 
-export const renameSection = async (sectionId, name) => {
-	const res = await api.put(`${API_URL}/sections/${sectionId}`, { name })
+export const renameSection = async (sectionId, title) => {
+	const res = await api.put(`${API_URL}/sections/${sectionId}`, { title })
 	return res.data
 }
 
@@ -61,7 +70,7 @@ export const getSectionInfo = async sectionId => {
 
 // --- Управление статусом курса ---
 export const changeCourseStatus = async (courseId, status) => {
-	const res = await api.patch(`${API_URL}/courses/${courseId}/status`, {
+	const res = await api.post(`${API_URL}/courses/${courseId}/revise`, {
 		status,
 	})
 	return res.data

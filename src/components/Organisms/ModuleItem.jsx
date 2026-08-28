@@ -18,6 +18,11 @@ import { useUser } from '../../context/UserContext'
 import { useClickOutside } from '../../hooks/useClickOutside'
 import { useScrollListener } from '../../hooks/useScrollListener'
 import { Input } from '../Molecules/InputFields/Input'
+import {
+	deleteModule,
+	renameModule,
+	translateModule,
+} from '../../api/courseService'
 
 export const ModuleItem = ({
 	title,
@@ -39,6 +44,9 @@ export const ModuleItem = ({
 
 	useClickOutside(menuRef, () => setMenuIsOpen(false), menuIsOpen)
 	useScrollListener(() => setMenuIsOpen(false), menuIsOpen)
+	const ReloadSideBar = () => {
+		window.dispatchEvent(new Event('course:sidebar:update'))
+	}
 
 	const menuItems = [
 		{
@@ -71,6 +79,7 @@ export const ModuleItem = ({
 		try {
 			await deleteModule(id)
 			onChange?.()
+			ReloadSideBar()
 		} catch (err) {
 			console.error(err)
 		} finally {
@@ -82,6 +91,7 @@ export const ModuleItem = ({
 		try {
 			await renameModule(id, newTitle)
 			onChange?.()
+			ReloadSideBar()
 		} catch (err) {
 			console.error(err)
 		} finally {
@@ -93,6 +103,7 @@ export const ModuleItem = ({
 		try {
 			await translateModule(courseId, id, direction)
 			onChange?.()
+			ReloadSideBar()
 		} catch (err) {
 			console.error(err)
 		}

@@ -32,6 +32,15 @@ export const TestHeader = ({ isEdit }) => {
 		setSearchParams(newParams)
 	}
 
+	const fetchAllQuestionIds = async () => {
+		try {
+			const res = await GetQuestions(activeSection)
+			setQuestionsData(res)
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
 	const handleCreateQuestion = async type => {
 		try {
 			const res = await AddQuestion(activeSection, type)
@@ -39,6 +48,7 @@ export const TestHeader = ({ isEdit }) => {
 				`Вопрос типа "${QUESTION_TYPES.find(item => item.apiType === type)?.label || ''}" успешно создан!`,
 			)
 			setIsOpen(false)
+			fetchAllQuestionIds()
 			if (res) {
 				handleBlockClick(res.id)
 			}
@@ -48,16 +58,17 @@ export const TestHeader = ({ isEdit }) => {
 		}
 	}
 	useEffect(() => {
-		const fetchAllQuestionIds = async () => {
-			try {
-				const res = await GetQuestions(activeSection)
-				setQuestionsData(res)
-			} catch (error) {
-				console.error(error)
-			}
-		}
 		fetchAllQuestionIds()
 	}, [])
+
+	useEffect(() => {
+		const handleReload = () => {
+			fetchAllQuestionIds()
+		}
+
+		window.addEventListener('question:deleted', handleReload)
+		return () => window.removeEventListener('question:deleted', handleReload)
+	}, [fetchAllQuestionIds])
 
 	return (
 		<>

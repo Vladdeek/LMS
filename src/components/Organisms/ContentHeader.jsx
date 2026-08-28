@@ -11,12 +11,12 @@ import { LESSON_ICONS, LESSON_LABELS } from '../../Constants/lessonTypes'
 import { Toggle } from '../Atoms/Buttons/Toggle'
 import { SubmitButton } from '../Atoms/Buttons/SubmitButton'
 import { TimeLimitInput } from '../Molecules/InputFields/TimeLimitInput'
-import { getSectionInfo } from '../../api/CourseService'
 import { Show } from '../Atoms/Show'
 import { Loading } from '../Atoms/Loaders/Loading'
 import { ButtonCase } from '../Atoms/Buttons/ButtonCase'
 import { Text } from '../Atoms/Text'
 import { TestSettingsModal } from './Modals/TestSettingsModal'
+import { getSectionInfo } from '../../api/courseService'
 
 const formatTime = seconds => {
 	const mins = Math.floor(seconds / 60)
@@ -54,7 +54,6 @@ export const ContentHeader = ({ isEdit, onIsEditChange }) => {
 		const fetchInfo = async () => {
 			try {
 				const res = await getSectionInfo(activeSection)
-				console.log(res)
 				setSectionInfo(res)
 			} catch (err) {
 				console.error(err)
@@ -142,10 +141,10 @@ export const ContentHeader = ({ isEdit, onIsEditChange }) => {
 						<button
 							onClick={() => setTestSettingsIsOpen(true)}
 							className={
-								'flex items-center justify-center group cursor-pointer bg-[var(--white)] shadow-[var(--shadow)] h-full w-auto aspect-square rounded-lg hover:bg-[var(--light-middle)]  transition-all'
+								'flex gap-1 items-center px-3 justify-center group cursor-pointer bg-[var(--white)] shadow-[var(--shadow)] h-full w-fit rounded-lg hover:bg-[var(--light-middle)]  transition-all'
 							}
-							invert
 						>
+							<Text size={'md'}>Настройки теста</Text>
 							<Settings className='group-hover:rotate-360 duration-500 transition-all group-hover:scale-105' />
 						</button>
 					</Show>

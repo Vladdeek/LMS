@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom'
 import { useUser } from '../../../context/UserContext'
 import { MEDIA_API_URL } from '../../../API'
+import { STATUS_CONFIG } from '../../../Constants/statusConfig'
+import { Show } from '../../Atoms/Show'
 
 export const CourseCard = ({ courseInfo }) => {
 	const { role } = useUser()
@@ -18,32 +20,16 @@ export const CourseCard = ({ courseInfo }) => {
 		created_from_load,
 	} = courseInfo
 
-	// Настройки статусов публикации
-	const statusConfig = {
-		approved: {
-			text: 'Опубликован',
-			styles: 'text-[var(--green-text)] bg-[var(--green-bg)]',
-		},
-		in_development: {
-			text: 'Не опубликован',
-			styles: 'text-[var(--red-text)] bg-[var(--red-bg)]',
-		},
-		pending: {
-			text: 'На рассмотрении',
-			styles: 'text-[var(--yellow-text)] bg-[var(--yellow-bg)]',
-		},
-	}
-
-	const currentStatus = statusConfig[course_status]
+	const currentStatus = STATUS_CONFIG[course_status]
 
 	return (
 		<div className='w-full h-full'>
 			<NavLink
 				to={`/course/${courseInfo.id}`}
-				className='flex flex-col h-full w-full rounded-4xl overflow-hidden border border-white/40 bg-white/80 backdrop-blur-md shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] transition-shadow duration-300 hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.12)] cursor-pointer'
+				className='flex flex-col h-full w-full rounded-4xl overflow-hidden border border-[var(--white)]/40 bg-[var(--white)]/80 backdrop-blur-md shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] transition-shadow duration-300 hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.12)] cursor-pointer'
 			>
 				{/* Блок с изображением */}
-				<div className='relative w-full h-[45%] overflow-hidden bg-gray-100'>
+				<div className='relative w-full h-[45%] overflow-hidden bg-[var(--white)]'>
 					<img
 						className='h-full w-full object-cover transition-transform duration-500 hover:scale-105'
 						src={`${MEDIA_API_URL}${image_url}`}
@@ -51,13 +37,17 @@ export const CourseCard = ({ courseInfo }) => {
 					/>
 
 					{/* Статус отображается только для преподавателя или модератора */}
-					{(role === 'teacher' || role === 'moderator') && currentStatus && (
+					<Show when={role !== 'student'}>
 						<span
-							className={`absolute top-3 right-3 py-1 px-2.5 rounded-lg text-xs font-medium tracking-wide shadow-sm backdrop-blur-sm ${currentStatus.styles}`}
+							style={{
+								backgroundColor: currentStatus?.styles?.bg,
+								color: currentStatus?.styles?.text,
+							}}
+							className={`absolute top-3 right-3 py-1 px-2.5 rounded-lg text-xs font-medium tracking-wide shadow-sm backdrop-blur-sm `}
 						>
-							{currentStatus.text}
+							{currentStatus?.text}
 						</span>
-					)}
+					</Show>
 				</div>
 
 				{/* Контентная часть */}
@@ -71,7 +61,7 @@ export const CourseCard = ({ courseInfo }) => {
 						</p>
 					</div>
 
-					<div className='flex gap-2 flex-wrap mt-4 pt-4 text-sm border-t border-gray-100/60'>
+					<div className='flex gap-2 flex-wrap mt-4 pt-4 text-sm border-t border-[var(--light-middle)]'>
 						{(course || study_level) && (
 							<span className='py-1 px-2.5 rounded-lg  font-medium text-[var(--hero)] bg-[var(--hero-pale)]'>
 								{`${course && `${course}-й курс`} ${study_level !== 'undefined' ? `• ${study_level}` : ''}`}

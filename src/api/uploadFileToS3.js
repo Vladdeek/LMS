@@ -2,9 +2,28 @@ import axios from 'axios'
 import { API_URL } from '../API'
 import api from './client'
 
-export const GetPresignedUrlToUploadMedia = async (id, fileMetadata) => {
+export const GetPresignedUrlToUploadMediaConstructor = async (
+	id,
+	fileMetadata,
+) => {
 	const response = await api.post(
 		`${API_URL}/sections/upload-url/${id}`,
+		fileMetadata,
+	)
+	return response.data
+}
+
+export const GetPresignedUrlToUploadMediaTest = async (id, fileMetadata) => {
+	const response = await api.post(
+		`${API_URL}/questions/${id}/media/upload-url/`,
+		fileMetadata,
+	)
+	return response.data
+}
+
+export const GetPresignedUrlToUploadMedia = async (id, fileMetadata) => {
+	const response = await api.post(
+		`${API_URL}/test/upload-url/${id}`,
 		fileMetadata,
 	)
 	return response.data

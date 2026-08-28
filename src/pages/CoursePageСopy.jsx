@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext'
-import { fetchCourseById } from '../api/CoursePage'
-import {
-	changeCourseStatus,
-	createLesson,
-	createModule,
-} from '../api/CourseService'
+
 import { Loader } from '../components/Atoms/Loaders/Loader'
 import { ReviewConfirmModal } from '../components/Organisms/Modals/ReviewConfirmModal'
 import { RadioGroup } from '../components/Molecules/RadioGroup'
@@ -21,6 +16,9 @@ import Attachment from './CoursePage/Attachmint'
 import { SubmitButton } from '../components/Atoms/Buttons/SubmitButton'
 import { Settings } from 'lucide-react'
 import { CourseModal } from '../components/Organisms/Modals/CourseModal'
+import { changeCourseStatus, fetchCourseById } from '../api/courseService'
+import { ButtonCase } from '../components/Atoms/Buttons/ButtonCase'
+import { STATUS_CONFIG } from '../Constants/statusConfig'
 
 const CHAPTER_OPTIONS = [
 	{ value: 'constructor', label: 'Конструктор' },
@@ -115,6 +113,18 @@ const CoursePage = () => {
 		}
 	}
 
+	useEffect(() => {
+		const handleReload = () => {
+			fetchCourseData()
+		}
+
+		window.addEventListener('course:sidebar:update', handleReload)
+		return () =>
+			window.removeEventListener('course:sidebar:update', handleReload)
+	}, [fetchCourseData])
+
+	const currentStatus = STATUS_CONFIG[status]
+
 	if (isLoading) {
 		return (
 			<div className='w-full min-h-screen flex items-center justify-center'>
@@ -150,23 +160,25 @@ const CoursePage = () => {
 						/>
 					)}
 					<div className='flex gap-4'>
-						<SubmitButton
-							onClick={() => setIsSettingsOpen(true)}
-							invert
-							className={'flex items-center gap-2 justify-center'}
-						>
-							Настройки курса
-							<Settings size={18} />
-						</SubmitButton>
-						{role !== 'student' && (
-							<StatusBadge
-								status={status}
-								role={role}
+						<Show when={role !== 'student'}>
+							<SubmitButton
+								onClick={() => setIsSettingsOpen(true)}
+								invert
+								className={'flex items-center gap-2 justify-center'}
+							>
+								Настройки курса
+								<Settings size={18} />
+							</SubmitButton>
+							<ButtonCase
+								backgroundColor={currentStatus?.styles?.bg}
+								textColor={currentStatus?.styles?.text}
 								onClick={() =>
 									role === 'moderator' ? setIsModalOpen(true) : changeStatus()
 								}
-							/>
-						)}
+							>
+								{currentStatus?.text}
+							</ButtonCase>
+						</Show>
 					</div>
 				</div>
 

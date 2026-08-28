@@ -5,11 +5,12 @@ import ResponsiveSidebar from '../Molecules/ResponsiveSidebar'
 import { ModuleItem } from './ModuleItem'
 import { LessonItem } from './LessonItem'
 import { CreateItemButton } from './CreateItemButton'
-import { createLesson, createModule } from '../../api/CourseService'
+
 import { useParams, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { LESSON_LABELS } from '../../Constants/lessonTypes'
 import { Show } from '../Atoms/Show'
+import { createLesson, createModule } from '../../api/courseService'
 
 export const CourseSidebar = ({
 	role,

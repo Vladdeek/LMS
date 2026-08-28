@@ -4,9 +4,11 @@ import { UploadProgressBar } from '../../Molecules/UploadProgressBar'
 import { Upload } from 'lucide-react'
 import {
 	GetPresignedUrlToUploadMedia,
+	GetPresignedUrlToUploadMediaConstructor,
 	uploadFileToStorage,
 } from '../../../api/uploadFileToS3'
 import { Show } from '../../Atoms/Show'
+import { useSearchParams } from 'react-router-dom'
 
 export const FileUploaderZone = ({
 	type = 'files',
@@ -17,9 +19,13 @@ export const FileUploaderZone = ({
 	currentFilesCount = 0,
 	maxSize,
 	maxCount = null,
+	uploadApiFn = GetPresignedUrlToUploadMediaConstructor,
 }) => {
 	const [isDragActive, setIsDragActive] = useState(false)
 	const [isValid, setIsValid] = useState(true)
+
+	const [searchParams] = useSearchParams()
+	const activeQuestionId = searchParams.get('questionId')
 
 	const [isUploading, setIsUploading] = useState(false)
 	const [uploadProgress, setUploadProgress] = useState(0)
@@ -51,11 +57,16 @@ export const FileUploaderZone = ({
 					file_extension: fileExt,
 					mime_type: file.type,
 					file_size: file.size,
-					type: type === 'image' ? 'images' : type,
+					...(uploadApiFn === GetPresignedUrlToUploadMediaConstructor && {
+						type: type === 'image' ? 'images' : type,
+					}),
 				}
 
-				const responseData = await GetPresignedUrlToUploadMedia(
-					sectionId,
+				// Вызываем переданную API-функцию
+				const responseData = await uploadApiFn(
+					uploadApiFn === GetPresignedUrlToUploadMediaConstructor
+						? sectionId
+						: activeQuestionId,
 					fileMetadata,
 				)
 
@@ -128,7 +139,7 @@ export const FileUploaderZone = ({
 			: 'bg-[var(--light-middle)]/50 border-[var(--middle)] ring-[var(--light-middle)]/50'
 
 	const badgeClass = isDragActive
-		? 'bg-[var(--hero)] text-[var(--hero-pale)]'
+		? 'bg-[var(--hero-pale)] text-[var(--hero)]'
 		: !isValid
 			? 'bg-[var(--red-text)] text-[var(--red-pale)]'
 			: 'bg-[var(--light-middle)] text-[var(--middle)] '
