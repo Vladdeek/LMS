@@ -21,28 +21,29 @@ export const TestForm = props => {
 	const { state, actions } = useTestForm(props)
 
 	const DIFFICULTY_OPTIONS = [
-		{ value: 0, label: 'Высший балл' },
-		{ value: 1, label: 'Средний балл' },
-		{ value: 2, label: 'Последняя попытка' },
+		{ value: 'hight_score', label: 'Высший балл' },
+		{ value: 'average_score', label: 'Средний балл' },
+		{ value: 'last_attempt', label: 'Последняя попытка' },
 	]
 
-	return (
-		<form
-			onSubmit={actions.handleSubmit}
-			className='w-125 max-w-5xl mx-auto p-2 sm:p-4 space-y-6'
-		>
-			{/* СЕКЦИЯ: ВРЕМЯ И ПОПЫТКИ */}
-			<div className='flex flex-col gap-6 w-full items-start'>
-				<div className='w-full flex items-center gap-2.5 pb-2 border-b border-[var(--light-middle)]/30'>
-					<div className='p-1.5 bg-[var(--hero-pale)] rounded-lg text-[var(--hero)]'>
-						<Clock size={18} />
-					</div>
-					<h3 className='text-base font-bold text-[var(--black)]'>
-						Время и попытки
-					</h3>
-				</div>
+	const getCheckedValue = e =>
+		e && typeof e === 'object' && 'target' in e ? e.target.checked : Boolean(e)
 
-				<div className='space-y-4 w-full'>
+	return (
+		<form className='max-w-5xl mx-auto p-2 sm:p-4 space-y-6'>
+			{/* Сетка из двух колонок для десктопа */}
+			<div className='grid grid-cols-1 md:grid-cols-2 gap-6 items-start'>
+				{/* СЕКЦИЯ 1: ВРЕМЯ И ПОПЫТКИ */}
+				<div className='flex flex-col gap-4 w-full'>
+					<div className='w-full flex items-center gap-2.5 pb-2 border-b border-[var(--light-middle)]/30'>
+						<div className='p-1.5 bg-[var(--hero-pale)] rounded-lg text-[var(--hero)]'>
+							<Clock size={18} />
+						</div>
+						<h3 className='text-base font-bold text-[var(--black)]'>
+							Время и попытки
+						</h3>
+					</div>
+
 					{/* Лимит времени */}
 					<div className='p-3 bg-[var(--light-middle)]/10 rounded-xl space-y-3 border border-[var(--light-middle)]/20'>
 						<div className='flex items-center gap-2'>
@@ -50,7 +51,7 @@ export const TestForm = props => {
 							<Checkbox
 								title='Лимит времени'
 								checked={state.hasTimeLimit}
-								onChange={e => actions.setHasTimeLimit(e.target.checked)}
+								onChange={e => actions.setHasTimeLimit(getCheckedValue(e))}
 							/>
 						</div>
 
@@ -81,7 +82,7 @@ export const TestForm = props => {
 							<Checkbox
 								title='Ограничить количество попыток'
 								checked={state.hasAttemptsLimit}
-								onChange={e => actions.setHasAttemptsLimit(e.target.checked)}
+								onChange={e => actions.setHasAttemptsLimit(getCheckedValue(e))}
 							/>
 						</div>
 
@@ -99,7 +100,9 @@ export const TestForm = props => {
 									min={1}
 									max={TEST_CONFIG.MAX_ATTEMPTS}
 									value={state.attemptsCount}
-									onChange={e => actions.setAttemptsCount(e.target.value)}
+									onChange={e =>
+										actions.setAttemptsCount(e?.target ? e.target.value : e)
+									}
 								/>
 
 								<RadioGroup
@@ -115,17 +118,17 @@ export const TestForm = props => {
 					</div>
 				</div>
 
-				{/* СЕКЦИЯ: ВОПРОСЫ И ОЦЕНИВАНИЕ */}
-				<div className='w-full flex items-center gap-2.5 pb-2 border-b border-[var(--light-middle)]/30'>
-					<div className='p-1.5 bg-[var(--hero-pale)] rounded-lg text-[var(--hero)]'>
-						<HelpCircle size={18} />
+				{/* СЕКЦИЯ 2: ВОПРОСЫ И ОЦЕНИВАНИЕ */}
+				<div className='flex flex-col gap-4 w-full'>
+					<div className='w-full flex items-center gap-2.5 pb-2 border-b border-[var(--light-middle)]/30'>
+						<div className='p-1.5 bg-[var(--hero-pale)] rounded-lg text-[var(--hero)]'>
+							<HelpCircle size={18} />
+						</div>
+						<h3 className='text-base font-bold text-[var(--black)]'>
+							Вопросы и оценивание
+						</h3>
 					</div>
-					<h3 className='text-base font-bold text-[var(--black)]'>
-						Вопросы и оценивание
-					</h3>
-				</div>
 
-				<div className='space-y-4 w-full'>
 					{/* Режим банка вопросов */}
 					<div className='p-3 bg-[var(--light-middle)]/10 rounded-xl space-y-3 border border-[var(--light-middle)]/20'>
 						<div className='flex items-center gap-2'>
@@ -133,7 +136,7 @@ export const TestForm = props => {
 							<Checkbox
 								title='Банк вопросов'
 								checked={state.isQuestionBank}
-								onChange={e => actions.setIsQuestionBank(e.target.checked)}
+								onChange={e => actions.setIsQuestionBank(getCheckedValue(e))}
 							/>
 						</div>
 
@@ -154,7 +157,9 @@ export const TestForm = props => {
 									min={1}
 									max={state.totalQuestionsCount || undefined}
 									value={state.questionsToUse}
-									onChange={e => actions.setQuestionsToUse(e.target.value)}
+									onChange={e =>
+										actions.setQuestionsToUse(e?.target ? e.target.value : e)
+									}
 								/>
 							</motion.div>
 						)}
@@ -167,7 +172,7 @@ export const TestForm = props => {
 							<Checkbox
 								title='Проходной балл'
 								checked={state.hasPassingScore}
-								onChange={e => actions.setHasPassingScore(e.target.checked)}
+								onChange={e => actions.setHasPassingScore(getCheckedValue(e))}
 							/>
 						</div>
 
@@ -184,24 +189,30 @@ export const TestForm = props => {
 									min={1}
 									max={100}
 									value={state.passingScore}
-									onChange={e => actions.setPassingScore(e.target.value)}
+									onChange={e =>
+										actions.setPassingScore(e?.target ? e.target.value : e)
+									}
 								/>
 							</motion.div>
 						)}
 					</div>
+					<div className='pt-2 border-t border-[var(--light-middle)]/20'>
+						<Checkbox
+							title='Отображать студенту его ответы и их верность'
+							checked={state.showAnswersToStudent}
+							onChange={e =>
+								actions.setShowAnswersToStudent(getCheckedValue(e))
+							}
+						/>
+					</div>
 				</div>
-
-				{/* Отображение ответов студенту */}
-				<Checkbox
-					title='Отображать студенту его ответы и их верность'
-					checked={state.showAnswersToStudent}
-					onChange={e => actions.setShowAnswersToStudent(e.target.checked)}
-				/>
+				{/* Общая опция под сеткой */}
 			</div>
 
 			{/* КНОПКА САБМИТА */}
 			<div className='flex justify-end pt-4 border-t border-[var(--light-middle)]/30'>
 				<SubmitButton
+					onClick={actions.handleSubmit}
 					type='submit'
 					className='w-full sm:w-auto px-6 py-2.5'
 					disabled={state.isSubmitDisabled}

@@ -1,8 +1,24 @@
 import { CheckCircle2, ShieldAlert, XCircle } from 'lucide-react'
 import Modal from '../../Atoms/Modal'
 import { ButtonCase } from '../../Atoms/Buttons/ButtonCase'
+import { changeCourseStatus } from '../../../api/courseService'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useState } from 'react'
 
 export const ReviewConfirmModal = ({ isModalOpen, onClose }) => {
+	const [searchParams, setSearchParams] = useSearchParams()
+	const courseId = searchParams.get('course_id')
+	const navigate = useNavigate()
+	const accessCourse = async verdictStatus => {
+		console.log('click - ', verdictStatus)
+		try {
+			await changeCourseStatus(courseId, verdictStatus)
+			onClose
+			navigate('/moderation-courses')
+		} catch (err) {
+			console.error(err)
+		}
+	}
 	return (
 		<Modal width={'w-110'} isOpen={isModalOpen}>
 			<div className='flex flex-col gap-6 p-2 w-full'>
@@ -25,7 +41,7 @@ export const ReviewConfirmModal = ({ isModalOpen, onClose }) => {
 						backgroundColor={'var(--green-base)'}
 						textColor={'var(--green-pale)'}
 						hoverStyles={'hover:bg-[var(--green-hover)]'}
-						onClick={() => accessCourse('rejected_preview')}
+						onClick={() => accessCourse('approved')}
 					>
 						<CheckCircle2 size={24} />
 						<span className='font-semibold'>Допустить</span>
@@ -35,7 +51,7 @@ export const ReviewConfirmModal = ({ isModalOpen, onClose }) => {
 						backgroundColor={'var(--red-base)'}
 						textColor={'var(--red-pale)'}
 						hoverStyles={'hover:bg-[var(--red-hover)]'}
-						onClick={() => accessCourse('draft')}
+						onClick={() => accessCourse('in_development')}
 					>
 						<XCircle size={24} />
 						<span className='font-semibold'>Запретить</span>

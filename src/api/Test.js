@@ -104,6 +104,18 @@ export const DeleteMediaInQuestion = async (question_id, file_metadata_id) => {
 	return response.data
 }
 
+// ---> GetTestSettings - отдает настройки теста <---
+export const GetTestSettings = async id => {
+	const response = await api.get(`${API_URL}/tests/${id}/settings`, {})
+	return response.data
+}
+
+// ---> ChangeTestSettings - изменяет настройки теста <---
+export const ChangeTestSettings = async (id, data) => {
+	const response = await api.put(`${API_URL}/tests/${id}/settings`, data)
+	return response.data
+}
+
 // ---> EditOptionName - обновляет вариант ответа (name) <---
 export const EditOptionName = async (option_id, name) => {
 	const response = await api.patch(

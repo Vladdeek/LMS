@@ -16,9 +16,14 @@ import Attachment from './CoursePage/Attachmint'
 import { SubmitButton } from '../components/Atoms/Buttons/SubmitButton'
 import { Settings } from 'lucide-react'
 import { CourseModal } from '../components/Organisms/Modals/CourseModal'
-import { changeCourseStatus, fetchCourseById } from '../api/courseService'
+import {
+	changeCourseStatus,
+	changeCourseStatusForTeacher,
+	fetchCourseById,
+} from '../api/courseService'
 import { ButtonCase } from '../components/Atoms/Buttons/ButtonCase'
 import { STATUS_CONFIG } from '../Constants/statusConfig'
+import { toast } from 'sonner'
 
 const CHAPTER_OPTIONS = [
 	{ value: 'constructor', label: 'Конструктор' },
@@ -96,19 +101,13 @@ const CoursePage = () => {
 
 	const changeStatus = async () => {
 		try {
-			await changeCourseStatus(courseId, 'pending')
+			if (role === 'teacher' && currentStatus === 'in_development') {
+				await changeCourseStatusForTeacher(courseId)
+			} else return
+			toast.success('Отправлено на рассмотрение!')
 			fetchCourseData()
 		} catch (err) {
-			console.error(err)
-		}
-	}
-
-	const accessCourse = async verdictStatus => {
-		try {
-			await changeCourseStatus(courseId, verdictStatus)
-			setIsModalOpen(false)
-			navigate('/moderation-courses')
-		} catch (err) {
+			toast.error('Ошибка отправки курса на рассмотрения.')
 			console.error(err)
 		}
 	}
@@ -139,7 +138,6 @@ const CoursePage = () => {
 			<ReviewConfirmModal
 				isModalOpen={isModalOpen}
 				onClose={() => setIsModalOpen(false)}
-				onAccess={accessCourse}
 			/>
 			<CourseModal
 				isOpen={isSettingsOpen}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { TEST_CONFIG } from '../Constants/testConfig'
-import { GetQuestions } from '../api/Test'
+import { GetQuestions, GetTestSettings, ChangeTestSettings } from '../api/Test'
 
 export const useTestForm = props => {
 	const { initialData, onSubmit } = props
@@ -9,48 +9,86 @@ export const useTestForm = props => {
 
 	const testId = searchParams.get('section') || initialData?.id
 
-	// Настройки прохождения
-	const [timeLimit, setTimeLimit] = useState(initialData?.timeLimit || '')
-	const [hasTimeLimit, setHasTimeLimit] = useState(
-		Boolean(initialData?.timeLimit),
-	)
-	const [hasAttemptsLimit, setHasAttemptsLimit] = useState(
-		Boolean(initialData?.attemptsCount),
-	)
-	const [attemptsCount, setAttemptsCount] = useState(
-		initialData?.attemptsCount || '',
-	)
+	// Поля настроек
+	const [timeLimit, setTimeLimit] = useState('')
+	const [hasTimeLimit, setHasTimeLimit] = useState(false)
 
-	// Новые поля
-	const [showAnswersToStudent, setShowAnswersToStudent] = useState(
-		initialData?.showAnswersToStudent ?? false,
-	)
-	const [gradingStrategy, setGradingStrategy] = useState(
-		initialData?.gradingStrategy ?? 1, // 0: Высший балл, 1: Средний балл, 2: Последняя попытка
-	)
+	const [hasAttemptsLimit, setHasAttemptsLimit] = useState(false)
+	const [attemptsCount, setAttemptsCount] = useState('')
 
-	// Вопросы
+	const [showAnswersToStudent, setShowAnswersToStudent] = useState(false)
+	const [gradingStrategy, setGradingStrategy] = useState('average_score')
+
+	const [isQuestionBank, setIsQuestionBank] = useState(false)
+	const [questionsToUse, setQuestionsToUse] = useState('')
+
+	const [hasPassingScore, setHasPassingScore] = useState(false)
+	const [passingScore, setPassingScore] = useState('')
+
+	// Вопросы и загрузка
 	const [questionsIds, setQuestionsIds] = useState([])
 	const [isLoadingQuestions, setIsLoadingQuestions] = useState(false)
-	const [isQuestionBank, setIsQuestionBank] = useState(
-		Boolean(initialData?.isQuestionBank),
-	)
-	const [questionsToUse, setQuestionsToUse] = useState(
-		initialData?.questionsToUse || '',
-	)
-
-	// Проходной балл
-	const [hasPassingScore, setHasPassingScore] = useState(
-		Boolean(initialData?.passingScore),
-	)
-	const [passingScore, setPassingScore] = useState(
-		initialData?.passingScore || '',
-	)
+	const [isLoadingSettings, setIsLoadingSettings] = useState(false)
 
 	const editMode = Boolean(testId)
 	const totalQuestionsCount = questionsIds.length
 
-	// Загрузка вопросов по ID из URL/props
+	// 1. Загрузка настроек теста (GET)
+	useEffect(() => {
+		if (!testId) return
+
+		const fetchSettings = async () => {
+			setIsLoadingSettings(true)
+			try {
+				const settings = await GetTestSettings(testId)
+				if (settings) {
+					// Time Limit
+					const hasTime =
+						settings.time_limit_sec !== null &&
+						settings.time_limit_sec !== undefined
+					setHasTimeLimit(hasTime)
+					setTimeLimit(hasTime ? settings.time_limit_sec : '')
+
+					// Attempts Limit
+					const hasAttempts =
+						settings.max_attempts !== null &&
+						settings.max_attempts !== undefined
+					setHasAttemptsLimit(hasAttempts)
+					setAttemptsCount(hasAttempts ? settings.max_attempts : '')
+
+					// Assessment / Grading Strategy
+					if (
+						settings.assessment_method !== null &&
+						settings.assessment_method !== undefined
+					) {
+						setGradingStrategy(settings.assessment_method)
+					}
+
+					// Question Bank Count
+					const hasBank =
+						settings.bank_question_count !== null &&
+						settings.bank_question_count !== undefined
+					setIsQuestionBank(hasBank)
+					setQuestionsToUse(hasBank ? settings.bank_question_count : '')
+
+					// Passing Score
+					const hasScore =
+						settings.passing_score !== null &&
+						settings.passing_score !== undefined
+					setHasPassingScore(hasScore)
+					setPassingScore(hasScore ? settings.passing_score : '')
+				}
+			} catch (err) {
+				console.error('Ошибка при получении настроек теста:', err)
+			} finally {
+				setIsLoadingSettings(false)
+			}
+		}
+
+		fetchSettings()
+	}, [testId])
+
+	// 2. Загрузка списка вопросов
 	useEffect(() => {
 		if (!testId) return
 
@@ -69,14 +107,13 @@ export const useTestForm = props => {
 		fetchQuestions()
 	}, [testId])
 
-	// Хэндлер для установки лимита времени
+	// Обработчики ввода
 	const handleTimeLimitChange = val => {
 		const nextVal =
 			typeof val === 'object' && val?.target ? val.target.value : val
 		setTimeLimit(nextVal)
 	}
 
-	// Хэндлеры с ограничением
 	const handleQuestionsToUseChange = value => {
 		const numValue = Number(value)
 		if (
@@ -101,12 +138,31 @@ export const useTestForm = props => {
 
 	const handleHasTimeLimitChange = checked => {
 		setHasTimeLimit(checked)
-		if (!checked) {
-			setTimeLimit('')
-		}
+		if (!checked) setTimeLimit('')
 	}
 
-	// Минимальное время в секундах
+	const handleHasAttemptsLimitChange = val => {
+		const checked =
+			typeof val === 'object' && val?.target ? val.target.checked : Boolean(val)
+		setHasAttemptsLimit(checked)
+		if (!checked) setAttemptsCount('')
+	}
+
+	const handleIsQuestionBankChange = val => {
+		const checked =
+			typeof val === 'object' && val?.target ? val.target.checked : Boolean(val)
+		setIsQuestionBank(checked)
+		if (!checked) setQuestionsToUse('')
+	}
+
+	const handleHasPassingScoreChange = val => {
+		const checked =
+			typeof val === 'object' && val?.target ? val.target.checked : Boolean(val)
+		setHasPassingScore(checked)
+		if (!checked) setPassingScore('')
+	}
+
+	// Расчет минимального времени
 	const effectiveQuestionsCount = isQuestionBank
 		? Number(questionsToUse) || 0
 		: totalQuestionsCount
@@ -139,29 +195,45 @@ export const useTestForm = props => {
 		isAttemptsInvalid ||
 		isQuestionsBankInvalid ||
 		isPassingScoreInvalid ||
-		isTimeLimitInvalid
+		isTimeLimitInvalid ||
+		isLoadingSettings
 
-	// Отправка
-	const handleSubmit = e => {
+	// 3. Отправка формы (PUT)
+	const handleSubmit = async e => {
+		console.log('Попытка сабмита. Состояние валидации:', {
+			isSubmitDisabled,
+			isAttemptsInvalid,
+			isQuestionsBankInvalid,
+			isPassingScoreInvalid,
+			isTimeLimitInvalid,
+			isLoadingSettings,
+			editMode,
+			testId,
+		})
+
 		if (e && e.preventDefault) e.preventDefault()
-		if (isSubmitDisabled) return
 
 		const payload = {
-			testId,
-			hasTimeLimit,
-			timeLimit: hasTimeLimit && timeLimit ? Number(timeLimit) : null,
-			hasAttemptsLimit,
-			attemptsCount: hasAttemptsLimit ? Number(attemptsCount) : null,
-			gradingStrategy: hasAttemptsLimit ? gradingStrategy : null,
-			showAnswersToStudent,
-			isQuestionBank,
-			questionsToUse: isQuestionBank ? Number(questionsToUse) : null,
-			hasPassingScore,
-			passingScore: hasPassingScore ? Number(passingScore) : null,
+			assessment_method: attemptsCount !== null ? gradingStrategy : null,
+			time_limit_sec:
+				hasTimeLimit && timeLimit !== '' ? Number(timeLimit) : null,
+			passing_score:
+				hasPassingScore && passingScore !== '' ? Number(passingScore) : null,
+			max_attempts:
+				hasAttemptsLimit && attemptsCount !== '' ? Number(attemptsCount) : null,
+			bank_question_count:
+				isQuestionBank && questionsToUse !== '' ? Number(questionsToUse) : null,
 		}
 
-		if (onSubmit) {
-			onSubmit(payload)
+		try {
+			if (editMode) {
+				const updatedSettings = await ChangeTestSettings(testId, payload)
+				if (onSubmit) onSubmit(updatedSettings)
+			} else if (onSubmit) {
+				onSubmit(payload)
+			}
+		} catch (err) {
+			console.error('Ошибка при сохранении настроек:', err)
 		}
 	}
 
@@ -183,18 +255,19 @@ export const useTestForm = props => {
 			questionsIds,
 			totalQuestionsCount,
 			isLoadingQuestions,
+			isLoadingSettings,
 			minTimeLimit,
 		},
 		actions: {
 			setHasTimeLimit: handleHasTimeLimitChange,
 			setTimeLimit: handleTimeLimitChange,
-			setHasAttemptsLimit,
+			setHasAttemptsLimit: handleHasAttemptsLimitChange,
 			setAttemptsCount: handleAttemptsCountChange,
 			setGradingStrategy,
 			setShowAnswersToStudent,
-			setIsQuestionBank,
+			setIsQuestionBank: handleIsQuestionBankChange,
 			setQuestionsToUse: handleQuestionsToUseChange,
-			setHasPassingScore,
+			setHasPassingScore: handleHasPassingScoreChange,
 			setPassingScore,
 			handleSubmit,
 		},

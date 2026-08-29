@@ -69,10 +69,16 @@ export const getSectionInfo = async sectionId => {
 }
 
 // --- Управление статусом курса ---
-export const changeCourseStatus = async (courseId, status) => {
+export const changeCourseStatus = async (courseId, course_status) => {
 	const res = await api.post(`${API_URL}/courses/${courseId}/revise`, {
-		status,
+		course_status,
 	})
+	return res.data
+}
+
+// --- Управление статусом курса ---
+export const changeCourseStatusForTeacher = async courseId => {
+	const res = await api.post(`${API_URL}/courses/${courseId}/revision/status`)
 	return res.data
 }
 
