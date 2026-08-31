@@ -1,6 +1,6 @@
 import { QuestionResultCard } from '../Cards/QuestionResultCard'
 
-export const TestingScore = ({ score = 4.1, min = 1, max = 5 }) => {
+export const TestingScore = ({ score = 0, testResults = [] }) => {
 	const scoreConfigs = {
 		1: {
 			val: 1,
@@ -29,66 +29,32 @@ export const TestingScore = ({ score = 4.1, min = 1, max = 5 }) => {
 		},
 	}
 
-	const roundedScore = Math.round(score)
-	const floorScore = Math.floor(score)
-	const scoreTitle = scoreConfigs[roundedScore]
-		? scoreConfigs[roundedScore].title
-		: 'Неизвестно'
-	const exactScore = score.toFixed(2)
+	const numericScore = Number(score) || 0
+	const roundedScore = Math.min(Math.max(Math.round(numericScore), 1), 5)
+	const scoreTitle = scoreConfigs[roundedScore]?.title || 'Неизвестно'
+	const exactScore = numericScore.toFixed(2)
 
 	const getScoreColor = scoreValue => {
 		const config = scoreConfigs[scoreValue]
 		if (config) {
-			// Here we extract only the color, for example 'bg-[var(--red-base)]' -> 'red'
-			const colorName = config.color.match(/--(.*?)-base/)[1]
-			return `var(--${colorName}-base)`
+			const match = config.color.match(/--(.*?)-base/)
+			if (match) return `var(--${match[1]}-base)`
 		}
-		return 'var(--middle)' // Default color
+		return 'var(--middle)'
 	}
 
-	// Логика расчета процента
 	const getColorPercentage = totalScore => {
 		const remainder = totalScore - Math.floor(totalScore)
 		return (1 - remainder) * 100
 	}
+
 	const getGrayPercentage = (index, totalScore) => {
-		// 1. Карточки до текущей (полностью цветные)
 		if (index < Math.floor(totalScore)) return 0
-
-		// 2. Карточка, на которой находится "срез"
-		if (index === Math.floor(totalScore)) {
-			return getColorPercentage(totalScore)
-		}
-
-		// 3. Карточки после среза (полностью серые)
+		if (index === Math.floor(totalScore)) return getColorPercentage(totalScore)
 		return 100
 	}
 
 	const primaryScoreColor = getScoreColor(roundedScore)
-
-	const testResults = [
-		{
-			id: 1,
-			question: 'Какой цвет получается при смешивании синего и желтого?',
-			correctAnswers: ['Зеленый'],
-			studentAnswers: ['Зеленый'],
-			status: 'correct',
-		},
-		{
-			id: 2,
-			question: 'Выберите все языки программирования высокого уровня:',
-			correctAnswers: ['Python', 'JavaScript', 'C++'],
-			studentAnswers: ['Python', 'PHP'],
-			status: 'middle',
-		},
-		{
-			id: 3,
-			question: 'Столица Франции — это...',
-			correctAnswers: ['Париж'],
-			studentAnswers: ['Берлин'],
-			status: 'uncorrect',
-		},
-	]
 
 	return (
 		<div className='w-full p-8 grid grid-cols-3 gap-10'>
@@ -120,23 +86,19 @@ export const TestingScore = ({ score = 4.1, min = 1, max = 5 }) => {
 				<div className='flex flex-col gap-6 w-full max-w-lg'>
 					<div className='grid grid-cols-5 gap-3'>
 						{Object.values(scoreConfigs).map((item, i) => {
-							const grayPercent = getGrayPercentage(i, score)
-
+							const grayPercent = getGrayPercentage(i, numericScore)
 							return (
 								<div
 									key={item.val}
 									className='relative flex flex-col gap-1 items-center'
 								>
 									<div
-										className={`relative flex items-center justify-center w-full h-12 rounded-2xl ${item.color} `}
+										className={`relative flex items-center justify-center w-full h-12 rounded-2xl ${item.color}`}
 									>
-										<span className={`text-2xl font-bold `}>{item.val}</span>
-
+										<span className='text-2xl font-bold'>{item.val}</span>
 										<div
 											className='absolute h-full right-0 backdrop-grayscale-90'
-											style={{
-												width: `${grayPercent}%`,
-											}}
+											style={{ width: `${grayPercent}%` }}
 										/>
 									</div>
 								</div>
@@ -146,9 +108,7 @@ export const TestingScore = ({ score = 4.1, min = 1, max = 5 }) => {
 				</div>
 			</div>
 
-			<div
-				className={`col-span-2 bg-[var(--light-middle)]/25 rounded-3xl p-4 pb-0 flex flex-col  gap-4 max-h-[calc(90vh-20rem)]`}
-			>
+			<div className='col-span-2 bg-[var(--light-middle)]/25 rounded-3xl p-4 pb-0 flex flex-col gap-4 max-h-[calc(90vh-20rem)]'>
 				<p className='text-center text-2xl font-semibold text-[var(--black)]'>
 					Ваши ответы на вопросы
 				</p>
@@ -156,11 +116,11 @@ export const TestingScore = ({ score = 4.1, min = 1, max = 5 }) => {
 					<div className='flex flex-col gap-4'>
 						{testResults.map((item, idx) => (
 							<QuestionResultCard
-								key={idx}
+								key={item.id || idx}
 								id={idx + 1}
 								question={item.question}
-								correctAnswers={item.correctAnswers}
-								studentAnswers={item.studentAnswers}
+								correctAnswers={item.correctAnswers || item.correct_answers}
+								studentAnswers={item.studentAnswers || item.student_answers}
 								status={item.status}
 							/>
 						))}

@@ -16,6 +16,7 @@ import { useTestForm } from '../../../hooks/useTestForm'
 import { TEST_CONFIG } from '../../../Constants/testConfig'
 import { InputNumber } from '../../Molecules/InputFields/InputNumber'
 import { RadioGroup } from '../../Molecules/RadioGroup'
+import { Show } from '../../Atoms/Show'
 
 export const TestForm = props => {
 	const { state, actions } = useTestForm(props)
@@ -54,8 +55,7 @@ export const TestForm = props => {
 								onChange={e => actions.setHasTimeLimit(getCheckedValue(e))}
 							/>
 						</div>
-
-						{state.hasTimeLimit && (
+						<Show when={state.hasTimeLimit}>
 							<motion.div
 								initial={{ opacity: 0, height: 0 }}
 								animate={{ opacity: 1, height: 'auto' }}
@@ -72,7 +72,7 @@ export const TestForm = props => {
 									onChange={actions.setTimeLimit}
 								/>
 							</motion.div>
-						)}
+						</Show>
 					</div>
 
 					{/* Количество попыток */}
@@ -85,8 +85,7 @@ export const TestForm = props => {
 								onChange={e => actions.setHasAttemptsLimit(getCheckedValue(e))}
 							/>
 						</div>
-
-						{state.hasAttemptsLimit && (
+						<Show when={state.hasAttemptsLimit}>
 							<motion.div
 								initial={{ opacity: 0, height: 0 }}
 								animate={{ opacity: 1, height: 'auto' }}
@@ -114,7 +113,7 @@ export const TestForm = props => {
 									wfull
 								/>
 							</motion.div>
-						)}
+						</Show>
 					</div>
 				</div>
 
@@ -140,7 +139,7 @@ export const TestForm = props => {
 							/>
 						</div>
 
-						{state.isQuestionBank && (
+						<Show when={state.isQuestionBank}>
 							<motion.div
 								initial={{ opacity: 0, height: 0 }}
 								animate={{ opacity: 1, height: 'auto' }}
@@ -162,7 +161,7 @@ export const TestForm = props => {
 									}
 								/>
 							</motion.div>
-						)}
+						</Show>
 					</div>
 
 					{/* Проходной балл */}
@@ -175,8 +174,7 @@ export const TestForm = props => {
 								onChange={e => actions.setHasPassingScore(getCheckedValue(e))}
 							/>
 						</div>
-
-						{state.hasPassingScore && (
+						<Show when={state.hasPassingScore}>
 							<motion.div
 								initial={{ opacity: 0, height: 0 }}
 								animate={{ opacity: 1, height: 'auto' }}
@@ -184,17 +182,25 @@ export const TestForm = props => {
 							>
 								<InputNumber
 									name='passingScore'
-									placeholder='Например: 80'
-									title='Проходной балл (%)'
+									placeholder={
+										state.maxScore !== null
+											? `Макс. балл: ${state.maxScore}`
+											: 'Например: 80'
+									}
+									title={
+										state.maxScore !== null
+											? `Проходной балл (из ${state.maxScore})`
+											: 'Проходной балл'
+									}
 									min={1}
-									max={100}
+									max={state.maxScore ?? 100}
 									value={state.passingScore}
 									onChange={e =>
 										actions.setPassingScore(e?.target ? e.target.value : e)
 									}
 								/>
 							</motion.div>
-						)}
+						</Show>
 					</div>
 					<div className='pt-2 border-t border-[var(--light-middle)]/20'>
 						<Checkbox

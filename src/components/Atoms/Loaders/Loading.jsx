@@ -13,11 +13,11 @@ export const Loading = ({ className }) => {
 	}, [])
 
 	return (
-		<p className={'flex'}>
+		<span className={`inline-flex ${className || ''}`}>
 			Загрузка
 			<span className='flex justify-start' style={{ width: '2ch' }}>
 				{states[step]}
 			</span>
-		</p>
+		</span>
 	)
 }

@@ -321,10 +321,10 @@ export const Header = ({ links = [], onChangeRole }) => {
 									</Text>
 								</div>
 
-								{userInfo?.avatar_url ? (
+								{userInfo?.photo ? (
 									<img
 										className='h-10 w-10 md:h-12 md:w-12 rounded-md object-cover aspect-square'
-										src={MEDIA_API_URL + userInfo?.avatar_url}
+										src={MEDIA_API_URL + userInfo?.photo}
 										alt='Avatar'
 									/>
 								) : (

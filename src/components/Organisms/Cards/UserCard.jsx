@@ -1,5 +1,6 @@
 import { ImageOff } from 'lucide-react'
 import { Text } from '../../Atoms/Text'
+import { MEDIA_API_URL } from '../../../API'
 
 export const UserCard = ({ FullName, avatar_url, email, role, onClick }) => {
 	const roles = {
@@ -15,7 +16,11 @@ export const UserCard = ({ FullName, avatar_url, email, role, onClick }) => {
 				className='w-full h-fit flex gap-3 bg-[var(--white)] rounded-2xl shadow-[var(--shadow)] p-2'
 			>
 				{avatar_url ? (
-					<img className='rounded-xl w-12.5 h-12.5' src={avatar_url} alt='' />
+					<img
+						className='rounded-xl w-12.5 h-12.5'
+						src={MEDIA_API_URL + avatar_url}
+						alt=''
+					/>
 				) : (
 					<ImageOff className='h-12 rounded-xl object-cover aspect-square w-auto p-3 text-[var(--middle)] bg-[var(--light-middle)]' />
 				)}

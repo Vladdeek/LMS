@@ -1,40 +1,81 @@
-import { Check, Trash2, X } from 'lucide-react'
-import { Input } from './Input'
+import { forwardRef } from 'react'
+import { X, GripVertical } from 'lucide-react'
+import { useUser } from '../../../context/UserContext'
+import { TextArea } from './TextArea'
+import { Show } from '../../Atoms/Show'
 
-export const MatchingQuestionOptionInput = ({
-	value,
-	disabled,
-	onChangeText,
-	onDelete,
-	column,
-}) => {
-	return (
-		<div
-			className={`flex ${column === 'left' ? 'flex-row-reverse' : 'flex-row'} gap-2 w-full`}
-		>
-			{/* Инпут */}
-			<div className='flex-1'>
-				<Input
-					value={value}
-					onChange={e => onChangeText(e.target.value)}
-					placeholder={'Введите вариант ответа...'}
-				/>
-			</div>
+export const MatchingQuestionOptionInput = forwardRef(
+	(
+		{
+			item,
+			side,
+			onChangeText,
+			onDelete,
+			isDeleteDisabled = false,
+			dragHandleProps,
+		},
+		ref,
+	) => {
+		const { role } = useUser()
+		const isStudent = role === 'student'
+		const isRight = side === 'right'
 
-			{/* Кнопка удаления */}
-			<div className='flex items-center gap-3'>
-				<button
-					disabled={disabled}
-					onClick={onDelete}
-					className={`flex justify-center items-center text-[var(--middle)] aspect-square rounded-md border-1 border-[var(--black)]/2.5 h-3 w-3 transition-all p-0.5 bg-[var(--white)] ${
-						disabled
-							? 'opacity-50'
-							: 'hover:shadow-[var(--shadow)] hover:bg-[var(--red-base)] hover:text-[var(--red-pale)] active:shadow-inner active:scale-99 active:brightness-95 cursor-pointer'
-					}`}
+		return (
+			<div className='flex items-center gap-2 w-full group'>
+				{/* Основная карточка */}
+				<div
+					ref={ref}
+					className='relative flex items-center gap-2 min-h-[52px] w-full p-2 rounded-[22px] bg-[var(--white)] border-2 border-transparent shadow-sm select-none'
 				>
-					<X strokeWidth={1.75} />
-				</button>
+					{/* Иконка Drag only для правого столбца */}
+					{isRight && (
+						<div
+							{...dragHandleProps}
+							className='cursor-grab active:cursor-grabbing text-[var(--middle)] hover:text-black p-1 shrink-0'
+						>
+							<GripVertical size={18} />
+						</div>
+					)}
+
+					<div className='flex items-center gap-2 w-full min-w-0'>
+						{isStudent ? (
+							<span className='w-full truncate px-1 font-medium'>
+								{item.name}
+							</span>
+						) : (
+							<TextArea
+								value={item.name || ''}
+								onChange={val => onChangeText?.(val)}
+								placeholder={
+									!isRight ? 'Введите понятие...' : 'Введите определение...'
+								}
+							/>
+						)}
+					</div>
+				</div>
+
+				{/* Кнопка полного удаления (только для преподавателя) */}
+				<Show when={!isStudent}>
+					<button
+						type='button'
+						disabled={isDeleteDisabled}
+						onClick={e => {
+							e.stopPropagation()
+							onDelete?.()
+						}}
+						className={`flex justify-center items-center w-8 h-8 rounded-lg border border-[var(--black)]/5 bg-[var(--white)] transition-all shrink-0 ${
+							isDeleteDisabled
+								? 'opacity-40 cursor-not-allowed'
+								: 'hover:bg-[var(--red-base)] hover:text-[var(--red-pale)] cursor-pointer active:scale-95'
+						}`}
+						aria-label='Удалить вариант'
+					>
+						<X size={16} strokeWidth={2} />
+					</button>
+				</Show>
 			</div>
-		</div>
-	)
-}
+		)
+	},
+)
+
+MatchingQuestionOptionInput.displayName = 'MatchingQuestionOptionInput'

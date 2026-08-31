@@ -9,7 +9,7 @@ const UserContext = createContext()
 //Провайдер
 export const UserProvider = ({ children }) => {
 	const [userInfo, setUserInfo] = useState(null)
-	const [role, setRole] = useState(null)
+	const [role, setRole] = useState('student')
 	const [loadingUserInfo, setLoadingUserInfo] = useState(false)
 	const location = useLocation()
 

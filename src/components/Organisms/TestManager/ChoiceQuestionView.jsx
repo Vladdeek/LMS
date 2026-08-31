@@ -1,9 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus } from 'lucide-react'
-import { QuestionOptionButton } from '../../Atoms/Buttons/QuestionOptionButton'
 import { QuestionOptionInput } from '../../Molecules/InputFields/QuestionOptionInput'
-import { Show } from '../../Atoms/Show'
-import { useUser } from '../../../context/UserContext'
 import { SubmitButton } from '../../Atoms/Buttons/SubmitButton'
 import { TEST_CONFIG } from '../../../Constants/testConfig'
 import {
@@ -14,21 +11,13 @@ import {
 	DeleteOption,
 } from '../../../api/Test'
 import { useSearchParams } from 'react-router-dom'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { useDebounce } from '../../../hooks/useDebounce'
 
-const alphabet = ['а', 'б', 'в', 'г', 'д', 'е', 'ж']
-
-export const ChoiceQuestionView = ({
-	selectedOptions,
-	onToggleOption,
-	onOptionUpdate,
-}) => {
+export const ChoiceQuestionView = ({ onOptionUpdate }) => {
 	const [searchParams] = useSearchParams()
 	const activeQuestionId = searchParams.get('questionId')
-
 	const [options, setOptions] = useState([])
-	const { role } = useUser()
 
 	useEffect(() => {
 		const fetchOptions = async () => {
@@ -43,7 +32,6 @@ export const ChoiceQuestionView = ({
 		fetchOptions()
 	}, [activeQuestionId])
 
-	// Дебаунс сохранение имени опции
 	const debouncedSaveName = useDebounce(async (id, newText) => {
 		try {
 			await EditOptionName(id, newText)
@@ -59,7 +47,6 @@ export const ChoiceQuestionView = ({
 		debouncedSaveName(id, newText)
 	}
 
-	// Переключение правильности (Оптимистичное обновление)
 	const handleToggleCorrect = async (id, currentStatus) => {
 		const nextStatus = !currentStatus
 		setOptions(prev =>
@@ -78,7 +65,6 @@ export const ChoiceQuestionView = ({
 		}
 	}
 
-	// Удаление опции
 	const handleDeleteOption = async id => {
 		try {
 			await DeleteOption(id)
@@ -89,7 +75,6 @@ export const ChoiceQuestionView = ({
 		}
 	}
 
-	// Добавление опции
 	const addOption = async () => {
 		const existingCodes = new Set(options?.map(opt => opt.option_code))
 		let newCode = 1
@@ -138,39 +123,25 @@ export const ChoiceQuestionView = ({
 						}}
 						className='w-full flex items-center gap-3'
 					>
-						{role !== 'student' ? (
-							<QuestionOptionInput
-								value={q.name}
-								isCorrect={q.correct}
-								disabled={options.length <= TEST_CONFIG.MIN_OPTION_COUNT}
-								onChangeText={newText => handleTextChange(q.id, newText)}
-								onToggleCorrect={() => handleToggleCorrect(q.id, q.correct)}
-								onDelete={() => handleDeleteOption(q.id)}
-							/>
-						) : (
-							<>
-								<p className='uppercase text-xl'>{alphabet[i] + ').'}</p>
-								<QuestionOptionButton
-									id={q.id}
-									initialText={q.name}
-									onHandleAnswer={() => onToggleOption(q.option_code)}
-									initialIsSelected={selectedOptions.has(q.option_code)}
-								/>
-							</>
-						)}
+						<QuestionOptionInput
+							value={q.name}
+							isCorrect={q.correct}
+							disabled={options.length <= TEST_CONFIG.MIN_OPTION_COUNT}
+							onChangeText={newText => handleTextChange(q.id, newText)}
+							onToggleCorrect={() => handleToggleCorrect(q.id, q.correct)}
+							onDelete={() => handleDeleteOption(q.id)}
+						/>
 					</motion.div>
 				))}
 			</AnimatePresence>
 
-			<Show when={role !== 'student'}>
-				<SubmitButton
-					onClick={addOption}
-					className='mt-2 w-full flex justify-center items-center'
-				>
-					<Plus strokeWidth={3} />
-					<p>Добавить вариант</p>
-				</SubmitButton>
-			</Show>
+			<SubmitButton
+				onClick={addOption}
+				className='mt-2 w-full flex justify-center items-center'
+			>
+				<Plus strokeWidth={3} />
+				<p>Добавить вариант</p>
+			</SubmitButton>
 		</div>
 	)
 }

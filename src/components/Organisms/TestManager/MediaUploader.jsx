@@ -82,17 +82,19 @@ export const MediaUploader = ({
 
 	return (
 		<>
-			<div className='w-full max-w-2xl'>
+			<div className='w-full max-w-2xl justify-center flex'>
 				<Show when={localFile !== null}>
-					<div className='relative rounded-xl object-cover '>
+					<div className='relative rounded-xl object-cover w-full'>
 						{/* Рендер Картинки */}
 						<Show when={isImage}>
-							<div className='w-full h-full'>
+							<div
+								onClick={() => setFullScreenIdx(0)}
+								className='w-full h-[25vh] overflow-hidden rounded-2xl flex justify-center bg-[var(--light-middle)] hover:scale-101 hover:shadow-md transition-all cursor-pointer'
+							>
 								<img
-									onClick={() => setFullScreenIdx(0)}
 									src={MEDIA_API_URL + fileUrl}
 									alt='Прикрепленное медиа'
-									className='w-full h-auto object-cover rounded-2xl hover:scale-101 hover:shadow-md transition-all cursor-pointer'
+									className='h-full w-auto '
 								/>
 							</div>
 						</Show>

@@ -46,7 +46,7 @@ function MainApp() {
 					<Route path='/moderation-courses/' element={<ModerateCourses />} />
 					<Route path='/moderation-users/' element={<ModerateCourses />} />
 					<Route path='/profile' element={<Profile />} />
-					<Route path='/checking' element={<TaskChecking />} />
+					<Route path='/task-checking' element={<TaskChecking />} />
 				</Route>
 			</Routes>
 		</Suspense>

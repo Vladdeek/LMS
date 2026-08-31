@@ -28,7 +28,7 @@ import { useParams, useSearchParams } from 'react-router-dom'
 import { DynamicTable } from './ConstructorViews/TableConstructor'
 import { AudioManager } from './ConstructorViews/AudioManager'
 import { TestManager } from './TestManager/TestManager'
-import { StudentTestView } from './StudentTestView'
+import { StudentTestView } from './TestManager/StudentTestView'
 
 const COMPONENT_MAP = {
 	text: TextEditor,

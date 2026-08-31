@@ -1,41 +1,17 @@
 import axios from 'axios'
 import { toast } from 'sonner'
+import { API_URL } from '../API'
+
+// Формируем WS URL на основе API_URL
+export const WS_API = API_URL.startsWith('http')
+	? API_URL.replace(/^http/, 'ws') + '/ws'
+	: `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}${API_URL}/ws`
 
 const api = axios.create({
 	withCredentials: true,
 })
 
-const BACKEND_ERRORS = {
-	USER_NOT_FOUND_BY_EMAIL: 'Пользователь с таким email не найден',
-}
-
-const STATUS_ERRORS = {
-	401: 'Ошибка авторизации',
-	403: 'Доступ запрещён',
-	404: 'Ничего не найдено',
-	500: 'Сервер временно умер',
-}
-
-// const showError = err => {
-// 	const uniqueCode = err.data?.unique_code
-// 	const status = err?.status
-
-// 	let message = ''
-
-// 	if (uniqueCode && BACKEND_ERRORS[uniqueCode]) {
-// 		message = BACKEND_ERRORS[uniqueCode]
-// 	} else if (status && STATUS_ERRORS[status]) {
-// 		message = STATUS_ERRORS[status]
-// 	} else {
-// 		message = uniqueCode || `Неизвестная ошибка (${status || 'No Status'})`
-// 	}
-
-// 	toast.error(message, {
-// 		id: 'api-error',
-// 	})
-// }
-
-const getCookie = name => {
+export const getCookie = name => {
 	const cookies = document.cookie ? document.cookie.split('; ') : []
 	for (let c of cookies) {
 		const [k, ...v] = c.split('=')
@@ -44,33 +20,76 @@ const getCookie = name => {
 	return null
 }
 
+// Request Interceptor
 api.interceptors.request.use(config => {
 	const csrf = getCookie('csrftoken')
-
 	if (csrf) {
 		config.headers['X-CSRF-TOKEN'] = csrf
 	}
 
-	config.headers['X-API-KEY'] = import.meta.env.VITE_API_KEY
+	if (import.meta.env.VITE_API_KEY) {
+		config.headers['X-API-KEY'] = import.meta.env.VITE_API_KEY
+	}
 
 	return config
 })
 
+// Response Interceptor с очередью Refresh JWT
+let isRefreshing = false
+let refreshSubscribers = []
+
+const subscribeTokenRefresh = cb => refreshSubscribers.push(cb)
+const onRefreshed = () => {
+	refreshSubscribers.forEach(cb => cb())
+	refreshSubscribers = []
+}
+
 api.interceptors.response.use(
 	r => r,
-	error => {
+	async error => {
 		if (axios.isCancel(error)) {
 			return Promise.reject(error)
 		}
 
-		if (error.response?.status === 401) {
-			console.error('Ошибка авторизации. Пожалуйста, войдите в систему.')
-			window.location.href = '/authorization'
-			return Promise.reject(error)
-		}
+		const status = error.response?.status
+		const originalRequest = error.config
 
-		const status = error.response
-		// showError(status)
+		// Перехват 401 и попытка рефреша
+		if (status === 401 && !originalRequest._retry) {
+			if (isRefreshing) {
+				return new Promise(resolve => {
+					subscribeTokenRefresh(() => {
+						resolve(api(originalRequest))
+					})
+				})
+			}
+
+			originalRequest._retry = true
+			isRefreshing = true
+
+			try {
+				// Запрос на рефреш идет через базовый axios, чтобы не зациклить interceptor
+				await axios.post(
+					`${API_URL}/auth/jwt/refresh`,
+					{},
+					{
+						withCredentials: true,
+						headers: import.meta.env.VITE_API_KEY
+							? { 'X-API-KEY': import.meta.env.VITE_API_KEY }
+							: {},
+					},
+				)
+
+				isRefreshing = false
+				onRefreshed()
+				return api(originalRequest)
+			} catch (refreshError) {
+				isRefreshing = false
+				refreshSubscribers = []
+				window.location.href = '/authorization'
+				return Promise.reject(refreshError)
+			}
+		}
 
 		return Promise.reject(error)
 	},

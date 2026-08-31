@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { TEST_CONFIG } from '../Constants/testConfig'
-import { GetQuestions, GetTestSettings, ChangeTestSettings } from '../api/Test'
+import {
+	GetQuestions,
+	GetTestSettings,
+	ChangeTestSettings,
+	GetMaxScore,
+} from '../api/Test'
 
 export const useTestForm = props => {
 	const { initialData, onSubmit } = props
@@ -25,6 +30,10 @@ export const useTestForm = props => {
 	const [hasPassingScore, setHasPassingScore] = useState(false)
 	const [passingScore, setPassingScore] = useState('')
 
+	// Максимальный балл теста
+	const [maxScore, setMaxScore] = useState(null)
+	const [isLoadingMaxScore, setIsLoadingMaxScore] = useState(false)
+
 	// Вопросы и загрузка
 	const [questionsIds, setQuestionsIds] = useState([])
 	const [isLoadingQuestions, setIsLoadingQuestions] = useState(false)
@@ -33,7 +42,31 @@ export const useTestForm = props => {
 	const editMode = Boolean(testId)
 	const totalQuestionsCount = questionsIds.length
 
-	// 1. Загрузка настроек теста (GET)
+	// 1. Загрузка максимального балла (GET)
+	useEffect(() => {
+		if (!testId) return
+
+		const fetchMaxScore = async () => {
+			setIsLoadingMaxScore(true)
+			try {
+				const res = await GetMaxScore(testId)
+				// Извлекаем значение в зависимости от формата ответа API (число или объект)
+				const score =
+					typeof res === 'object' && res !== null
+						? (res?.maxScore ?? res?.max_score ?? res?.score)
+						: res
+				setMaxScore(Number(score) || null)
+			} catch (err) {
+				console.error('Ошибка при получении максимального балла:', err)
+			} finally {
+				setIsLoadingMaxScore(false)
+			}
+		}
+
+		fetchMaxScore()
+	}, [testId])
+
+	// 2. Загрузка настроек теста (GET)
 	useEffect(() => {
 		if (!testId) return
 
@@ -88,7 +121,7 @@ export const useTestForm = props => {
 		fetchSettings()
 	}, [testId])
 
-	// 2. Загрузка списка вопросов
+	// 3. Загрузка списка вопросов (GET)
 	useEffect(() => {
 		if (!testId) return
 
@@ -136,6 +169,23 @@ export const useTestForm = props => {
 		}
 	}
 
+	const handlePassingScoreChange = val => {
+		const value =
+			typeof val === 'object' && val?.target ? val.target.value : val
+		const numValue = Number(value)
+		const effectiveMaxScore = maxScore !== null ? maxScore : 100
+
+		if (
+			hasPassingScore &&
+			effectiveMaxScore > 0 &&
+			numValue > effectiveMaxScore
+		) {
+			setPassingScore(effectiveMaxScore)
+		} else {
+			setPassingScore(value)
+		}
+	}
+
 	const handleHasTimeLimitChange = checked => {
 		setHasTimeLimit(checked)
 		if (!checked) setTimeLimit('')
@@ -171,6 +221,8 @@ export const useTestForm = props => {
 	const minTimeLimit = effectiveQuestionsCount * TIME_FOR_ONE_QUESTION_SECONDS
 
 	// Валидация
+	const limitScore = maxScore !== null ? maxScore : 100
+
 	const isAttemptsInvalid =
 		hasAttemptsLimit &&
 		(!attemptsCount ||
@@ -185,7 +237,9 @@ export const useTestForm = props => {
 
 	const isPassingScoreInvalid =
 		hasPassingScore &&
-		(!passingScore || Number(passingScore) <= 0 || Number(passingScore) > 100)
+		(!passingScore ||
+			Number(passingScore) <= 0 ||
+			Number(passingScore) > limitScore)
 
 	const isTimeLimitInvalid =
 		hasTimeLimit &&
@@ -196,9 +250,10 @@ export const useTestForm = props => {
 		isQuestionsBankInvalid ||
 		isPassingScoreInvalid ||
 		isTimeLimitInvalid ||
-		isLoadingSettings
+		isLoadingSettings ||
+		isLoadingMaxScore
 
-	// 3. Отправка формы (PUT)
+	// Отправка формы (PUT)
 	const handleSubmit = async e => {
 		console.log('Попытка сабмита. Состояние валидации:', {
 			isSubmitDisabled,
@@ -207,6 +262,7 @@ export const useTestForm = props => {
 			isPassingScoreInvalid,
 			isTimeLimitInvalid,
 			isLoadingSettings,
+			isLoadingMaxScore,
 			editMode,
 			testId,
 		})
@@ -250,12 +306,14 @@ export const useTestForm = props => {
 			questionsToUse,
 			hasPassingScore,
 			passingScore,
+			maxScore,
 			editMode,
 			isSubmitDisabled,
 			questionsIds,
 			totalQuestionsCount,
 			isLoadingQuestions,
 			isLoadingSettings,
+			isLoadingMaxScore,
 			minTimeLimit,
 		},
 		actions: {
@@ -268,7 +326,7 @@ export const useTestForm = props => {
 			setIsQuestionBank: handleIsQuestionBankChange,
 			setQuestionsToUse: handleQuestionsToUseChange,
 			setHasPassingScore: handleHasPassingScoreChange,
-			setPassingScore,
+			setPassingScore: handlePassingScoreChange,
 			handleSubmit,
 		},
 	}

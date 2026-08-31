@@ -7,12 +7,19 @@ const TEXT_STYLES = {
 	inverse: 'text-[var(--white)]',
 }
 
-export const Text = ({ children, size, font, style, className }) => {
+export const Text = ({
+	children,
+	size,
+	font,
+	style,
+	className,
+	as: Component = 'span',
+}) => {
 	return (
-		<p
+		<Component
 			className={`${TEXT_SIZES.size[size]} ${TEXT_SIZES.font[font]} ${TEXT_STYLES[style]} ${className}`}
 		>
 			{children}
-		</p>
+		</Component>
 	)
 }

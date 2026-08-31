@@ -1,28 +1,16 @@
 import { useEffect, useState } from 'react'
-import {
-	BookMarked,
-	LaptopMinimalCheck,
-	NotebookPen,
-	Settings,
-} from 'lucide-react'
+import { Settings } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { useUser } from '../../context/UserContext'
 import { LESSON_ICONS, LESSON_LABELS } from '../../Constants/lessonTypes'
 import { Toggle } from '../Atoms/Buttons/Toggle'
-import { SubmitButton } from '../Atoms/Buttons/SubmitButton'
-import { TimeLimitInput } from '../Molecules/InputFields/TimeLimitInput'
 import { Show } from '../Atoms/Show'
 import { Loading } from '../Atoms/Loaders/Loading'
-import { ButtonCase } from '../Atoms/Buttons/ButtonCase'
 import { Text } from '../Atoms/Text'
 import { TestSettingsModal } from './Modals/TestSettingsModal'
 import { getSectionInfo } from '../../api/courseService'
-
-const formatTime = seconds => {
-	const mins = Math.floor(seconds / 60)
-	const secs = seconds % 60
-	return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
-}
+import { TestTimerBar } from '../Molecules/TestTimeBar'
+import { useTestSession } from '../../hooks/useTestSession'
 
 export const ContentHeader = ({ isEdit, onIsEditChange }) => {
 	const { role } = useUser()
@@ -32,22 +20,11 @@ export const ContentHeader = ({ isEdit, onIsEditChange }) => {
 	const activeType = searchParams.get('type')
 
 	const [sectionInfo, setSectionInfo] = useState(null)
-	const [questionsData, setQuestionsData] = useState(null)
 	const [testSettingsIsOpen, setTestSettingsIsOpen] = useState(false)
 
-	const [totalTime, setTotalTime] = useState(0)
-	const [timeLeft, setTimeLeft] = useState(0)
-	const [testStatus, setTestStatus] = useState(null)
-
-	const progressWidth = totalTime > 0 ? (timeLeft / totalTime) * 100 : 0
-
-	useEffect(() => {
-		if (timeLeft <= 0) return
-		const timer = setInterval(() => {
-			setTimeLeft(prev => Math.max(prev - 1, 0))
-		}, 1000)
-		return () => clearInterval(timer)
-	}, [timeLeft])
+	const { session } = useTestSession(
+		activeType === 'test' ? activeSection : null,
+	)
 
 	useEffect(() => {
 		if (!activeSection) return
@@ -62,51 +39,7 @@ export const ContentHeader = ({ isEdit, onIsEditChange }) => {
 		fetchInfo()
 	}, [activeSection])
 
-	const fetchTestSessionInfo = async () => {
-		if (!activeSection) return
-		try {
-			const res = await getSession(activeSection)
-			const currentTime = Math.floor(Date.now() / 1000)
-			const remaining = res.expire_at
-				? Math.max(0, res.expire_at - currentTime)
-				: 0
-
-			setTestStatus(res.status)
-			setTimeLeft(remaining)
-		} catch (err) {
-			console.error(err)
-		}
-	}
-
-	useEffect(() => {
-		if (role === 'student' && activeType === 'test' && activeSection) {
-			fetchTestSessionInfo()
-		}
-	}, [activeSection, role, activeType])
-
-	const changeTimeLimit = async time => {
-		if (time > 0 && activeSection) {
-			try {
-				const res = await editTest(activeSection, null, null, time, null)
-				setQuestionsData(res)
-			} catch (err) {
-				console.error(err)
-			}
-		}
-	}
-
-	const handleEndSession = async () => {
-		try {
-			await endSession(activeSection)
-		} catch (err) {
-			console.error(err)
-		} finally {
-			await fetchTestSessionInfo()
-		}
-	}
-
 	const icons = LESSON_ICONS
-
 	const labels = LESSON_LABELS
 
 	return (
@@ -115,7 +48,7 @@ export const ContentHeader = ({ isEdit, onIsEditChange }) => {
 				isOpen={testSettingsIsOpen}
 				onClose={() => setTestSettingsIsOpen(false)}
 			/>
-			<div className='flex flex-col gap-3'>
+			<div className='flex flex-col gap-3 relative'>
 				<div className='relative flex items-center justify-between w-full bg-[var(--white)] shadow-[var(--shadow)] rounded-xl pr-3 pl-4 py-2 overflow-hidden'>
 					<div className='flex items-center gap-3'>
 						<Show when={sectionInfo}>
@@ -140,14 +73,13 @@ export const ContentHeader = ({ isEdit, onIsEditChange }) => {
 					<Show when={role !== 'student' && activeType === 'test'}>
 						<button
 							onClick={() => setTestSettingsIsOpen(true)}
-							className={
-								'flex gap-1 items-center px-3 justify-center group cursor-pointer bg-[var(--white)] shadow-[var(--shadow)] h-full w-fit rounded-lg hover:bg-[var(--light-middle)]  transition-all'
-							}
+							className='flex gap-1 items-center px-3 justify-center group cursor-pointer bg-[var(--white)] shadow-[var(--shadow)] h-full w-fit rounded-lg hover:bg-[var(--light-middle)] transition-all'
 						>
 							<Text size={'md'}>Настройки теста</Text>
 							<Settings className='group-hover:rotate-360 duration-500 transition-all group-hover:scale-105' />
 						</button>
 					</Show>
+
 					<Show when={role !== 'student' && activeType !== 'test'}>
 						<Toggle
 							label='Режим редактирования'
@@ -157,27 +89,16 @@ export const ContentHeader = ({ isEdit, onIsEditChange }) => {
 						/>
 					</Show>
 
-					<Show when={activeType === 'test' && testStatus === 'pending'}>
-						<>
-							<p className='w-24 text-center text-[var(--black)] font-semibold'>
-								{formatTime(timeLeft >= 0 ? timeLeft : 0)}
-							</p>
-							<SubmitButton
-								onClick={handleEndSession}
-								rounded='rounded-lg'
-								className='w-fit'
-								flexParams='justify-center'
-							>
-								Завершить тест
-							</SubmitButton>
-							<div
-								style={{
-									width: `${progressWidth}%`,
-									transition: 'width 1s linear',
-								}}
-								className='absolute bg-[var(--hero)] bottom-0 left-0 h-1 rounded-full'
+					<Show
+						when={Boolean(session?.expires_at) && activeType === 'test'}
+						fallback={null}
+					>
+						<div className='absolute -bottom-0 left-0 w-full'>
+							<TestTimerBar
+								submittedAt={session?.submitted_at}
+								expiresAt={session?.expires_at}
 							/>
-						</>
+						</div>
 					</Show>
 				</div>
 			</div>

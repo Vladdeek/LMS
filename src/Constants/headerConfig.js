@@ -27,8 +27,7 @@ export const HEADER_CONFIG = [
 			{
 				title: 'Задания',
 				icon: CopyCheck,
-				to: '/students',
-				not_clickable: true,
+				to: '/task-checking',
 			},
 			// {
 			// 	title: 'Журнал',

@@ -10,9 +10,7 @@ import { Loader } from '../../Atoms/Loaders/Loader'
 import { Show } from '../../Atoms/Show'
 import { Input } from '../../Molecules/InputFields/Input'
 import { ChoiceQuestionView } from './ChoiceQuestionView'
-import { OpenQuestionView } from './OpenQuestionView'
 
-import { SubmitButton } from '../../Atoms/Buttons/SubmitButton'
 import { useUser } from '../../../context/UserContext'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { Text } from '../../Atoms/Text'
@@ -22,9 +20,10 @@ import { CircleHelp, ImagePlus, Trash2 } from 'lucide-react'
 import { ConfirmModal } from '../Modals/ConfirmModal'
 import { ButtonCase } from '../../Atoms/Buttons/ButtonCase'
 import { toast } from 'sonner'
-import { MatchingQuestionView } from './MatchingVariant2/MatchingQuestionView'
+
 import { FileUploaderZone } from '../ConstructorViews/FileUploaderZone'
 import { MediaUploader } from './MediaUploader'
+import { MatchingQuestionView } from './MatchingQuestionView'
 
 export const TestView = () => {
 	const navigate = useNavigate()
@@ -254,19 +253,6 @@ export const TestView = () => {
 					</Show>
 					<Show when={data?.question_type === 'matching'}>
 						<MatchingQuestionView />
-					</Show>
-					<Show when={data?.question_type === 'open'}>
-						<OpenQuestionView
-							isEdit={role !== 'student'}
-							studentAnswer={data?.student_answer}
-							onChange={handleChange}
-						/>
-					</Show>
-
-					<Show when={role === 'student'}>
-						<SubmitButton onClick={submitAnswer} className='mt-2'>
-							<p>Ответить на вопрос</p>
-						</SubmitButton>
 					</Show>
 				</div>
 			</div>

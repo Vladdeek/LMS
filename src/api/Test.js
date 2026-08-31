@@ -104,6 +104,15 @@ export const DeleteMediaInQuestion = async (question_id, file_metadata_id) => {
 	return response.data
 }
 
+// ---> GetMaxScore - отдает настройки теста <---
+export const GetMaxScore = async id => {
+	const response = await api.get(
+		`${API_URL}/tests/${id}/questions/max-score`,
+		{},
+	)
+	return response.data
+}
+
 // ---> GetTestSettings - отдает настройки теста <---
 export const GetTestSettings = async id => {
 	const response = await api.get(`${API_URL}/tests/${id}/settings`, {})
@@ -168,24 +177,33 @@ export const EditTest = async (
 }
 
 // ---> GetSession - Отправляет данные сессии теста <---
-export const GetSession = async test_id => {
+export const GetActiveSession = async test_id => {
 	const response = await api.get(
-		`${API_URL}/test-content/student-session/active/${test_id}`,
+		`${API_URL}/tests/${test_id}/student-attempt/active`,
 	)
 	return response.data
 }
 // ---> StartSession - начинает сессию тестирования <---
 export const StartSession = async test_id => {
 	const response = await api.post(
-		`${API_URL}/test-content/student-session/start/${test_id}`,
+		`${API_URL}/tests/${test_id}/student-attempt/`,
 		{},
 	)
 	return response.data
 }
+
+// ---> GetQuestion - начинает сессию тестирования <---
+export const GetQuestion = async (test_id, attempt_id) => {
+	const response = await api.get(
+		`${API_URL}/tests/${test_id}/student-passing/${attempt_id}/question`,
+	)
+	return response.data
+}
+
 // ---> EndSession - заканчивает сессию тестирования <---
-export const EndSession = async test_id => {
+export const EndSession = async (test_id, student_attempt_id) => {
 	const response = await api.post(
-		`${API_URL}/test-content/student-session/end/${test_id}`,
+		`${API_URL}/tests/${test_id}/student-attempt/${student_attempt_id}/finish`,
 		{},
 	)
 	return response.data
@@ -200,5 +218,26 @@ export const GetStudentAnswer = async (test_id, question_id) => {
 // ---> GetResultStudentAnswers - отдает результаты тестирования студента <---
 export const GetResultStudentAnswers = async test_id => {
 	const response = await api.get(`${API_URL}/test-content/${test_id}/result`)
+	return response.data
+}
+
+export const PostStudentAnswer = async (
+	test_id,
+	student_attempt_id,
+	question_id,
+	answers,
+) => {
+	const response = await api.post(
+		`${API_URL}/tests/${test_id}/student-passing/${student_attempt_id}/student-answer/${question_id}`,
+		{
+			answers,
+		},
+	)
+	return response.data
+}
+
+// ---> EndSession - заканчивает сессию тестирования <---
+export const GetResult = async test_id => {
+	const response = await api.get(`${API_URL}/tests/${test_id}/student/result`)
 	return response.data
 }

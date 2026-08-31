@@ -3,19 +3,19 @@ import { useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Plus } from 'lucide-react'
 
-import { Show } from '../../../Atoms/Show'
-import { SubmitButton } from '../../../Atoms/Buttons/SubmitButton'
-import { useUser } from '../../../../context/UserContext'
-import { useDebounce } from '../../../../hooks/useDebounce'
-import { TEST_CONFIG } from '../../../../Constants/testConfig'
+import { Show } from '../../Atoms/Show'
+import { SubmitButton } from '../../Atoms/Buttons/SubmitButton'
+import { useUser } from '../../../context/UserContext'
+import { useDebounce } from '../../../hooks/useDebounce'
+import { TEST_CONFIG } from '../../../Constants/testConfig'
 import {
 	AddOptionToMatchingQuestion,
 	DeleteOption,
 	GetMatchingOptions,
 	EditOptionName,
 	CreatePair,
-} from '../../../../api/Test'
-import { PairItem } from './MatchingItem'
+} from '../../../api/Test'
+import { MatchingQuestionOptionInput } from '../../Molecules/InputFields/MatchingQuestionOptionInput'
 
 const PAIR_COLORS = [
 	'var(--pair-color-1)',
@@ -240,7 +240,7 @@ export const MatchingQuestionView = () => {
 				{/* Правая колонка */}
 				<div className='flex flex-col gap-3 w-full'>
 					{options.right_options.map((item, i) => (
-						<PairItem
+						<MatchingQuestionOptionInput
 							key={item.id || i}
 							item={item}
 							side='right'

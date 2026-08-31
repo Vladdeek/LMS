@@ -1,214 +1,245 @@
-import {
-	ArrowLeft,
-	BookMarked,
-	FlaskConical,
-	ImageOff,
-	LaptopMinimalCheck,
-	NotebookPen,
-} from 'lucide-react'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { CourseMiniCard } from '../components/Organisms/Cards/CourseMiniCard'
+import { ArrowLeft, Users, ChevronLeft } from 'lucide-react'
+import {
+	fetchCourses,
+	fetchGroups,
+	fetchStudents,
+	fetchTasks,
+} from '../api/ChekingService'
+import ResponsiveSidebar from '../components/Molecules/ResponsiveSidebar'
 import { SubmitButton } from '../components/Atoms/Buttons/SubmitButton'
+import { UserCard } from '../components/Organisms/Cards/UserCard'
+import { TaskCard } from '../components/Organisms/Cards/TaskCard'
+import { CourseMiniCard } from '../components/Organisms/Cards/CourseMiniCard'
+import { TestCheckingView } from '../components/Organisms/TestManager/TeskCheckingView'
 
-const UserCard = ({ FullName, avatar_url, email, role, onClick }) => {
-	const roles = {
-		student: 'Cтудент',
-		teacher: 'Преподаватель',
-		moderator: 'Модератор',
-	}
-
-	return (
-		<>
-			<div
-				onClick={onClick}
-				className='w-full h-fit flex gap-3 bg-[var(--white)] rounded-2xl shadow-[var(--shadow)] p-2'
-			>
-				{avatar_url ? (
-					<img className='rounded-xl w-12.5 h-12.5' src={avatar_url} alt='' />
-				) : (
-					<ImageOff className='h-12 rounded-xl object-cover aspect-square w-auto p-3 text-[var(--middle)] bg-[var(--light-middle)]' />
-				)}
-
-				<div className='flex flex-col w-full'>
-					<div className='flex flex-wrap w-full items-center justify-between'>
-						<p className='text-lg text-[var(--black)]'>
-							{FullName?.last_name} {FullName?.first_name[0]}
-							{'. '}
-							{FullName?.patronymic[0]}.
-						</p>
-						<p className='text-sm bg-[var(--hero-pale)] text-[var(--hero)] px-2 rounded-full'>
-							{role && <p>{roles[role]}</p>}
-						</p>
-					</div>
-
-					<p className='text-sm text-[var(--middle)]'>{email}</p>
-				</div>
-			</div>
-		</>
-	)
-}
-
-const TaskCard = ({ data, onClick }) => {
-	const scoreConfigs = {
-		1: {
-			val: 1,
-			title: 'Неудовлетворительно',
-			color: 'bg-[var(--red-base)] text-[var(--red-pale)]',
-		},
-		2: {
-			val: 2,
-			title: 'Неудовлетворительно',
-			color: 'bg-[var(--orange-base)] text-[var(--orange-pale)]',
-		},
-		3: {
-			val: 3,
-			title: 'Удовлетворительно',
-			color: 'bg-[var(--yellow-base)] text-[var(--yellow-pale)]',
-		},
-		4: {
-			val: 4,
-			title: 'Хорошо',
-			color: 'bg-[var(--lime-base)] text-[var(--lime-pale)]',
-		},
-		5: {
-			val: 5,
-			title: 'Отлично',
-			color: 'bg-[var(--green-base)] text-[var(--green-pale)]',
-		},
-	}
-
-	const icon = {
-		lecture: <BookMarked />,
-		practice: <NotebookPen />,
-		test: <LaptopMinimalCheck />,
-		labs: <FlaskConical />,
-	}[data.type]
-
-	const score = scoreConfigs[data.score] // Используй свой объект scoreConfigs
-
-	return (
-		<div
-			onClick={onClick}
-			className='p-4 border rounded-xl cursor-pointer hover:bg-gray-50 transition-colors'
-		>
-			<div className='flex items-center gap-3'>
-				{icon}
-				<div>
-					<h3 className='font-medium'>{data.title}</h3>
-					<span className={`text-xs px-2 py-0.5 rounded ${score?.color}`}>
-						{score ? score.title : 'На проверке'}
-					</span>
-				</div>
-			</div>
-		</div>
-	)
-}
-
-const TaskChecking = () => {
+const TestChecking = () => {
 	const [searchParams, setSearchParams] = useSearchParams()
 
 	const courseId = searchParams.get('course_id')
-	const userId = searchParams.get('student_id')
+	const groupId = searchParams.get('group_id')
+	const studentId = searchParams.get('student_id')
 	const taskId = searchParams.get('task_id')
 
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
 	const [courses, setCourses] = useState([])
-	const [students, setStudents] = useState([]) // Добавь API для студентов курса
+	const [groups, setGroups] = useState([])
+	const [students, setStudents] = useState([])
+	const [tasks, setTasks] = useState([])
 
+	// 1. Загрузка списка курсов
 	useEffect(() => {
-		const getUsers = async () => {
-			try {
-				const res = await GetUsers('teacher')
-				setStudents(res)
-			} catch (err) {}
+		fetchCourses().then(setCourses).catch(console.error)
+	}, [])
+
+	// 2. Загрузка групп при выборе курса
+	useEffect(() => {
+		if (courseId) {
+			fetchGroups(courseId).then(setGroups).catch(console.error)
+		} else {
+			setGroups([])
 		}
-		getUsers()
-	}, [])
+	}, [courseId])
 
+	// 3. Загрузка студентов при выборе группы
 	useEffect(() => {
-		// Загрузка курсов
-		GetAllCoursesForTeacher()
-			.then(setCourses)
-			.catch(() => {})
-	}, [])
+		if (groupId) {
+			fetchStudents(groupId).then(setStudents).catch(console.error)
+		} else {
+			setStudents([])
+		}
+	}, [groupId])
 
-	const clearParams = () => setSearchParams({})
+	// 4. Загрузка тасков при выборе студента и курса
+	useEffect(() => {
+		if (studentId && courseId) {
+			fetchTasks(studentId, courseId).then(setTasks).catch(console.error)
+		} else {
+			setTasks([])
+		}
+	}, [studentId, courseId])
+
+	// Утилита для обновления параметров URL
+	const updateParams = newParamsMap => {
+		const newParams = new URLSearchParams(searchParams)
+		Object.entries(newParamsMap).forEach(([key, value]) => {
+			if (value === null) {
+				newParams.delete(key)
+			} else {
+				newParams.set(key, value)
+			}
+		})
+		setSearchParams(newParams)
+	}
+
+	const handleBackToCourses = () => {
+		updateParams({
+			course_id: null,
+			group_id: null,
+			student_id: null,
+			task_id: null,
+		})
+	}
+
+	const handleBackToGroups = () => {
+		updateParams({ group_id: null, student_id: null, task_id: null })
+	}
+
+	const handleBackToTasks = () => {
+		updateParams({ task_id: null })
+	}
+
+	// Динамический заголовок сайдбара
+	const getSidebarTitle = () => {
+		if (!courseId) return 'Выбор курса'
+		if (!groupId) return 'Выбор группы'
+		return 'Выбор студента'
+	}
+
+	const currentTask = tasks?.find(t => String(t.id) === String(taskId))
 
 	return (
-		<div className='grid grid-cols-[300px_500px_1fr] h-screen gap-6 pt-30 pb-10'>
-			{/* 1 Колонна: Курсы и Студенты */}
-			<div className='bg-[var(--white)] shadow-lg rounded-3xl p-4 flex flex-col gap-4 overflow-y-auto'>
-				{!courseId ? (
-					<>
-						<h2 className='text-xl font-bold'>Выберите курс</h2>
-						{courses?.map(course => (
-							<CourseMiniCard
-								key={course.id}
-								data={course}
-								onClick={() => setSearchParams({ course_id: course.id })}
-							/>
-						))}
-					</>
-				) : (
-					<>
-						<div className='flex items-center gap-2'>
-							<SubmitButton
-								paddings='px-2 py-1 gap-1'
-								width='w-fit'
-								flexParams='items-center'
-								onClick={() => {
-									clearParams()
-								}}
-							>
-								<ArrowLeft className='text-[var(--black)]' />
-								Курсы
-							</SubmitButton>
-							<h2 className='font-bold'>Студенты курса</h2>
+		<div className='flex lg:grid lg:grid-cols-[340px_1fr] h-screen gap-6 pt-24 pb-6 px-4'>
+			{/* ЛЕВАЯ КОЛОНКА: Навигационный сайдбар (Курс -> Группа -> Студент) */}
+			<ResponsiveSidebar
+				title={getSidebarTitle()}
+				triggerTitle='Фильтры выборки'
+				triggerIcon={Users}
+				isOpen={isSidebarOpen}
+				setIsOpen={setIsSidebarOpen}
+			>
+				<div className='w-full h-full overflow-y-auto flex flex-col gap-3 pr-1'>
+					{/* Шаг 1: Курсы */}
+					{!courseId && (
+						<div className='flex flex-col gap-2'>
+							{courses?.map(course => (
+								<CourseMiniCard
+									key={course.id}
+									data={course}
+									onClick={() => updateParams({ course_id: course.id })}
+								/>
+							))}
 						</div>
-						{/* Здесь список студентов этого курса */}
-						{students?.items?.map(user => (
-							<UserCard
-								FullName={user?.full_name}
-								avatar_url={user?.avatar_url}
-								email={user?.email}
-								role={user?.role}
-								onClick={() => {
-									const newParams = new URLSearchParams(searchParams)
-									newParams.set('student_id', user.id)
-									setSearchParams(newParams)
-								}}
-							/>
-						))}
-					</>
-				)}
-			</div>
+					)}
 
-			{/* 2 Колонна: Список заданий студента */}
-			<div className='bg-[var(--white)] shadow-lg rounded-3xl p-4 overflow-y-auto'>
-				{userId ? (
-					<>
-						<h2 className='text-xl font-bold mb-4'>Задания</h2>
-						{/* Маппинг заданий пользователя */}
-						{/* <TaskCard onClick={() => setSearchParams({ ...Object.fromEntries(searchParams), task_id: task.id })} /> */}
-					</>
-				) : (
-					<p className='text-[var(--middle)]'>Выберите студента</p>
-				)}
-			</div>
+					{/* Шаг 2: Группы */}
+					{courseId && !groupId && (
+						<div className='flex flex-col gap-2'>
+							<SubmitButton
+								className={'flex items-center gap-1'}
+								invert
+								onClick={handleBackToCourses}
+							>
+								<ArrowLeft className='w-4 h-4 text-[var(--black)]' />К курсам
+							</SubmitButton>
 
-			{/* 3 Колонна: Область проверки */}
-			<div className='bg-[var(--white)] shadow-lg rounded-3xl p-6'>
-				{taskId ? (
-					<div>
-						{/* Здесь рендер контента для проверки конкретного задания */}
+							<div className='flex flex-col gap-2 mt-2'>
+								{groups?.map(group => (
+									<div
+										key={group.id}
+										onClick={() => updateParams({ group_id: group.id })}
+										className='p-3 bg-[var(--white)] rounded-xl border border-gray-100 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors'
+									>
+										<p className='font-semibold text-sm text-[var(--black)]'>
+											{group.name || group.title || `Группа ${group.id}`}
+										</p>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
+
+					{/* Шаг 3: Студенты */}
+					{courseId && groupId && (
+						<div className='flex flex-col gap-2'>
+							<SubmitButton
+								className={'flex items-center gap-1'}
+								invert={true}
+								onClick={handleBackToGroups}
+							>
+								<ArrowLeft className='w-4 h-4 text-[var(--black)]' />К группам
+							</SubmitButton>
+
+							<div className='flex flex-col gap-2 mt-2'>
+								{students?.map(user => (
+									<UserCard
+										key={user.id}
+										FullName={user?.personal_data}
+										avatar_url={user?.image_path}
+										onClick={() => {
+											updateParams({ student_id: user.id, task_id: null })
+											setIsSidebarOpen(false)
+										}}
+									/>
+								))}
+							</div>
+						</div>
+					)}
+				</div>
+			</ResponsiveSidebar>
+
+			{/* ОСНОВНАЯ РАБОЧАЯ ЗОНА */}
+			<div className='flex-1 bg-[var(--white)] shadow-lg rounded-3xl p-6 overflow-y-auto h-full border border-gray-100 flex flex-col'>
+				{!studentId ? (
+					// Состояние: Не выбран студент
+					<div className='flex items-center justify-center h-full text-[var(--middle)] text-base'>
+						Выберите курс, группу и студента в панели слева
+					</div>
+				) : !taskId ? (
+					// Состояние: Студент выбран -> Отображаем список его тасков
+					<div className='flex flex-col h-full gap-4'>
+						<div className='border-b pb-4 flex items-center justify-between'>
+							<h1 className='text-xl font-bold text-[var(--black)]'>
+								Задания студента
+							</h1>
+							<span className='text-sm text-[var(--middle)]'>
+								Всего заданий: {tasks?.length || 0}
+							</span>
+						</div>
+
+						{tasks?.length > 0 ? (
+							<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto p-2'>
+								{tasks.map(task => {
+									const actualTaskId =
+										task.id || task.task_id || task.assignment_id
+									return (
+										<TaskCard
+											key={actualTaskId}
+											data={task}
+											isSelected={false}
+											onClick={() => updateParams({ task_id: actualTaskId })}
+										/>
+									)
+								})}
+							</div>
+						) : (
+							<div className='flex items-center justify-center h-full text-[var(--middle)] text-sm'>
+								У данного студента пока нет заданий
+							</div>
+						)}
 					</div>
 				) : (
-					<div className='flex items-center justify-center h-full text-[var(--middle)]'>
-						Выберите задание для проверки
+					<div className='flex flex-col h-full gap-4'>
+						<div className='border-b border-[var(--light-middle)] pb-4 flex items-center justify-between'>
+							<button
+								onClick={handleBackToTasks}
+								className='flex items-center gap-1 text-sm font-medium text-[var(--hero)] hover:underline'
+							>
+								<ChevronLeft className='w-4 h-4' /> К списку заданий
+							</button>
+						</div>
+
+						{/* Отображаем проверку теста */}
+						<div className='flex-1 overflow-y-auto p-4 rounded-2xl'>
+							<TestCheckingView id={taskId} studentId={studentId} />
+						</div>
 					</div>
 				)}
 			</div>
 		</div>
 	)
 }
-export default TaskChecking
+
+export default TestChecking

@@ -5,68 +5,28 @@ import { Show } from '../../Atoms/Show'
 import { Text } from '../../Atoms/Text'
 import { TestHeader } from '../../Molecules/TestHeader'
 import { TestView } from './TestView'
-import { TestingScore } from './TestingScore'
-import { StartTestingButton } from '../../Atoms/Buttons/StartTestingButton'
+import { useUser } from '../../../context/UserContext'
 
-export const TestManager = ({ isEdit }) => {
+export const TestManager = () => {
 	const [searchParams] = useSearchParams() // Достаем хук
 	const activeQuestionId = searchParams.get('questionId')
-	const activeSection = searchParams.get('section')
-
-	const [sessionIsStart, setSessionIsStart] = useState(false)
-	const [accessToTheTest, setAccessToTheTest] = useState(false)
-
-	const [timeLeft, setTimeLeft] = useState(0)
-
-	const [role, setRole] = useState()
+	const { role } = useUser()
 
 	return (
-		<>
-			{role === 'student' ? (
-				<>
-					{sessionIsStart ? (
-						accessToTheTest ? (
-							<>
-								<TestHeader timeLeft={timeLeft} isEdit={role !== 'student'} />
-								{activeQuestionId ? (
-									<>
-										<TestView />
-									</>
-								) : (
-									<div className='flex justify-center items-center w-full h-full text-center text-[var(--middle)] font-medium'>
-										Вопрос не выбран
-									</div>
-								)}
-							</>
-						) : (
-							<TestingScore />
-						)
-					) : (
-						<div className={`w-full h-150 flex justify-center items-center`}>
-							<StartTestingButton
-								title={'Начать тестирование'}
-								onClick={startSession}
-							/>
-						</div>
-					)}
-				</>
-			) : (
-				<>
-					<TestHeader timeLeft={timeLeft} isEdit={role !== 'student'} />
-					<Show
-						when={activeQuestionId}
-						fallback={
-							<div className='flex justify-center items-center w-full h-[50vh]'>
-								<Text size={'xl'} style={'secondary'}>
-									Вопрос не выбран
-								</Text>
-							</div>
-						}
-					>
-						<TestView role={role} isEdit={role !== 'student'} />
-					</Show>
-				</>
-			)}
-		</>
+		<Show when={role !== 'student'}>
+			<TestHeader isEdit={role !== 'student'} />
+			<Show
+				when={activeQuestionId}
+				fallback={
+					<div className='flex justify-center items-center w-full h-[50vh]'>
+						<Text size={'xl'} style={'secondary'}>
+							Вопрос не выбран
+						</Text>
+					</div>
+				}
+			>
+				<TestView role={role} isEdit={role !== 'student'} />
+			</Show>
+		</Show>
 	)
 }
