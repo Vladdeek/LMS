@@ -8,6 +8,7 @@ import { LevelsBar } from '../../Molecules/LevelsBar'
 import { ChoiceQuestionCheckView } from './ChoiseQuestionCheckView'
 import { MatchingQuestionCheckView } from './MatchingQuestionCheckView'
 import { OpenQuestionCheckView } from './OpenQuestionCheckView'
+import { TestHeader } from '../../Molecules/TestHeader'
 
 export const TestCheckingView = ({ id, studentId }) => {
 	const [activeIndex, setActiveIndex] = useState(null)
@@ -19,9 +20,9 @@ export const TestCheckingView = ({ id, studentId }) => {
 	const fetchQuestions = async () => {
 		try {
 			const res = await api.get(
-				`${API_URL}/student-profile/${studentId}/assignment/test/preview?test_id=${id}`,
+				`${API_URL}/student-profile/${id}/${studentId}/assignment/test/preview/`,
 			)
-			setQuestions(res.data.questions || [])
+			setQuestions(res.data.questions_ids || [])
 			setGrade({
 				score: res.data.score,
 				grade_status: res.data.grade_status,
@@ -77,7 +78,7 @@ export const TestCheckingView = ({ id, studentId }) => {
 		<div className='w-full flex flex-col gap-5'>
 			{/* Шапка с навигацией по вопросам и итоговой оценкой */}
 			<div className='w-full flex justify-between items-center gap-4'>
-				<LevelsBar
+				<TestHeader
 					questions={questions}
 					activeIndex={activeIndex}
 					setActiveIndex={setActiveIndex}

@@ -65,7 +65,7 @@ const TestChecking = () => {
 	const updateParams = newParamsMap => {
 		const newParams = new URLSearchParams(searchParams)
 		Object.entries(newParamsMap).forEach(([key, value]) => {
-			if (value === null) {
+			if (value === null || value === undefined || value === 'undefined') {
 				newParams.delete(key)
 			} else {
 				newParams.set(key, value)
